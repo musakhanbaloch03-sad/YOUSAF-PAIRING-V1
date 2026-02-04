@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YOUSAF BALOCH MD | PAIRING</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+    <style>
+        body { margin: 0; background: #000; color: #fff; font-family: 'Orbitron', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        .card { background: rgba(10, 10, 10, 0.9); border: 1px solid #00e5ff; box-shadow: 0 0 25px #00e5ff; padding: 40px; border-radius: 25px; text-align: center; width: 320px; }
+        h1 { color: #00e5ff; font-size: 20px; text-transform: uppercase; margin-bottom: 25px; }
+        input { width: 90%; padding: 12px; margin-bottom: 20px; background: transparent; border: 1px solid #fff; border-radius: 10px; color: #fff; text-align: center; }
+        button { background: linear-gradient(45deg, #00e5ff, #7d00ff); border: none; padding: 12px 25px; border-radius: 10px; color: white; cursor: pointer; font-weight: bold; width: 100%; transition: 0.3s; }
+        button:hover { box-shadow: 0 0 15px #7d00ff; transform: scale(1.02); }
+        #code { margin-top: 25px; font-size: 32px; color: #00ff88; letter-spacing: 5px; text-shadow: 0 0 10px #00ff88; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>YOUSAF BALOCH MD</h1>
+        <p style="font-size: 10px; opacity: 0.6;">ENTER NUMBER WITH COUNTRY CODE</p>
+        <input type="number" id="num" placeholder="923000000000">
+        <button onclick="getPair()">GENERATE CODE</button>
+        <div id="code"></div>
+    </div>
+    <script>
+        async function getPair() {
+            let n = document.getElementById('num').value;
+            let c = document.getElementById('code');
+            if(!n) return alert("Enter Number!");
+            c.innerText = "WAITING...";
+            let res = await fetch('/pair?number=' + n);
+            let data = await res.json();
+            c.innerText = data.code || "RETRY";
+        }
+    </script>
+</body>
+</html>
