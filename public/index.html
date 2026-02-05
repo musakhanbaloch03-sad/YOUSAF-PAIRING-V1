@@ -3,36 +3,292 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YOUSAF BALOCH MD | PAIRING</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+    <title>YOUSAF-BALOCH-MD Pairing Code</title>
     <style>
-        body { margin: 0; background: #000; color: #fff; font-family: 'Orbitron', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
-        .card { background: rgba(10, 10, 10, 0.9); border: 1px solid #00e5ff; box-shadow: 0 0 25px #00e5ff; padding: 40px; border-radius: 25px; text-align: center; width: 320px; }
-        h1 { color: #00e5ff; font-size: 20px; text-transform: uppercase; margin-bottom: 25px; }
-        input { width: 90%; padding: 12px; margin-bottom: 20px; background: transparent; border: 1px solid #fff; border-radius: 10px; color: #fff; text-align: center; }
-        button { background: linear-gradient(45deg, #00e5ff, #7d00ff); border: none; padding: 12px 25px; border-radius: 10px; color: white; cursor: pointer; font-weight: bold; width: 100%; transition: 0.3s; }
-        button:hover { box-shadow: 0 0 15px #7d00ff; transform: scale(1.02); }
-        #code { margin-top: 25px; font-size: 32px; color: #00ff88; letter-spacing: 5px; text-shadow: 0 0 10px #00ff88; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            font-size: 48px;
+            margin-bottom: 10px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .code-display {
+            display: none;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .code-display.show {
+            display: block;
+        }
+
+        .code-text {
+            font-size: 36px;
+            font-weight: bold;
+            letter-spacing: 5px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .social-links {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .social-links a {
+            display: inline-block;
+            margin: 5px;
+            padding: 10px 20px;
+            background: #25D366;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .social-links .youtube {
+            background: #FF0000;
+        }
+
+        .social-links .tiktok {
+            background: #000000;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #666;
+            font-size: 12px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h1>YOUSAF BALOCH MD</h1>
-        <p style="font-size: 10px; opacity: 0.6;">ENTER NUMBER WITH COUNTRY CODE</p>
-        <input type="number" id="num" placeholder="923000000000">
-        <button onclick="getPair()">GENERATE CODE</button>
-        <div id="code"></div>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🤖</div>
+            <h1>YOUSAF-BALOCH-MD</h1>
+            <p>Get Your WhatsApp Pairing Code</p>
+        </div>
+
+        <div class="form-group">
+            <label for="phone">📱 WhatsApp Number</label>
+            <input 
+                type="tel" 
+                id="phone" 
+                placeholder="923710636110"
+                maxlength="15"
+            >
+        </div>
+
+        <button class="btn" onclick="getPairingCode()">
+            🔐 Get Pairing Code
+        </button>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p style="margin-top: 10px; color: #667eea;">Generating...</p>
+        </div>
+
+        <div class="code-display" id="codeDisplay">
+            <h2>✅ Your Code</h2>
+            <div class="code-text" id="codeText">----</div>
+            <div class="instructions">
+                <strong>How to use:</strong><br>
+                1. Open WhatsApp<br>
+                2. Linked Devices<br>
+                3. Link with Phone Number<br>
+                4. Enter this code
+            </div>
+        </div>
+
+        <div class="social-links">
+            <a href="https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j" target="_blank">
+                📢 Channel
+            </a>
+            <a href="https://www.youtube.com/@Yousaf_Baloch_Tech" target="_blank" class="youtube">
+                🎥 YouTube
+            </a>
+            <a href="https://tiktok.com/@loser_boy.110" target="_blank" class="tiktok">
+                🎵 TikTok
+            </a>
+        </div>
+
+        <div class="footer">
+            <p>© 2026 YOUSAF-BALOCH-MD</p>
+            <p>📱 +92 371 063 6110</p>
+        </div>
     </div>
+
     <script>
-        async function getPair() {
-            let n = document.getElementById('num').value;
-            let c = document.getElementById('code');
-            if(!n) return alert("Enter Number!");
-            c.innerText = "WAITING...";
-            let res = await fetch('/pair?number=' + n);
-            let data = await res.json();
-            c.innerText = data.code || "RETRY";
+        async function getPairingCode() {
+            const phone = document.getElementById('phone').value.trim();
+            const loading = document.getElementById('loading');
+            const codeDisplay = document.getElementById('codeDisplay');
+            const codeText = document.getElementById('codeText');
+
+            if (!phone || phone.length < 10) {
+                alert('Enter valid number');
+                return;
+            }
+
+            loading.classList.add('show');
+            codeDisplay.classList.remove('show');
+
+            try {
+                const response = await fetch('/code', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ number: phone })
+                });
+
+                const data = await response.json();
+                loading.classList.remove('show');
+
+                if (data.success && data.code) {
+                    codeText.textContent = data.code;
+                    codeDisplay.classList.add('show');
+                } else {
+                    alert(data.error || 'Failed');
+                }
+            } catch (err) {
+                loading.classList.remove('show');
+                alert('Connection error');
+            }
         }
+
+        document.getElementById('phone').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') getPairingCode();
+        });
     </script>
 </body>
 </html>
