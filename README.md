@@ -16,8 +16,8 @@
 
 <p align="center">
   <img src="https://komarev.com/ghpvc/?username=yousaf-baloch-pairing&label=👁️+Profile+Views&color=667eea&style=for-the-badge&labelColor=000000" alt="Profile Views"/>
-  <img src="https://img.shields.io/github/stars/YOUR-USERNAME/YOUSAF-PAIRING-V1?style=for-the-badge&logo=github&labelColor=000000&color=yellow" alt="Stars"/>
-  <img src="https://img.shields.io/github/forks/YOUR-USERNAME/YOUSAF-PAIRING-V1?style=for-the-badge&logo=github&labelColor=000000&color=blue" alt="Forks"/>
+  <img src="https://img.shields.io/github/stars/musakhanbaloch03-sad/YOUSAF-PAIRING-V1?style=for-the-badge&logo=github&labelColor=000000&color=yellow" alt="Stars"/>
+  <img src="https://img.shields.io/github/forks/musakhanbaloch03-sad/YOUSAF-PAIRING-V1?style=for-the-badge&logo=github&labelColor=000000&color=blue" alt="Forks"/>
 </p>
 
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">
@@ -149,7 +149,7 @@ Perfect performance on all devices – phones, tablets, desktops
 
 ### 🏆 PROJECT HIGHLIGHTS
 
-<img src="https://github-readme-stats.vercel.app/api/pin/?username=YOUR-USERNAME&repo=YOUSAF-PAIRING-V1&theme=radical&hide_border=true&bg_color=0D1117&title_color=667eea&icon_color=764ba2&text_color=ffffff"/>
+<img src="https://github-readme-stats.vercel.app/api/pin/?username=musakhanbaloch03-sad&repo=YOUSAF-PAIRING-V1&theme=radical&hide_border=true&bg_color=0D1117&title_color=667eea&icon_color=764ba2&text_color=ffffff"/>
 
 <img src="https://img.shields.io/badge/⭐_Star_This_Repo-Help_Others_Discover-yellow?style=for-the-badge"/>
 
@@ -317,39 +317,47 @@ Perfect performance on all devices – phones, tablets, desktops
 
 ```bash
 # Clone from GitHub
-git clone https://github.com/MUSAKHANBALOCH03-SAD/YOUSAF-PAIRING-V1.git
+git clone https://github.com/musakhanbaloch03-sad/YOUSAF-PAIRING-V1.git
 
 # Navigate to project folder
 cd YOUSAF-PAIRING-V1
-�
-￼
-�
+```
 
-�
-2️⃣
+</td>
+</tr>
 
+<tr>
+<td width="5%" align="center"><h3>2️⃣</h3></td>
+<td>
 
-INSTALL DEPENDENCIES
+#### INSTALL DEPENDENCIES
+
+```bash
 # Using npm
 npm install
 
 # Or using yarn
 yarn install
-Packages installed:
-✅ @whiskeysockets/baileys - WhatsApp Web API
-✅ express - Web Server Framework
-✅ pino - Logging System
-✅ @hapi/boom - Error Handling
-�
-￼
-�
+```
 
-�
-3️⃣
+**Packages installed:**
+- ✅ @whiskeysockets/baileys - WhatsApp Web API
+- ✅ express - Web Server Framework
+- ✅ pino - Logging System
+- ✅ @hapi/boom - Error Handling
 
+</td>
+</tr>
 
-CONFIGURE SETTINGS
-Edit config.js with your details:
+<tr>
+<td width="5%" align="center"><h3>3️⃣</h3></td>
+<td>
+
+#### CONFIGURE SETTINGS
+
+Edit `config.js` with your details:
+
+```javascript
 module.exports = {
   owner: ['923710636110'],
   botName: 'YOUSAF-BALOCH-MD',
@@ -361,44 +369,62 @@ module.exports = {
   },
   port: 3000
 };
-�
-￼
-�
+```
 
-�
-4️⃣
+</td>
+</tr>
 
+<tr>
+<td width="5%" align="center"><h3>4️⃣</h3></td>
+<td>
 
-START SERVER
+#### START SERVER
+
+```bash
 # Start development server
 npm start
-Server running at: http://localhost:3000
-�
-￼
-�
+```
 
-�
+**Server running at:** `http://localhost:3000`
 
-✅ INSTALLATION COMPLETE!
-�
-￼
-�
-￼
-�
+</td>
+</tr>
+</table>
 
-💻 USAGE
-�
+---
 
-📝 HOW TO USE YOUSAF-BALOCH-MD
-�
+<div align="center">
 
-�
-1️⃣
+### ✅ INSTALLATION COMPLETE!
 
+<img src="https://img.shields.io/badge/Status-Ready_to_Use-success?style=for-the-badge&logo=checkmarx&logoColor=white"/>
 
-START THE SERVER
+</div>
+
+---
+
+## 💻 USAGE
+
+<div align="center">
+
+### 📝 HOW TO USE YOUSAF-BALOCH-MD
+
+</div>
+
+<table>
+<tr>
+<td width="5%" align="center"><h3>1️⃣</h3></td>
+<td>
+
+#### START THE SERVER
+
+```bash
 npm start
+```
+
 You'll see the beautiful welcome screen with all social media links:
+
+```
 ╔═══════════════════════╗
 ║  YOUSAF-BALOCH-MD    ║
 ║  Pairing Code System ║
@@ -410,111 +436,135 @@ You'll see the beautiful welcome screen with all social media links:
 📞 Phone: 923710636110
 
 🚀 Server running on port 3000
-�
-￼
-�
+```
 
-�
-2️⃣
+</td>
+</tr>
 
+<tr>
+<td width="5%" align="center"><h3>2️⃣</h3></td>
+<td>
 
-OPEN IN BROWSER
-Navigate to: http://localhost:3000
-�
-￼
-�
+#### OPEN IN BROWSER
 
-�
-3️⃣
+Navigate to: `http://localhost:3000`
 
+</td>
+</tr>
 
-ENTER PHONE NUMBER
-Format: 923XXXXXXXXX
-✅ Start with country code (92 for Pakistan)
-✅ No plus (+) sign
-✅ Only numbers
-�
-￼
-�
+<tr>
+<td width="5%" align="center"><h3>3️⃣</h3></td>
+<td>
 
-�
-4️⃣
+#### ENTER PHONE NUMBER
 
+**Format:** `923XXXXXXXXX`
 
-GET PAIRING CODE
-Click "Get Pairing Code" button
+- ✅ Start with country code (92 for Pakistan)
+- ✅ No plus (+) sign
+- ✅ Only numbers
+
+</td>
+</tr>
+
+<tr>
+<td width="5%" align="center"><h3>4️⃣</h3></td>
+<td>
+
+#### GET PAIRING CODE
+
+Click **"Get Pairing Code"** button
+
 Wait 3 seconds for generation...
-�
-￼
-�
 
-�
-5️⃣
+</td>
+</tr>
 
+<tr>
+<td width="5%" align="center"><h3>5️⃣</h3></td>
+<td>
 
-RECEIVE CODE
-You'll get an 8-character code like: ABCD-EFGH
-�
-￼
-�
+#### RECEIVE CODE
 
-�
-6️⃣
+You'll get an 8-character code like: `ABCD-EFGH`
 
+</td>
+</tr>
 
-CONNECT WHATSAPP
-Open WhatsApp on your phone
-Go to ⚙️ Settings → 📱 Linked Devices
-Tap ➕ Link a Device
-Select 🔢 "Link with phone number instead"
-Enter your pairing code
-✅ Connected!
-�
-￼
-�
+<tr>
+<td width="5%" align="center"><h3>6️⃣</h3></td>
+<td>
 
-�
+#### CONNECT WHATSAPP
 
-🎥 VIDEO TUTORIAL
+1. Open WhatsApp on your phone
+2. Go to ⚙️ **Settings** → 📱 **Linked Devices**
+3. Tap ➕ **Link a Device**
+4. Select 🔢 **"Link with phone number instead"**
+5. Enter your pairing code
+6. ✅ **Connected!**
+
+</td>
+</tr>
+</table>
+
+---
+
+<div align="center">
+
+### 🎥 VIDEO TUTORIAL
+
 Watch the complete setup guide on YouTube:
-�
-￼ 
-�
-￼
-�
 
-🌐 DEPLOYMENT
-�
+<a href="https://www.youtube.com/@Yousaf_Baloch_Tech">
+<img src="https://img.shields.io/badge/▶️_Watch_Tutorial-YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white"/>
+</a>
 
-🚀 DEPLOY YOUR PROJECT ONLINE
-�
-￼ ￼
-�
+</div>
 
-1️⃣ RENDER.COM (RECOMMENDED) 🏆
-�
+---
 
-[
-�
-Load image
-](https://render.com)
-�
-￼ ￼ ￼
-�
+## 🌐 DEPLOYMENT
 
-Steps:
-Go to Render.com
-Click "New +" → "Web Service"
-Connect your GitHub repository
-Configure:
-Name: yousaf-baloch-pairing
-Environment: Node
-Build Command: npm install
-Start Command: npm start
-Click "Create Web Service"
-Wait 2-3 minutes ✅
-Your URL: https://yousaf-baloch-pairing.onrender.com
-2️⃣ RAILWAY.APP
+<div align="center">
+
+### 🚀 DEPLOY YOUR PROJECT ONLINE
+
+<img src="https://img.shields.io/badge/Deploy-Online-success?style=for-the-badge"/> <img src="https://img.shields.io/badge/Free-Hosting-blue?style=for-the-badge"/>
+
+</div>
+
+---
+
+### 1️⃣ RENDER.COM (RECOMMENDED) 🏆
+
+<div align="center">
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com)
+
+<img src="https://img.shields.io/badge/Best-Choice-success?style=for-the-badge"/> <img src="https://img.shields.io/badge/Free-Plan-blue?style=for-the-badge"/> <img src="https://img.shields.io/badge/Easy-Setup-blueviolet?style=for-the-badge"/>
+
+</div>
+
+**Steps:**
+
+1. Go to [Render.com](https://render.com)
+2. Click **"New +"** → **"Web Service"**
+3. Connect your GitHub repository
+4. Configure:
+   - **Name:** `yousaf-baloch-pairing`
+   - **Environment:** `Node`
+   - **Build Command:** `npm install`
+   - **Start Command:** `npm start`
+5. Click **"Create Web Service"**
+6. Wait 2-3 minutes ✅
+7. Your URL: `https://yousaf-baloch-pairing.onrender.com`
+
+---
+
+### 2️⃣ RAILWAY.APP
+
+```bash
 # Install Railway CLI
 npm i -g @railway/cli
 
@@ -526,9 +576,13 @@ railway init
 
 # Deploy
 railway up
-�
-￼
-3️⃣ HEROKU
+```
+
+---
+
+### 3️⃣ HEROKU
+
+```bash
 # Login to Heroku
 heroku login
 
@@ -540,109 +594,119 @@ git push heroku main
 
 # Open your app
 heroku open
-�
-￼
-4️⃣ REPLIT
-Visit Replit.com
-Click "Import from GitHub"
-Paste repository URL
-Click "Run" button
-�
-￼
-�
+```
 
-📊 DEPLOYMENT COMPARISON
-Platform
-Free Plan
-Speed
-Ease
-Recommended
-Render
-✅ Yes
-⚡⚡⚡
-⭐⭐⭐⭐⭐
-🏆 Best
-Railway
-⚠️ Limited
-⚡⚡⚡⚡
-⭐⭐⭐⭐
-✅ Good
-Heroku
-❌ Paid
-⚡⚡⚡⚡
-⭐⭐⭐
-⚠️ Paid
-Replit
-✅ Yes
-⚡⚡
-⭐⭐⭐⭐⭐
-✅ Good
-�
-￼
-�
+---
 
-🛠️ TECH STACK
-�
+### 4️⃣ REPLIT
 
-💻 TECHNOLOGIES POWERING THIS PROJECT
-�
-￼
-�
+1. Visit [Replit.com](https://replit.com)
+2. Click **"Import from GitHub"**
+3. Paste repository URL: `https://github.com/musakhanbaloch03-sad/YOUSAF-PAIRING-V1`
+4. Click **"Run"** button
 
-�
+---
 
-BACKEND
-�
-Load image
-�
-Load image
-�
-Load image
-Runtime & Framework
-Node.js v18+
-Express.js
-Baileys Library
-�
+<div align="center">
 
-FRONTEND
-�
-Load image
-�
-Load image
-�
-Load image
-Modern Web Stack
-HTML5
-CSS3 Gradients
-Vanilla JavaScript
-�
+### 📊 DEPLOYMENT COMPARISON
 
-TOOLS
-�
-Load image
-�
-Load image
-�
-Load image
-Development Tools
-Git Version Control
-GitHub
-VS Code
-�
+</div>
 
-�
+| Platform | Free Plan | Speed | Ease | Recommended |
+|----------|-----------|-------|------|-------------|
+| **Render** | ✅ Yes | ⚡⚡⚡ | ⭐⭐⭐⭐⭐ | 🏆 Best |
+| **Railway** | ⚠️ Limited | ⚡⚡⚡⚡ | ⭐⭐⭐⭐ | ✅ Good |
+| **Heroku** | ❌ Paid | ⚡⚡⚡⚡ | ⭐⭐⭐ | ⚠️ Paid |
+| **Replit** | ✅ Yes | ⚡⚡ | ⭐⭐⭐⭐⭐ | ✅ Good |
 
-📦 NPM PACKAGES
-�
-PackageVersionPurpose@whiskeysockets/baileys￼WhatsApp Web APIexpress￼Web Serverpino￼Logger@hapi/boom￼Error Handler
-�
+---
 
-📁 STRUCTURE
-�
+## 🛠️ TECH STACK
 
-🗂️ PROJECT FILE ORGANIZATION
-�
+<div align="center">
 
+### 💻 TECHNOLOGIES POWERING THIS PROJECT
+
+<img src="https://skillicons.dev/icons?i=nodejs,express,javascript,html,css,git,github,vscode&theme=dark" />
+
+</div>
+
+---
+
+<table>
+<tr>
+<td width="33%" align="center">
+
+### 🟢 BACKEND
+
+<img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white"/>
+<img src="https://img.shields.io/badge/Express-000000?style=for-the-badge&logo=express&logoColor=white"/>
+<img src="https://img.shields.io/badge/Baileys-25D366?style=for-the-badge&logo=whatsapp&logoColor=white"/>
+
+**Runtime & Framework**
+- Node.js v18+
+- Express.js
+- Baileys Library
+
+</td>
+<td width="33%" align="center">
+
+### 🎨 FRONTEND
+
+<img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white"/>
+<img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white"/>
+<img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black"/>
+
+**Modern Web Stack**
+- HTML5
+- CSS3 Gradients
+- Vanilla JavaScript
+
+</td>
+<td width="33%" align="center">
+
+### 🛠️ TOOLS
+
+<img src="https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white"/>
+<img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white"/>
+<img src="https://img.shields.io/badge/VS_Code-007ACC?style=for-the-badge&logo=visual-studio-code&logoColor=white"/>
+
+**Development Tools**
+- Git Version Control
+- GitHub
+- VS Code
+
+</td>
+</tr>
+</table>
+
+---
+
+<div align="center">
+
+### 📦 NPM PACKAGES
+
+</div>
+
+| Package | Version | Purpose |
+|---------|---------|---------|
+| `@whiskeysockets/baileys` | Latest | WhatsApp Web API |
+| `express` | Latest | Web Server |
+| `pino` | Latest | Logger |
+| `@hapi/boom` | Latest | Error Handler |
+
+---
+
+## 📁 STRUCTURE
+
+<div align="center">
+
+### 🗂️ PROJECT FILE ORGANIZATION
+
+</div>
+
+```
 YOUSAF-PAIRING-V1/
 │
 ├── 📂 public/                           # Frontend Assets
@@ -694,165 +758,12 @@ YOUSAF-PAIRING-V1/
     ├── 💻 Usage Instructions
     ├── 🌐 Deployment Guide
     └── 👨‍💻 Creator Info: MUHAMMAD YOUSAF
-�
+```
 
-📊 FILE SIZE BREAKDOWN
-�
-ComponentFilesSizePurposenode_modules/~1000+~50 MBDependenciespublic/1~20 KBFrontendsession/Auto~500 KBSessionsCore Files4~10 KBConfiguration
-�
-￼
-�
+---
 
-🎨 CUSTOMIZATION
-�
+<div align="center">
 
-✨ PERSONALIZE YOUR PROJECT
-�
+### 📊 FILE SIZE BREAKDOWN
 
-1️⃣ CHANGE THEME COLORS
-Edit public/index.html CSS section:
-/* Current Gradient */
-background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-
-/* Try These Beautiful Themes: */
-
-/* 🔥 Fire Sunset */
-background: linear-gradient(135deg, #FF6B6B 0%, #FFE66D 100%);
-
-/* 🌊 Ocean Blue */
-background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-
-/* 🌸 Pink Dream */
-background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-
-/* 🌿 Nature Green */
-background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-
-/* 🌌 Galaxy Purple */
-background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-
-/* 🍊 Orange Burst */
-background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-2️⃣ UPDATE PERSONAL INFO
-Edit config.js:
-module.exports = {
-  // Your WhatsApp Number
-  owner: ['923710636110'],
-  
-  // Bot Name
-  botName: 'YOUSAF-BALOCH-MD',
-  
-  // Your Social Media
-  socialMedia: {
-    whatsappChannel: 'https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j',
-    youtube: 'https://www.youtube.com/@Yousaf_Baloch_Tech',
-    tiktok: 'https://tiktok.com/@loser_boy.110',
-    phone: '923710636110'
-  },
-  
-  // Server Port
-  port: 3000,  // Change to 5000, 8080, etc.
-  
-  // Welcome Message
-  welcomeMessage: `
-╔═══════════════════════╗
-║  YOUR NAME HERE      ║
-╚═══════════════════════╝
-  `
-};
-3️⃣ MODIFY UI TEXT
-In public/index.html, find and change:
-<!-- Page Title -->
-<title>YOUSAF-BALOCH-MD Pairing Code</title>
-
-<!-- Main Heading -->
-<h1>YOUSAF-BALOCH-MD</h1>
-
-<!-- Subtitle -->
-<p class="subtitle">WhatsApp Multi-Device Pairing System</p>
-
-<!-- Creator Info -->
-<div class="creator-info">
-    <strong>💻 Created by MUHAMMAD YOUSAF</strong><br>
-    Pakistani Developer | Full Stack Bot Creator
 </div>
-4️⃣ ADD CUSTOM FEATURES
-Add to index.js:
-// Custom route example
-app.get('/about', (req, res) => {
-  res.json({
-    creator: 'MUHAMMAD YOUSAF',
-    project: 'YOUSAF-BALOCH-MD',
-    version: '2.0.0',
-    country: 'Pakistan 🇵🇰'
-  });
-});
-�
-
-�
-￼
-�
-￼
-�
-
-❓ FAQ
-�
-
-💬 FREQUENTLY ASKED QUESTIONS
-�
-
-�
-❓ Is this project completely free? 
-
-✅ YES! This project is 100% free and open source under MIT License.
-You can:
-✅ Use it for personal projects
-✅ Use it for commercial projects
-✅ Modify and customize
-✅ Distribute and share
-Only requirement: Give credit to MUHAMMAD YOUSAF
-�
-
-�
-❓ Can I sell this project? 
-
-✅ YES, but with conditions:
-You MUST keep the credit:
-Created by MUHAMMAD YOUSAF
-YOUSAF-BALOCH-MD Pairing System
-You MUST keep the MIT License
-You SHOULD link back to:
-📱 WhatsApp: https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j
-🎥 YouTube: https://www.youtube.com/@Yousaf_Baloch_Tech
-�
-
-�
-❓ I'm getting errors during installation. What should I do? 
-
-Common Solutions:
-1️⃣ Check Node.js version:
-node -v  # Should be v18 or higher
-2️⃣ Clear npm cache:
-npm cache clean --force
-rm -rf node_modules package-lock.json
-npm install
-3️⃣ Delete session folder:
-rm -rf session
-mkdir session
-4️⃣ Still having issues?
-📱 Contact on WhatsApp: https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j
-📞 Call: 923710636110
-💻 Create GitHub Issue
-�
-
-�
-❓ Pairing code is not working in WhatsApp? 
-
-Troubleshooting Checklist:
-✅ Check number format:
-Correct: 923710636110
-Wrong: +923710636110 or 03710636110
-✅ Verify WhatsApp is updated:
-Go to Play Store/App Store
-Update WhatsApp to latest version
-✅ Check internet connection
