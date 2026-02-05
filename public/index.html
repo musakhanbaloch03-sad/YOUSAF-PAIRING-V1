@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ur">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,7 +10,7 @@
             padding: 0;
             box-sizing: border-box;
         }
-
+        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -20,66 +20,38 @@
             align-items: center;
             padding: 20px;
         }
-
+        
         .container {
-            background: rgba(255, 255, 255, 0.95);
+            background: white;
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             max-width: 500px;
             width: 100%;
-            animation: slideIn 0.5s ease;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .header {
+            padding: 40px;
             text-align: center;
-            margin-bottom: 30px;
         }
-
+        
         .logo {
-            font-size: 48px;
+            font-size: 50px;
             margin-bottom: 10px;
-            animation: bounce 2s infinite;
         }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
+        
         h1 {
             color: #667eea;
-            font-size: 28px;
             margin-bottom: 10px;
+            font-size: 28px;
         }
-
-        p {
+        
+        .subtitle {
             color: #666;
+            margin-bottom: 30px;
             font-size: 14px;
         }
-
-        .form-group {
-            margin-bottom: 25px;
+        
+        .input-group {
+            margin-bottom: 20px;
         }
-
-        label {
-            display: block;
-            color: #333;
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
-
+        
         input {
             width: 100%;
             padding: 15px;
@@ -88,14 +60,13 @@
             font-size: 16px;
             transition: all 0.3s;
         }
-
+        
         input:focus {
             outline: none;
             border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
-
-        .btn {
+        
+        button {
             width: 100%;
             padding: 15px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -103,79 +74,82 @@
             border: none;
             border-radius: 10px;
             font-size: 18px;
-            font-weight: 600;
+            font-weight: bold;
             cursor: pointer;
             transition: transform 0.2s;
         }
-
-        .btn:hover {
+        
+        button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
         }
-
-        .code-display {
+        
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .pairing-code {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
             display: none;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            border-radius: 15px;
-            text-align: center;
-            margin-top: 20px;
         }
-
-        .code-display.show {
-            display: block;
-        }
-
-        .code-text {
+        
+        .code-display {
             font-size: 36px;
             font-weight: bold;
+            color: #667eea;
             letter-spacing: 5px;
-            margin: 20px 0;
-            font-family: 'Courier New', monospace;
+            margin: 10px 0;
         }
-
+        
         .social-links {
             margin-top: 30px;
-            text-align: center;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
         }
-
-        .social-links a {
+        
+        .social-links h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .social-btn {
             display: inline-block;
             margin: 5px;
             padding: 10px 20px;
             background: #25D366;
             color: white;
             text-decoration: none;
-            border-radius: 8px;
+            border-radius: 25px;
             font-size: 14px;
+            transition: all 0.3s;
         }
-
-        .social-links .youtube {
+        
+        .social-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .social-btn.youtube {
             background: #FF0000;
         }
-
-        .social-links .tiktok {
+        
+        .social-btn.tiktok {
             background: #000000;
         }
-
-        .footer {
-            text-align: center;
-            margin-top: 30px;
-            color: #666;
-            font-size: 12px;
+        
+        .social-btn.phone {
+            background: #34B7F1;
         }
-
+        
         .loading {
             display: none;
-            text-align: center;
-            margin-top: 20px;
+            margin: 20px 0;
         }
-
-        .loading.show {
-            display: block;
-        }
-
+        
         .spinner {
             border: 4px solid #f3f3f3;
             border-top: 4px solid #667eea;
@@ -185,109 +159,127 @@
             animation: spin 1s linear infinite;
             margin: 0 auto;
         }
-
+        
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
+        }
+        
+        .creator-info {
+            margin-top: 20px;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            border-radius: 10px;
+            font-size: 13px;
+            color: #666;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <div class="logo">🤖</div>
-            <h1>YOUSAF-BALOCH-MD</h1>
-            <p>Get Your WhatsApp Pairing Code</p>
-        </div>
-
-        <div class="form-group">
-            <label for="phone">📱 WhatsApp Number</label>
+        <div class="logo">🤖</div>
+        <h1>YOUSAF-BALOCH-MD</h1>
+        <p class="subtitle">WhatsApp Multi-Device Pairing System</p>
+        
+        <div class="input-group">
             <input 
                 type="tel" 
-                id="phone" 
-                placeholder="923710636110"
-                maxlength="15"
-            >
+                id="phoneNumber" 
+                placeholder="923XXXXXXXXX (بغیر + کے)"
+                maxlength="12"
+            />
         </div>
-
-        <button class="btn" onclick="getPairingCode()">
+        
+        <button onclick="getPairingCode()" id="submitBtn">
             🔐 Get Pairing Code
         </button>
-
+        
         <div class="loading" id="loading">
             <div class="spinner"></div>
-            <p style="margin-top: 10px; color: #667eea;">Generating...</p>
+            <p style="margin-top: 10px;">Generating Pairing Code...</p>
         </div>
-
-        <div class="code-display" id="codeDisplay">
-            <h2>✅ Your Code</h2>
-            <div class="code-text" id="codeText">----</div>
-            <div class="instructions">
-                <strong>How to use:</strong><br>
-                1. Open WhatsApp<br>
-                2. Linked Devices<br>
-                3. Link with Phone Number<br>
-                4. Enter this code
-            </div>
+        
+        <div class="pairing-code" id="pairingCode">
+            <h3>✅ آپ کا Pairing Code:</h3>
+            <div class="code-display" id="codeDisplay">XXXX-XXXX</div>
+            <p style="color: #666; font-size: 14px; margin-top: 10px;">
+                اپنے WhatsApp میں <strong>Linked Devices</strong> میں جا کر یہ code enter کریں
+            </p>
         </div>
-
+        
+        <div class="creator-info">
+            <strong>💻 Created by YOUSAF BALOCH</strong><br>
+            پاکستانی Developer | Full Stack Bot Creator
+        </div>
+        
         <div class="social-links">
-            <a href="https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j" target="_blank">
-                📢 Channel
+            <h3>🌟 Follow & Subscribe کریں</h3>
+            <a href="https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j" target="_blank" class="social-btn">
+                📱 WhatsApp Channel
             </a>
-            <a href="https://www.youtube.com/@Yousaf_Baloch_Tech" target="_blank" class="youtube">
+            <a href="https://www.youtube.com/@Yousaf_Baloch_Tech" target="_blank" class="social-btn youtube">
                 🎥 YouTube
             </a>
-            <a href="https://tiktok.com/@loser_boy.110" target="_blank" class="tiktok">
+            <a href="https://tiktok.com/@loser_boy.110" target="_blank" class="social-btn tiktok">
                 🎵 TikTok
             </a>
-        </div>
-
-        <div class="footer">
-            <p>© 2026 YOUSAF-BALOCH-MD</p>
-            <p>📱 +92 371 063 6110</p>
+            <a href="tel:03710636110" class="social-btn phone">
+                📞 03710636110
+            </a>
         </div>
     </div>
 
     <script>
         async function getPairingCode() {
-            const phone = document.getElementById('phone').value.trim();
+            const phoneNumber = document.getElementById('phoneNumber').value;
+            const submitBtn = document.getElementById('submitBtn');
             const loading = document.getElementById('loading');
-            const codeDisplay = document.getElementById('codeDisplay');
-            const codeText = document.getElementById('codeText');
-
-            if (!phone || phone.length < 10) {
-                alert('Enter valid number');
+            const pairingCodeDiv = document.getElementById('pairingCode');
+            
+            // Validation
+            if (!phoneNumber || phoneNumber.length < 10) {
+                alert('❌ براہ کرم صحیح نمبر درج کریں (مثال: 923XXXXXXXXX)');
                 return;
             }
-
-            loading.classList.add('show');
-            codeDisplay.classList.remove('show');
-
+            
+            // Show loading
+            submitBtn.disabled = true;
+            loading.style.display = 'block';
+            pairingCodeDiv.style.display = 'none';
+            
             try {
                 const response = await fetch('/code', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ number: phone })
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ number: phoneNumber })
                 });
-
+                
                 const data = await response.json();
-                loading.classList.remove('show');
-
-                if (data.success && data.code) {
-                    codeText.textContent = data.code;
-                    codeDisplay.classList.add('show');
+                
+                if (data.code) {
+                    document.getElementById('codeDisplay').textContent = data.code;
+                    pairingCodeDiv.style.display = 'block';
+                    
+                    // Success alert
+                    alert('✅ Pairing Code Generate ہو گیا!\n\nاب WhatsApp کھولیں:\n1. Settings > Linked Devices\n2. Link a Device کریں\n3. یہ code enter کریں: ' + data.code);
                 } else {
-                    alert(data.error || 'Failed');
+                    alert('❌ Error: ' + (data.error || 'کچھ غلط ہو گیا'));
                 }
-            } catch (err) {
-                loading.classList.remove('show');
-                alert('Connection error');
+            } catch (error) {
+                alert('❌ Server Error: ' + error.message);
+            } finally {
+                submitBtn.disabled = false;
+                loading.style.display = 'none';
             }
         }
-
-        document.getElementById('phone').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') getPairingCode();
+        
+        // Enter key support
+        document.getElementById('phoneNumber').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                getPairingCode();
+            }
         });
     </script>
 </body>
