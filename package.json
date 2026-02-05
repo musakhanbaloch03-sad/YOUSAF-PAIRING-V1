@@ -1,21 +1,17 @@
 {
-  "name": "yousaf-pairing-V1",
+  "name": "yousaf-pairing-v1",
   "version": "1.0.0",
-  "description": "Pairing Code Generator for YOUSAF-BALOCH-MD",
+  "description": "WhatsApp MD Pairing Code by YOUSAF BALOCH",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
   "keywords": ["whatsapp", "pairing", "yousaf-baloch"],
-  "author": "Yousaf Baloch",
+  "author": "YOUSAF BALOCH",
   "license": "MIT",
   "dependencies": {
-    "@whiskeysockets/baileys": "^6.7.8",
+    "@whiskeysockets/baileys": "latest",
     "express": "^4.18.2",
-    "pino": "^8.19.0",
-    "qrcode-terminal": "^0.12.0"
-  },
-  "engines": {
-    "node": ">=18.0.0"
+    "pino": "^8.16.1"
   }
 }
