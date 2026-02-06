@@ -5,16 +5,17 @@
   "description": "Yousaf Baloch MD Pairing Code Bot",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "build": "npm install --production"
   },
   "dependencies": {
-    "@whiskeysockets/baileys": "latest",
-    "pino": "latest",
-    "qrcode-terminal": "latest",
-    "express": "latest",
-    "axios": "latest",
-    "sharp": "latest",
-    "protobufjs": "latest"
+    "@whiskeysockets/baileys": "^6.7.8",
+    "express": "^4.19.2",
+    "pino": "^9.5.0",
+    "qrcode-terminal": "^0.12.0",
+    "axios": "^1.7.9",
+    "sharp": "^0.33.5",
+    "protobufjs": "^7.4.0"
   },
   "engines": {
     "node": ">=20.0.0"
