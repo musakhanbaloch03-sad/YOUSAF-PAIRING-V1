@@ -1,25 +1,18 @@
 {
-  "name": "yousaf-pairing-code",
+  "name": "yousaf-pairing",
   "version": "1.0.0",
-  "description": "Pairing Code Generator for YOUSAF-BALOCH-MD",
+  "description": "Pairing code for YOUSAF-BALOCH-MD",
   "main": "index.js",
   "type": "module",
   "scripts": {
     "start": "node index.js"
   },
-  "keywords": ["whatsapp", "pairing", "yousaf-baloch"],
   "author": "Yousaf Baloch",
   "license": "MIT",
   "dependencies": {
-    "@whiskeysockets/baileys": "latest",
-    "@hapi/boom": "^10.0.1",
     "express": "^4.18.2",
-    "pino": "^8.19.0",
-    "qrcode-terminal": "^0.12.0",
-    "fs": "^0.0.1-security",
-    "path": "^0.12.7"
-  },
-  "engines": {
-    "node": ">=18.0.0"
+    "baileys": "github:WhiskeySockets/Baileys",
+    "pino": "^8.17.2",
+    "qrcode-terminal": "^0.12.0"
   }
 }
