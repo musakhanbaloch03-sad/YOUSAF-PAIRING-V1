@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "name": "yousaf-pairing-v1",
   "version": "1.0.0",
   "description": "Yousaf Baloch MD Pairing Code Bot",
@@ -16,6 +17,6 @@
     "protobufjs": "latest"
   },
   "engines": {
-    "node": "18.x"
+    "node": ">=20.0.0"
   }
 }
