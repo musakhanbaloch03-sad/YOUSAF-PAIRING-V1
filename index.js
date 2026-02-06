@@ -9,7 +9,7 @@ import {
     DisconnectReason,
     fetchLatestBaileysVersion,
     makeCacheableSignalKeyStore
-} from 'baileys';
+} from '@whiskeysockets/baileys';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
