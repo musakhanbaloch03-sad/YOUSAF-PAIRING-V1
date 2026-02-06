@@ -1,6 +1,6 @@
 module.exports = {
   // Bot Owner Info
-  owner: ['923710636110'], // آپ کا WhatsApp نمبر
+  owner: ['923710636110'], // Your WhatsApp Number
   botName: 'YOUSAF-BALOCH-MD',
   
   // Social Media Links
@@ -8,11 +8,12 @@ module.exports = {
     whatsappChannel: 'https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j',
     youtube: 'https://www.youtube.com/@Yousaf_Baloch_Tech',
     tiktok: 'https://tiktok.com/@loser_boy.110',
-    phone: '03710636110'
+    phone: '03710636110',
+    pairingSite: 'https://yousaf-pairing-v-1--musakhanbaloch.replit.app' // Your Pairing Site Link
   },
   
   // Pairing Settings
-  pairingNumber: '', // یہاں user apna number daalega
+  pairingNumber: '', // User will enter number here
   usePairingCode: true,
   
   // Port Settings
@@ -25,6 +26,7 @@ module.exports = {
 ║  Pairing Code System ║
 ╚═══════════════════════╝
 
+🌐 Pairing Site: https://yousaf-pairing-v-1--musakhanbaloch.replit.app
 📱 WhatsApp Channel: https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j
 🎥 YouTube: https://www.youtube.com/@Yousaf_Baloch_Tech
 🎵 TikTok: https://tiktok.com/@loser_boy.110
