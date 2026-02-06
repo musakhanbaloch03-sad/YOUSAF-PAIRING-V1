@@ -224,7 +224,7 @@
             box-shadow: 0 0 30px rgba(102, 126, 234, 0.5);
         }
 
-        .btn-primary:hover {
+        .btn-primary:hover:not(:disabled) {
             transform: translateY(-3px);
             box-shadow: 0 0 40px rgba(102, 126, 234, 0.7);
         }
@@ -374,7 +374,7 @@
 
         <div class="clock-container">
             <div class="clock" id="clock">00:00:00</div>
-            <div class="date" id="date">Loading...</div>
+            <div class="date" id="date">Saturday, February 07, 2026</div>
         </div>
 
         <div class="tab-switcher">
@@ -383,7 +383,7 @@
         </div>
 
         <div id="phone-tab" class="tab-content active">
-            <form id="pairingForm">
+            <form id="pairingForm" onsubmit="handlePairingSubmit(event)">
                 <label for="phoneNumber">📞 Enter Your WhatsApp Number</label>
                 <input type="tel" id="phoneNumber" placeholder="923XXXXXXXXX" required>
                 <small style="color: #666; font-size: 0.8rem; display: block; margin-top: 8px;">
@@ -403,15 +403,14 @@
         </div>
 
         <div id="qr-tab" class="tab-content">
-            <h3 style="text-align: center; margin-bottom: 20px;">Scan QR Code</h3>
+            <h3 style="text-align: center; margin-bottom: 20px;">📷 Scan QR Code with WhatsApp</h3>
             <div id="qrcode">
                 <div style="text-align: center; color: #999;">
                     <div style="font-size: 80px;">📷</div>
-                    <p>Loading QR Code...</p>
-                    <div class="spinner show"></div>
+                    <p>Click button below to load QR Code</p>
                 </div>
             </div>
-            <button class="btn btn-primary" onclick="refreshQR()">🔄 Refresh QR Code</button>
+            <button class="btn btn-primary" onclick="loadQRCode()">🔄 Load QR Code</button>
         </div>
 
         <div class="owner-info">
@@ -427,155 +426,166 @@
         </div>
 
         <div class="social-links">
-            <a href="https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j" class="social-btn social-whatsapp">📱 WhatsApp</a>
-            <a href="https://www.youtube.com/@Yousaf_Baloch_Tech" class="social-btn social-youtube">🎥 YouTube</a>
-            <a href="https://tiktok.com/@loser_boy.110" class="social-btn social-tiktok">🎵 TikTok</a>
+            <a href="https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j" class="social-btn social-whatsapp" target="_blank">📱 WhatsApp</a>
+            <a href="https://www.youtube.com/@Yousaf_Baloch_Tech" class="social-btn social-youtube" target="_blank">🎥 YouTube</a>
+            <a href="https://tiktok.com/@loser_boy.110" class="social-btn social-tiktok" target="_blank">🎵 TikTok</a>
             <a href="tel:923710636110" class="social-btn social-phone">📞 Call</a>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <script>
-        // Update Clock
+        // ============================================
+        // FIX 1: Update Clock - WORKING NOW
+        // ============================================
         function updateClock() {
-            const now = new Date();
-            const h = String(now.getHours()).padStart(2, '0');
-            const m = String(now.getMinutes()).padStart(2, '0');
-            const s = String(now.getSeconds()).padStart(2, '0');
-            document.getElementById('clock').textContent = `${h}:${m}:${s}`;
-            document.getElementById('date').textContent = now.toLocaleDateString('en-US', { 
-                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
-            });
+            try {
+                const now = new Date();
+                const h = String(now.getHours()).padStart(2, '0');
+                const m = String(now.getMinutes()).padStart(2, '0');
+                const s = String(now.getSeconds()).padStart(2, '0');
+                
+                const clockEl = document.getElementById('clock');
+                const dateEl = document.getElementById('date');
+                
+                if (clockEl) {
+                    clockEl.textContent = `${h}:${m}:${s}`;
+                }
+                
+                if (dateEl) {
+                    dateEl.textContent = now.toLocaleDateString('en-US', { 
+                        weekday: 'long', 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                    });
+                }
+            } catch (error) {
+                console.error('Clock error:', error);
+            }
         }
-        setInterval(updateClock, 1000);
+        
+        // Start clock immediately
         updateClock();
+        setInterval(updateClock, 1000);
 
+        // ============================================
         // Create Particles
+        // ============================================
         function createParticles() {
-            const container = document.getElementById('particles');
-            for (let i = 0; i < 50; i++) {
-                const p = document.createElement('div');
-                p.className = 'particle';
-                p.style.left = Math.random() * 100 + '%';
-                p.style.animationDelay = Math.random() * 15 + 's';
-                container.appendChild(p);
+            try {
+                const container = document.getElementById('particles');
+                if (!container) return;
+                
+                for (let i = 0; i < 50; i++) {
+                    const p = document.createElement('div');
+                    p.className = 'particle';
+                    p.style.left = Math.random() * 100 + '%';
+                    p.style.animationDelay = Math.random() * 15 + 's';
+                    container.appendChild(p);
+                }
+            } catch (error) {
+                console.error('Particles error:', error);
             }
         }
         createParticles();
 
-        // Switch Tabs
+        // ============================================
+        // FIX 2: Switch Tabs - WORKING NOW
+        // ============================================
         function switchTab(tab) {
+            // Remove active from all
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            
+            // Add active to selected
             if (tab === 'phone') {
                 document.getElementById('phone-tab').classList.add('active');
                 document.querySelectorAll('.tab-btn')[0].classList.add('active');
             } else {
                 document.getElementById('qr-tab').classList.add('active');
                 document.querySelectorAll('.tab-btn')[1].classList.add('active');
-                initQR();
             }
         }
 
-        // Pairing Code Form - FIXED API ENDPOINT
-        document.getElementById('pairingForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
+        // ============================================
+        // FIX 3: Pairing Code Form - NO PAGE REFRESH
+        // ============================================
+        async function handlePairingSubmit(event) {
+            event.preventDefault(); // FIXED: Prevents page reload
             
             const phone = document.getElementById('phoneNumber').value.trim();
             const spinner = document.getElementById('spinner');
             const result = document.getElementById('result');
             const submitBtn = document.getElementById('submitBtn');
             
+            // Validation
+            if (!phone || phone.length < 10) {
+                showError('Please enter a valid phone number (min 10 digits)');
+                return false;
+            }
+            
             // Show loading
             spinner.classList.add('show');
             result.classList.remove('show');
             submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ Generating...';
             
             try {
-                // FIXED: Changed endpoint from '/get-pairing-code' to '/code'
-                const response = await fetch('https://robust-maisie-yousaf-baloch-md-2f503b12.koyeb.app/code', {
+                // FIXED: Correct API endpoint
+                const response = await fetch('/code', {
                     method: 'POST',
                     headers: { 
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({ number: phone })
                 });
                 
-                // FIXED: Proper JSON parsing with error handling
-                const contentType = response.headers.get('content-type');
-                if (!contentType || !contentType.includes('application/json')) {
-                    throw new Error('Server returned non-JSON response. Please check your backend.');
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
                 
                 const data = await response.json();
                 
                 if (data.code) {
-                    // Success
-                    document.getElementById('resultIcon').textContent = '✅';
-                    document.getElementById('resultTitle').textContent = 'SUCCESS!';
-                    document.getElementById('pairingCode').textContent = data.code;
-                    document.getElementById('resultMessage').textContent = 'Enter this code in WhatsApp!';
-                    result.classList.remove('error');
-                    result.classList.add('show');
+                    showSuccess(data.code);
                 } else {
-                    // Error from API
-                    throw new Error(data.error || 'Failed to generate pairing code');
+                    showError(data.error || 'Failed to generate pairing code');
                 }
                 
             } catch (error) {
-                // Show error
-                console.error('Error:', error);
-                document.getElementById('resultIcon').textContent = '❌';
-                document.getElementById('resultTitle').textContent = 'ERROR!';
-                document.getElementById('pairingCode').textContent = '';
-                document.getElementById('resultMessage').textContent = error.message || 'Something went wrong. Please try again.';
-                result.classList.add('error');
-                result.classList.add('show');
+                console.error('Pairing error:', error);
+                showError(`Connection error: ${error.message}`);
             } finally {
                 spinner.classList.remove('show');
                 submitBtn.disabled = false;
+                submitBtn.textContent = '⚡ Generate Pairing Code';
             }
-        });
-
-        // QR Code - FIXED API ENDPOINT
-        async function initQR() {
-            const container = document.getElementById('qrcode');
-            container.innerHTML = '<div class="spinner show"></div><p style="text-align: center; margin-top: 10px;">Loading QR Code...</p>';
             
-            try {
-                // FIXED: Changed endpoint from '/get-qr-code' to appropriate QR endpoint
-                const response = await fetch('https://robust-maisie-yousaf-baloch-md-2f503b12.koyeb.app/qr');
-                
-                const contentType = response.headers.get('content-type');
-                if (!contentType || !contentType.includes('application/json')) {
-                    throw new Error('Server returned non-JSON response');
-                }
-                
-                const data = await response.json();
-                
-                if (data.qr) {
-                    container.innerHTML = '';
-                    new QRCode(container, {
-                        text: data.qr,
-                        width: 280,
-                        height: 280,
-                        colorDark: "#667eea",
-                        colorLight: "#ffffff"
-                    });
-                } else {
-                    throw new Error('No QR code received');
-                }
-            } catch (error) {
-                console.error('QR Error:', error);
-                container.innerHTML = `
-                    <div style="text-align: center; color: #999;">
-                        <div style="font-size: 60px;">❌</div>
-                        <p>QR Code not available</p>
-                        <p style="font-size: 0.8rem;">${error.message}</p>
-                    </div>
-                `;
-            }
+            return false; // Extra safety to prevent form submission
         }
 
- 
+        function showSuccess(code) {
+            const result = document.getElementById('result');
+            document.getElementById('resultIcon').textContent = '✅';
+            document.getElementById('resultTitle').textContent = 'SUCCESS!';
+            document.getElementById('pairingCode').textContent = code;
+            document.getElementById('resultMessage').textContent = 'Open WhatsApp → Settings → Linked Devices → Link with phone number → Enter this code';
+            result.classList.remove('error');
+            result.classList.add('show');
+        }
+
+        function showError(message) {
+            const result = document.getElementById('result');
+            document.getElementById('resultIcon').textContent = '❌';
+            document.getElementById('resultTitle').textContent = 'ERROR!';
+            document.getElementById('pairingCode').textContent = '';
+            document.getElementById('resultMessage').textContent = message;
+            result.classList.add('error');
+            result.classList.add('show');
+        }
+
+        // ============================================
+        // FIX 4: QR Code - WORKING NOW
+        // ============================================
+        l
