@@ -1,0 +1,8 @@
+{
+  "name": "YOUSAF-BALOCH-MD",
+  "description": "Premium WhatsApp Pairing System by MUHAMMAD YOUSAF 🇵🇰",
+  "repository": "https://github.com/musakhanbaloch03-sad/YOUSAF-PAIRING-V1",
+  "keywords": ["whatsapp", "bot", "pairing-code", "baileys", "pakistan"],
+  "buildpacks": [{"url": "heroku/nodejs"}]
+}
+
