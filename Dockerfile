@@ -1,6 +1,6 @@
-FROM node:18-alpine
+FROM node:20-alpine
 
-# Install dependencies for sharp and baileys
+# Install dependencies for sharp, baileys, and git
 RUN apk add --no-cache \
     python3 \
     make \
@@ -9,7 +9,8 @@ RUN apk add --no-cache \
     jpeg-dev \
     pango-dev \
     giflib-dev \
-    pixman-dev
+    pixman-dev \
+    git
 
 # Set working directory
 WORKDIR /app
@@ -18,7 +19,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install npm packages
-RUN npm ci --production=false --legacy-peer-deps || npm install --legacy-peer-deps
+RUN npm install --legacy-peer-deps
 
 # Copy project files
 COPY . .
