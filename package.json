@@ -1,37 +1,21 @@
 {
   "name": "yousaf-pairing-v1",
-  "version": "2.0.0",
-  "description": "WhatsApp MD Pairing Code by MUHAMMAD YOUSAF",
+  "version": "1.0.0",
+  "description": "Yousaf Baloch MD Pairing Code Bot",
   "main": "index.js",
-  "type": "commonjs",
   "scripts": {
-    "start": "node index.js",
-    "dev": "node index.js"
-  },
-  "engines": {
-    "node": "18.x",
-    "npm": ">=9.0.0"
-  },
-  "keywords": [
-    "whatsapp",
-    "baileys",
-    "pairing",
-    "bot",
-    "yousaf-baloch"
-  ],
-  "author": {
-    "name": "MUHAMMAD YOUSAF",
-    "url": "https://github.com/musakhanbaloch03-sad"
-  },
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/musakhanbaloch03-sad/YOUSAF-PAIRING-V1.git"
+    "start": "node index.js"
   },
   "dependencies": {
-    "@whiskeysockets/baileys": "^6.7.8",
-    "express": "^4.18.2",
-    "pino": "^8.19.0",
-    "@hapi/boom": "^10.0.1"
+    "@whiskeysockets/baileys": "latest",
+    "pino": "latest",
+    "qrcode-terminal": "latest",
+    "express": "latest",
+    "axios": "latest",
+    "sharp": "latest",
+    "protobufjs": "latest"
+  },
+  "engines": {
+    "node": "18.x"
   }
 }
