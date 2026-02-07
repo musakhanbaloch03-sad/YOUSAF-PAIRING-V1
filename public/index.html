@@ -14,165 +14,177 @@
             --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
             --secondary-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
             --success-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-            --neon-shadow: 0 0 15px rgba(102, 126, 234, 0.5);
         }
 
         body {
             font-family: 'Space Mono', monospace;
-            background: #0f0c29; /* Darker Space theme */
-            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            background: var(--primary-gradient);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
+            position: relative;
             overflow-x: hidden;
         }
+
+        /* Animated Background Particles */
+        .particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+        .particle { position: absolute; width: 4px; height: 4px; background: rgba(255, 255, 255, 0.5); border-radius: 50%; animation: float 15s infinite ease-in-out; }
+        @keyframes float { 0%, 100% { transform: translateY(0); opacity: 0; } 50% { opacity: 1; } 100% { transform: translateY(-100vh) opacity: 0; } }
 
         .container {
             position: relative;
             z-index: 1;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
             border-radius: 30px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
             width: 100%;
             padding: 40px;
             animation: slideUp 0.8s ease-out;
-            color: white;
         }
 
         @keyframes slideUp { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
 
-        .logo { font-size: 60px; text-align: center; margin-bottom: 10px; filter: drop-shadow(0 0 10px #667eea); }
-        h1 { font-family: 'Orbitron', sans-serif; font-size: 1.8rem; text-align: center; background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px; }
-        .subtitle { color: #aaa; font-size: 0.8rem; text-align: center; margin-bottom: 20px; }
+        .logo { font-size: 80px; text-align: center; animation: bounce 2s infinite; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
 
-        .clock-container { background: rgba(0,0,0,0.3); padding: 10px; border-radius: 15px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05); }
-        .clock { font-family: 'Orbitron', sans-serif; font-size: 1.5rem; color: #00f2fe; text-align: center; }
-        .date { font-size: 0.7rem; color: #888; text-align: center; }
+        h1 { font-family: 'Orbitron', sans-serif; font-size: 2.2rem; font-weight: 900; background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-align: center; letter-spacing: 2px; }
+        .subtitle { color: #666; font-size: 0.9rem; text-align: center; margin-bottom: 20px; font-weight: bold; }
 
-        .tab-switcher { display: flex; gap: 10px; margin-bottom: 25px; background: rgba(255,255,255,0.1); padding: 5px; border-radius: 15px; }
-        .tab-btn { flex: 1; padding: 12px; border: none; background: transparent; color: #ccc; font-weight: bold; border-radius: 10px; cursor: pointer; transition: 0.3s; }
-        .tab-btn.active { background: var(--primary-gradient); color: white; box-shadow: var(--neon-shadow); }
+        /* Live Clock & Date Section */
+        .clock-container { background: var(--secondary-gradient); padding: 15px; border-radius: 15px; margin-bottom: 25px; box-shadow: 0 10px 30px rgba(79, 172, 254, 0.3); color: white; text-align: center; }
+        .clock { font-family: 'Orbitron', sans-serif; font-size: 2rem; font-weight: 700; text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); }
+        .date-day { font-size: 0.9rem; margin-top: 5px; text-transform: uppercase; letter-spacing: 1px; }
+
+        .tab-switcher { display: flex; gap: 10px; margin-bottom: 25px; background: #f0f0f0; padding: 5px; border-radius: 15px; }
+        .tab-btn { flex: 1; padding: 15px; border: none; background: transparent; color: #666; font-family: 'Space Mono', monospace; font-weight: 700; border-radius: 10px; cursor: pointer; transition: 0.3s; }
+        .tab-btn.active { background: var(--primary-gradient); color: white; box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3); }
 
         .tab-content { display: none; }
         .tab-content.active { display: block; animation: fadeIn 0.5s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        input[type="tel"] { width: 100%; padding: 15px; border: 2px solid rgba(255,255,255,0.1); border-radius: 12px; background: rgba(0,0,0,0.2); color: white; font-size: 1.1rem; outline: none; transition: 0.3s; margin-top: 10px; }
-        input[type="tel"]:focus { border-color: #667eea; box-shadow: var(--neon-shadow); }
+        input[type="tel"] { width: 100%; padding: 18px; border: 3px solid #e0e0e0; border-radius: 15px; font-size: 1.1rem; font-family: 'Orbitron', sans-serif; transition: 0.3s; outline: none; margin-top: 10px; }
+        input[type="tel"]:focus { border-color: #667eea; box-shadow: 0 0 20px rgba(102, 126, 234, 0.2); }
 
-        .btn { width: 100%; padding: 15px; border: none; border-radius: 12px; font-family: 'Orbitron', sans-serif; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 15px; letter-spacing: 1px; }
-        .btn-primary { background: var(--primary-gradient); color: white; }
-        .btn-primary:hover { transform: scale(1.02); box-shadow: 0 0 25px rgba(102, 126, 234, 0.6); }
+        .btn { width: 100%; padding: 20px; border: none; border-radius: 15px; font-family: 'Orbitron', sans-serif; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: 0.3s; text-transform: uppercase; margin-top: 20px; }
+        .btn-primary { background: var(--primary-gradient); color: white; box-shadow: 0 0 30px rgba(102, 126, 234, 0.5); }
 
-        .spinner { display: none; width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid #00f2fe; border-radius: 50%; animation: spin 1s linear infinite; margin: 20px auto; }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        .result { display: none; margin-top: 25px; padding: 25px; background: var(--success-gradient); border-radius: 15px; text-align: center; color: white; }
+        .pairing-code { font-family: 'Orbitron', sans-serif; font-size: 2.5rem; font-weight: 900; letter-spacing: 5px; margin: 15px 0; }
 
-        .result { display: none; margin-top: 20px; padding: 20px; background: rgba(67, 233, 123, 0.1); border: 1px solid #43e97b; border-radius: 15px; text-align: center; }
-        .pairing-code { font-family: 'Orbitron', sans-serif; font-size: 2rem; color: #43e97b; letter-spacing: 4px; margin: 10px 0; font-weight: 900; }
+        #qrcode { min-height: 250px; background: #f9f9f9; border-radius: 15px; display: flex; align-items: center; justify-content: center; margin-top: 20px; border: 2px dashed #ccc; }
 
-        #qrcode { background: white; padding: 15px; border-radius: 15px; margin: 15px auto; width: 230px; height: 230px; display: flex; align-items: center; justify-content: center; }
-        #qrcode img { width: 100%; height: 100%; }
-
+        /* Owner & Social Section */
+        .owner-info { margin-top: 30px; padding: 20px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 15px; color: white; }
+        .owner-title { font-family: 'Orbitron', sans-serif; font-size: 1.1rem; text-align: center; margin-bottom: 10px; }
+        
         .social-links { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 20px; }
-        .social-btn { padding: 10px; border-radius: 10px; color: white; font-size: 0.8rem; text-decoration: none; text-align: center; transition: 0.3s; font-weight: bold; }
-        .social-whatsapp { background: #25D366; }
-        .social-youtube { background: #FF0000; }
-        .social-tiktok { background: #000; border: 1px solid #333; }
-        .social-phone { background: #34B7F1; }
-        .social-btn:hover { transform: translateY(-2px); opacity: 0.9; }
+        .social-btn { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; border-radius: 10px; color: white; font-weight: 700; text-decoration: none; font-size: 0.8rem; transition: 0.3s; }
+        .social-whatsapp { background: #25D366; } .social-youtube { background: #FF0000; }
+        .social-tiktok { background: #000; } .social-phone { background: #34B7F1; }
 
-        .owner-card { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; margin-top: 20px; border-left: 4px solid #f093fb; }
-        .owner-card p { font-size: 0.8rem; margin: 2px 0; }
+        .spinner { display: none; width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #667eea; border-radius: 50%; animation: spin 1s linear infinite; margin: 20px auto; }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
+    <div class="particles" id="particles"></div>
 
     <div class="container">
         <div class="logo">🤖</div>
         <h1>YOUSAF-BALOCH-MD</h1>
-        <p class="subtitle">Premium WhatsApp MD System</p>
+        <p class="subtitle">Welcome to Home Page - Premium Bot</p>
 
         <div class="clock-container">
             <div class="clock" id="clock">00:00:00</div>
-            <div class="date" id="date">Loading...</div>
+            <div class="date-day" id="date-day">Loading...</div>
         </div>
 
         <div class="tab-switcher">
-            <button class="tab-btn active" id="btn-phone" onclick="switchTab('phone')">📱 Pairing</button>
-            <button class="tab-btn" id="btn-qr" onclick="switchTab('qr')">📷 QR Code</button>
+            <button class="tab-btn active" onclick="switchTab('phone')">📱 Pairing Code</button>
+            <button class="tab-btn" onclick="switchTab('qr')">📷 QR Code</button>
         </div>
 
         <div id="phone-tab" class="tab-content active">
-            <label style="font-size: 0.8rem; color: #ccc;">Enter Number with Country Code:</label>
+            <label style="font-weight: bold; color: #333;">Enter WhatsApp Number:</label>
             <input type="tel" id="phoneNumber" placeholder="923710636110">
-            <button class="btn btn-primary" onclick="getPairingCode()">⚡ GENERATE CODE</button>
+            <button class="btn btn-primary" onclick="getPairingCode()">⚡ Generate Code</button>
             
             <div class="spinner" id="spinner"></div>
             <div class="result" id="result">
-                <p style="font-size: 0.8rem;">Your Pairing Code:</p>
+                <h3>YOUR CODE:</h3>
                 <div class="pairing-code" id="pairingCode">----</div>
-                <p style="font-size: 0.7rem; color: #43e97b;">Enter this code in Linked Devices</p>
+                <p>Enter this in WhatsApp Linked Devices</p>
             </div>
         </div>
 
         <div id="qr-tab" class="tab-content">
             <div id="qrcode">
-                <p style="color: #666; font-size: 0.7rem; text-align: center;">Initializing QR...</p>
+                <p id="qr-status">Click button to load QR</p>
             </div>
-            <button class="btn btn-primary" style="background: var(--secondary-gradient);" onclick="loadQR()">🔄 REFRESH QR</button>
+            <button class="btn btn-primary" onclick="loadQR()">📷 Get QR Code</button>
         </div>
 
-        <div class="owner-card">
-            <p><strong>Dev:</strong> Muhammad Yousaf Baloch</p>
-            <p><strong>Contact:</strong> +923710636110</p>
-            <p><strong>Status:</strong> Professional MD Bot</p>
+        <div class="owner-info">
+            <div class="owner-title">MUHAMMAD YOUSAF BALOCH</div>
+            <p style="text-align: center; font-size: 0.8rem;">Professional WhatsApp Bot Developer</p>
         </div>
 
         <div class="social-links">
             <a href="https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j" class="social-btn social-whatsapp">WhatsApp</a>
             <a href="https://www.youtube.com/@Yousaf_Baloch_Tech" class="social-btn social-youtube">YouTube</a>
             <a href="https://tiktok.com/@loser_boy.110" class="social-btn social-tiktok">TikTok</a>
-            <a href="tel:923710636110" class="social-btn social-phone">Call Dev</a>
+            <a href="tel:923710636110" class="social-btn social-phone">Call Me</a>
         </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script>
-        // Clock Function
+        // Professional Clock System
         function updateClock() {
             const now = new Date();
-            document.getElementById('clock').textContent = now.toLocaleTimeString();
-            document.getElementById('date').textContent = now.toDateString();
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            const s = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('clock').textContent = `${h}:${m}:${s}`;
+            
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('date-day').textContent = now.toLocaleDateString('en-US', options);
         }
         setInterval(updateClock, 1000);
         updateClock();
 
-        // Tab Switcher
-        function switchTab(tab) {
-            document.getElementById('phone-tab').classList.remove('active');
-            document.getElementById('qr-tab').classList.remove('active');
-            document.getElementById('btn-phone').classList.remove('active');
-            document.getElementById('btn-qr').classList.remove('active');
+        // Particles
+        for (let i = 0; i < 30; i++) {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            p.style.left = Math.random() * 100 + '%';
+            p.style.top = Math.random() * 100 + '%';
+            p.style.animationDelay = Math.random() * 10 + 's';
+            document.getElementById('particles').appendChild(p);
+        }
 
-            if(tab === 'phone') {
+        // Switch Tabs Logic
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            if (tab === 'phone') {
                 document.getElementById('phone-tab').classList.add('active');
-                document.getElementById('btn-phone').classList.add('active');
+                document.querySelectorAll('.tab-btn')[0].classList.add('active');
             } else {
                 document.getElementById('qr-tab').classList.add('active');
-                document.getElementById('btn-qr').classList.add('active');
-                loadQR();
+                document.querySelectorAll('.tab-btn')[1].classList.add('active');
             }
         }
 
-        // Get Pairing Code
+        // Professional Pairing API Call
         async function getPairingCode() {
             const num = document.getElementById('phoneNumber').value.replace(/[^0-9]/g, '');
-            if(!num) return alert("Please enter valid number!");
+            if(!num) return alert("Please enter number!");
             
             const spinner = document.getElementById('spinner');
             const result = document.getElementById('result');
@@ -181,42 +193,28 @@
             result.style.display = "none";
 
             try {
-                // Change '/pairing' to your actual backend endpoint
-                const response = await fetch('/pairing?code=' + num);
-                const data = await response.json();
-                spinner.style.display = "none";
-                
+                const res = await fetch('/pairing?code=' + num);
+                const data = await res.json();
                 if(data.code) {
                     document.getElementById('pairingCode').innerText = data.code;
                     result.style.display = "block";
-                } else {
-                    alert("WhatsApp Refused Connection. Try again later.");
                 }
-            } catch (err) {
-                spinner.style.display = "none";
-                alert("Server Error! Make sure your bot is running.");
-            }
+            } catch (e) { alert("Error connecting to server!"); }
+            finally { spinner.style.display = "none"; }
         }
 
-        // Load QR Code
+        // QR Logic
         async function loadQR() {
             const qrDiv = document.getElementById('qrcode');
-            qrDiv.innerHTML = '<p style="color: #666; font-size: 0.7rem;">Generating QR...</p>';
-            
+            qrDiv.innerHTML = '<div class="spinner" style="display:block"></div>';
             try {
-                const response = await fetch('/qr'); // Your QR endpoint
-                const data = await response.json();
+                const res = await fetch('/qr');
+                const data = await res.json();
                 if(data.qr) {
                     qrDiv.innerHTML = "";
-                    new QRCode(qrDiv, {
-                        text: data.qr,
-                        width: 200,
-                        height: 200
-                    });
+                    new QRCode(qrDiv, { text: data.qr, width: 200, height: 200 });
                 }
-            } catch (err) {
-                qrDiv.innerHTML = '<p style="color:red">Failed to load QR</p>';
-            }
+            } catch (e) { qrDiv.innerHTML = "Failed to load QR"; }
         }
     </script>
 </body>
