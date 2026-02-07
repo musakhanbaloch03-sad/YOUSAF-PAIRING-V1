@@ -2,28 +2,22 @@
   "name": "yousaf-baloch-md-pairing",
   "version": "1.0.0",
   "description": "YOUSAF-BALOCH-MD WhatsApp Pairing Code Generator",
-  "main": "server.js",
+  "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node server.js"
+    "start": "node index.js"
   },
   "keywords": [
-    "whatsapp",
-    "bot",
-    "pairing",
-    "baileys",
-    "yousaf-baloch-md"
+    "whatsapp", "bot", "pairing", "baileys"
   ],
   "author": "Muhammad Yousaf Baloch",
   "license": "MIT",
   "dependencies": {
     "@whiskeysockets/baileys": "^6.6.0",
     "express": "^4.19.2",
-    "pino": "^9.0.0",
-    "qrcode-terminal": "^0.12.0"
+    "pino": "^9.0.0"
   },
   "engines": {
-    "node": ">=20.0.0",
-    "npm": ">=10.0.0"
+    "node": ">=20.0.0"
   }
 }
