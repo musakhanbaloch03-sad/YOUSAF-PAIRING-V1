@@ -23,21 +23,11 @@ import readline from 'readline';
 import express from 'express';
 import http from 'http';
 
-const { 
-    DisconnectReason, 
-    useMultiFileAuthState, 
-    fetchLatestBaileysVersion, 
-    makeCacheableSignalKeyStore, 
-    makeInMemoryStore 
-} = await import('@whiskeysockets/baileys');
-
 const app = express();
 const server = http.createServer(app);
 const PORT = process.env.PORT || 8000;
 
 app.use(express.static('public')); 
-
-const store = makeInMemoryStore({ logger: pino().child({ level: 'silent', stream: 'store' }) });
 
 // Professional Path & Global Configs
 global.__filename = function filename(pathURL = import.meta.url, rmPrefix = platform !== 'win32') {
@@ -73,6 +63,14 @@ console.log(chalk.green(figlet.textSync('YOUSAF-BALOCH-MD', { font: 'Standard' }
 console.log(chalk.cyan('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'));
 
 async function startBot() {
+  const { 
+    default: makeWASocket,
+    DisconnectReason, 
+    useMultiFileAuthState, 
+    fetchLatestBaileysVersion, 
+    makeCacheableSignalKeyStore
+  } = await import('@whiskeysockets/baileys');
+
   const {state, saveCreds} = await useMultiFileAuthState('session');
   const {version} = await fetchLatestBaileysVersion();
   
@@ -87,9 +85,7 @@ async function startBot() {
     }
   };
 
-  const { default: makeWASocket } = await import('@whiskeysockets/baileys');
   global.conn = makeWASocket(connectionOptions);
-  store.bind(conn.ev);
 
   conn.ev.on('creds.update', saveCreds);
   
