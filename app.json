@@ -3,6 +3,20 @@
   "description": "Premium WhatsApp Pairing System by MUHAMMAD YOUSAF 🇵🇰",
   "repository": "https://github.com/musakhanbaloch03-sad/YOUSAF-PAIRING-V1",
   "keywords": ["whatsapp", "bot", "pairing-code", "baileys", "pakistan"],
-  "buildpacks": [{"url": "heroku/nodejs"}]
+  "strategy": "docker",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "run": {
+    "command": "npm start"
+  },
+  "ports": [
+    {
+      "port": 8000,
+      "protocol": "http"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  }
 }
-
