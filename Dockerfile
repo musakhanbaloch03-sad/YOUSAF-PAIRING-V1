@@ -1,6 +1,6 @@
 FROM node:20-alpine
 
-# Install dependencies for sharp, baileys, and git
+# Professional dependencies installation for Yousaf-Baloch-MD
 RUN apk add --no-cache \
     python3 \
     make \
@@ -10,22 +10,28 @@ RUN apk add --no-cache \
     pango-dev \
     giflib-dev \
     pixman-dev \
-    git
+    git \
+    bash \
+    ffmpeg
 
 # Set working directory
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
+# Copy package files (Error Fix: Ensure all manifests are copied)
+COPY package.json package-lock.json* ./
 
-# Install npm packages
-RUN npm install --legacy-peer-deps
+# Professional Install (Error Fix: Build dependencies for sharp/baileys)
+RUN npm install --include=dev && npm install --legacy-peer-deps
 
 # Copy project files
 COPY . .
 
-# Expose port
-EXPOSE 3000
+# Environment settings for Web Interface
+ENV NODE_ENV=production
+ENV PORT=8000
+
+# Expose port (Fixed to match your index.js and Koyeb best practice)
+EXPOSE 8000
 
 # Start command
 CMD ["npm", "start"]
