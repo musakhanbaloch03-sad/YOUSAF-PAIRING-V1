@@ -17,20 +17,20 @@ RUN apk add --no-cache \
 # Set working directory
 WORKDIR /app
 
-# Copy package files (Error Fix: Ensure all manifests are copied)
+# Copy package files
 COPY package.json package-lock.json* ./
 
-# Professional Install (Error Fix: Build dependencies for sharp/baileys)
-RUN npm install --include=dev && npm install --legacy-peer-deps
+# Install dependencies (Fixed)
+RUN npm ci --legacy-peer-deps || npm install --legacy-peer-deps
 
 # Copy project files
 COPY . .
 
-# Environment settings for Web Interface
+# Environment settings
 ENV NODE_ENV=production
 ENV PORT=8000
 
-# Expose port (Fixed to match your index.js and Koyeb best practice)
+# Expose port
 EXPOSE 8000
 
 # Start command
