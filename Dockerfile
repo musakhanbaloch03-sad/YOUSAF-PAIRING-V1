@@ -14,7 +14,8 @@ RUN apk add --no-cache \
     pangomm-dev \
     libjpeg-turbo-dev \
     freetype-dev \
-    wget
+    wget \
+    git
 
 COPY package*.json ./
 
