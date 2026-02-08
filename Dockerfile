@@ -1,7 +1,6 @@
-FROM node:18-alpine
+FROM node:20-alpine
 
-WORKDIR /app
-
+# Install all required dependencies including git
 RUN apk add --no-cache \
     python3 \
     make \
@@ -11,28 +10,28 @@ RUN apk add --no-cache \
     pango-dev \
     giflib-dev \
     pixman-dev \
-    pangomm-dev \
-    libjpeg-turbo-dev \
-    freetype-dev \
-    wget
+    git \
+    bash \
+    ffmpeg
 
-COPY package*.json ./
+# Set working directory
+WORKDIR /app
 
-RUN npm install --omit=dev --ignore-scripts && \
-    npm cache clean --force
+# Copy package files
+COPY package.json package-lock.json* ./
 
+# Install dependencies with git support
+RUN npm ci --legacy-peer-deps || npm install --legacy-peer-deps
+
+# Copy all project files
 COPY . .
 
-RUN mkdir -p sessions tmp && \
-    chmod -R 755 sessions tmp
+# Environment settings
+ENV NODE_ENV=production
+ENV PORT=8000
 
-ENV NODE_ENV=production \
-    PORT=8000 \
-    TZ=Asia/Karachi
-
+# Expose port
 EXPOSE 8000
 
-HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:8000/health || exit 1
-
-CMD ["node", "index.js"]
+# Start command
+CMD ["npm", "start"]
