@@ -484,7 +484,13 @@ app.get('/', (req, res) => {
                 </div>
             </div>
             <div class="footer">
-                Powered by <a href="https://github.com/YOUSAF-BALOCH-MD" target="_blank">YOUSAF-BALOCH-MD</a> © 2026
+                <div style="margin-bottom: 15px;">
+                    <a href="https://github.com/musakhanbaloch03-sad/YOUSAF-PAIRING-V1" target="_blank" style="margin: 0 10px; font-size: 1.1em;">⭐ GitHub</a>
+                    <a href="https://www.youtube.com/@Yousaf_Baloch_Tech" target="_blank" style="margin: 0 10px; font-size: 1.1em;">📺 YouTube</a>
+                    <a href="https://tiktok.com/@loser_boy.110" target="_blank" style="margin: 0 10px; font-size: 1.1em;">🎵 TikTok</a>
+                    <a href="https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j" target="_blank" style="margin: 0 10px; font-size: 1.1em;">📢 Channel</a>
+                </div>
+                Powered by <a href="https://github.com/musakhanbaloch03-sad" target="_blank">MR YOUSAF BALOCH</a> © 2026
             </div>
         </div>
     </div>
@@ -537,11 +543,15 @@ app.get('/', (req, res) => {
         function showQR() {
             document.getElementById('qr-section').classList.add('active');
             document.getElementById('pairing-section').classList.remove('active');
+            document.querySelectorAll('.tab-btn')[0].classList.add('active');
+            document.querySelectorAll('.tab-btn')[1].classList.remove('active');
             loadQR();
         }
         function showPairing() {
             document.getElementById('pairing-section').classList.add('active');
             document.getElementById('qr-section').classList.remove('active');
+            document.querySelectorAll('.tab-btn')[1].classList.add('active');
+            document.querySelectorAll('.tab-btn')[0].classList.remove('active');
         }
         function loadQR() {
             fetch('/qr').then(r => r.json()).then(data => {
@@ -627,13 +637,19 @@ app.post('/pairing', async (req, res) => {
     if (!phone || phone.length < 10) {
       return res.json({ error: 'Invalid phone number' });
     }
+    
+    // FIX 1: Check if connection exists before requesting code
+    if (!global.conn) {
+      return res.json({ error: 'Bot is starting, please wait...' });
+    }
+    
     const code = await global.conn.requestPairingCode(phone);
     const formattedCode = code?.match(/.{1,4}/g)?.join('-') || code;
     console.log(chalk.green(`\n🔐 Code: ${formattedCode} for ${phone}\n`));
     res.json({ code: formattedCode });
   } catch (error) {
     console.error('Pairing error:', error);
-    res.json({ error: 'Failed to generate' });
+    res.json({ error: 'Failed to generate code. Please try again.' });
   }
 });
 
@@ -645,57 +661,84 @@ app.listen(PORT, () => {
   console.log(chalk.green(`\n✅ Server running on port ${PORT}\n`));
 });
 
+// FIX 2: Prevent multiple reconnection attempts
+let isReconnecting = false;
+
 async function startBot() {
-  const sessionFolder = path.join(__dirname, 'sessions');
-  const {state, saveCreds} = await useMultiFileAuthState(sessionFolder);
-  const {version} = await fetchLatestBaileysVersion();
-  
-  console.log(chalk.green(`✅ Baileys version: ${version}\n`));
-  
-  const sock = makeWASocket({
-    version,
-    logger: Pino({level: 'silent'}),
-    printQRInTerminal: false,
-    browser: ['YOUSAF-BALOCH-MD', 'Safari', '1.0.0'],
-    auth: {
-      creds: state.creds,
-      keys: makeCacheableSignalKeyStore(state.keys, Pino({level: 'silent'})),
-    },
-    markOnlineOnConnect: true,
-    generateHighQualityLinkPreview: true,
-  });
+  try {
+    const sessionFolder = path.join(__dirname, 'sessions');
+    const {state, saveCreds} = await useMultiFileAuthState(sessionFolder);
+    const {version} = await fetchLatestBaileysVersion();
+    
+    console.log(chalk.green(`✅ Baileys version: ${version}\n`));
+    
+    const sock = makeWASocket({
+      version,
+      logger: Pino({level: 'silent'}),
+      printQRInTerminal: false,
+      browser: ['YOUSAF-BALOCH-MD', 'Safari', '1.0.0'],
+      auth: {
+        creds: state.creds,
+        keys: makeCacheableSignalKeyStore(state.keys, Pino({level: 'silent'})),
+      },
+      markOnlineOnConnect: true,
+      generateHighQualityLinkPreview: true,
+      // FIX 3: Add getMessage handler to prevent disconnections
+      getMessage: async (key) => {
+        return { conversation: 'Hello' };
+      }
+    });
 
-  global.conn = sock;
+    global.conn = sock;
 
-  sock.ev.on('connection.update', async (update) => {
-    const {connection, lastDisconnect, qr} = update;
-    
-    if (qr) {
-      currentQR = qr;
-      console.log(chalk.yellow('📱 QR Code updated\n'));
-    }
-    
-    const code = lastDisconnect?.error?.output?.statusCode;
-    
-    if (code && code !== DisconnectReason.loggedOut && !sock?.ws.socket) {
-      console.log(chalk.yellow('⚠️  Reconnecting...\n'));
-      connectionStatus = 'reconnecting';
-      setTimeout(() => startBot(), 3000);
-    }
-    
-    if (connection === 'open') {
-      connectionStatus = 'connected';
-      console.log(chalk.green('✅ BOT CONNECTED!\n'));
-      console.log(chalk.cyan(`📱 Number: ${sock.user.id.split(':')[0]}\n`));
-    }
-    
-    if (connection === 'close') {
-      connectionStatus = 'closed';
-      console.log(chalk.red('❌ Connection closed\n'));
-    }
-  });
+    sock.ev.on('connection.update', async (update) => {
+      const {connection, lastDisconnect, qr} = update;
+      
+      if (qr) {
+        currentQR = qr;
+        console.log(chalk.yellow('📱 QR Code updated\n'));
+      }
+      
+      if (connection === 'open') {
+        connectionStatus = 'connected';
+        isReconnecting = false;
+        console.log(chalk.green('✅ BOT CONNECTED!\n'));
+        console.log(chalk.cyan(`📱 Number: ${sock.user.id.split(':')[0]}\n`));
+      }
+      
+      if (connection === 'close') {
+        connectionStatus = 'closed';
+        console.log(chalk.red('❌ Connection closed\n'));
+        
+        const code = lastDisconnect?.error?.output?.statusCode;
+        const shouldReconnect = code !== DisconnectReason.loggedOut;
+        
+        // FIX 4: Improved reconnection logic
+        if (shouldReconnect && !isReconnecting) {
+          isReconnecting = true;
+          console.log(chalk.yellow('⚠️  Reconnecting in 5 seconds...\n'));
+          setTimeout(() => {
+            isReconnecting = false;
+            startBot();
+          }, 5000);
+        } else if (code === DisconnectReason.loggedOut) {
+          console.log(chalk.red('❌ Logged out. Please reconnect using QR or pairing code.\n'));
+        }
+      }
+    });
 
-  sock.ev.on('creds.update', saveCreds);
+    sock.ev.on('creds.update', saveCreds);
+    
+  } catch (error) {
+    console.error(chalk.red('❌ Bot startup error:'), error);
+    if (!isReconnecting) {
+      isReconnecting = true;
+      setTimeout(() => {
+        isReconnecting = false;
+        startBot();
+      }, 5000);
+    }
+  }
 }
 
 startBot();
@@ -707,4 +750,3 @@ process.on('unhandledRejection', (err) => {
 process.on('uncaughtException', (err) => {
   console.error(chalk.red('Uncaught Exception:'), err);
 });
-      
