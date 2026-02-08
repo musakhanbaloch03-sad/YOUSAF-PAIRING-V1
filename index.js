@@ -234,358 +234,323 @@ app.get('/', (req, res) => {
             0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(255, 215, 0, 0.3); }
             50% { transform: scale(1.05); box-shadow: 0 0 30px rgba(255, 215, 0, 0.5); }
         }
-        .status.connected {
-            background: linear-gradient(135deg, rgba(0, 255, 128, 0.2), rgba(0, 242, 255, 0.2));
-            border-color: var(--primary);
-            box-shadow: 0 0 30px rgba(0, 242, 255, 0.5);
-        }
-        .method-tabs {
+        .tabs {
             display: flex;
-            gap: 10px;
+            gap: 15px;
             margin-bottom: 25px;
             position: relative;
             z-index: 1;
         }
-        .tab-btn {
+        .tab {
             flex: 1;
             padding: 15px;
-            border: 2px solid rgba(139, 92, 246, 0.5);
-            background: rgba(139, 92, 246, 0.1);
-            color: white;
+            text-align: center;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 0.95em;
             border-radius: 15px;
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 600;
-            font-size: 1em;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            background: rgba(139, 92, 246, 0.1);
         }
-        .tab-btn:hover {
-            background: rgba(139, 92, 246, 0.3);
-            box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
-        }
-        .tab-btn.active {
+        .tab.active {
             background: linear-gradient(135deg, var(--purple), var(--primary));
             border-color: var(--primary);
-            box-shadow: 0 0 30px rgba(0, 242, 255, 0.5);
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+            transform: translateY(-3px);
         }
-        .method-section {
+        .tab-content {
             display: none;
-            animation: fadeIn 0.5s ease;
             position: relative;
             z-index: 1;
         }
-        .method-section.active {
+        .tab-content.active {
             display: block;
+            animation: fadeIn 0.5s ease;
         }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
         .qr-container {
-            background: white;
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 10px 40px rgba(0, 242, 255, 0.3);
-        }
-        #qrcode {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 256px;
-        }
-        .qr-timer {
             text-align: center;
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 700;
-            color: var(--accent);
-            margin-top: 15px;
-            font-size: 1em;
+            margin-bottom: 25px;
+        }
+        .qr-box {
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 15px;
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.2);
+        }
+        .qr-box img {
+            max-width: 280px;
+            width: 100%;
+            height: auto;
+        }
+        .info-text {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.95em;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 10px;
+        }
+        .pairing-form {
+            margin-bottom: 25px;
         }
         .input-group {
             margin-bottom: 20px;
         }
-        .input-label {
+        .input-group label {
             display: block;
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 600;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9em;
             margin-bottom: 10px;
-            color: var(--primary);
-            font-size: 1em;
+            color: var(--accent);
         }
-        .phone-input {
+        .input-group input {
             width: 100%;
-            padding: 18px;
-            border: 2px solid rgba(139, 92, 246, 0.5);
+            padding: 15px 20px;
             border-radius: 15px;
+            border: 2px solid rgba(0, 242, 255, 0.3);
             background: rgba(0, 0, 0, 0.5);
             color: white;
+            font-family: 'Orbitron', sans-serif;
             font-size: 1.1em;
-            font-family: 'Orbitron', monospace;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
         }
-        .phone-input:focus {
+        .input-group input:focus {
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 20px rgba(0, 242, 255, 0.3);
         }
-        .generate-btn {
+        .btn {
             width: 100%;
             padding: 18px;
-            background: linear-gradient(135deg, var(--purple), var(--primary));
-            border: none;
             border-radius: 15px;
-            color: white;
-            font-size: 1.1em;
+            border: none;
+            font-family: 'Orbitron', sans-serif;
             font-weight: 700;
-            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.1em;
             cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 5px 20px rgba(139, 92, 246, 0.4);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
-        .generate-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(139, 92, 246, 0.6);
+        .btn-primary {
+            background: linear-gradient(135deg, var(--purple), var(--primary));
+            color: white;
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4);
         }
-        .generate-btn:active {
-            transform: translateY(0);
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(139, 92, 246, 0.6);
+        }
+        .btn-primary:active {
+            transform: translateY(-1px);
         }
         .code-display {
-            background: linear-gradient(135deg, var(--primary), var(--purple));
-            padding: 25px;
-            border-radius: 15px;
             font-family: 'Orbitron', monospace;
             font-size: 2.5em;
             font-weight: 900;
             text-align: center;
-            letter-spacing: 0.1em;
-            margin-bottom: 20px;
-            box-shadow: 0 0 40px rgba(0, 242, 255, 0.5);
-            animation: codeGlow 2s ease infinite;
-        }
-        @keyframes codeGlow {
-            0%, 100% { box-shadow: 0 0 40px rgba(0, 242, 255, 0.5); }
-            50% { box-shadow: 0 0 60px rgba(0, 242, 255, 0.8); }
-        }
-        .info-text {
-            text-align: center;
-            font-size: 0.95em;
-            color: rgba(255, 255, 255, 0.8);
-            margin-bottom: 10px;
-            line-height: 1.6;
-        }
-        .spinner {
-            display: inline-block;
-            width: 15px;
-            height: 15px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-top: 2px solid white;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-right: 8px;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        .instructions {
-            background: rgba(139, 92, 246, 0.1);
-            border: 2px solid rgba(139, 92, 246, 0.3);
-            border-radius: 15px;
-            padding: 20px;
-            margin-top: 25px;
-            position: relative;
-            z-index: 1;
-        }
-        .instructions h3 {
-            font-family: 'Orbitron', sans-serif;
-            color: var(--primary);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientFlow 3s ease infinite;
             margin-bottom: 15px;
-            font-size: 1.2em;
-        }
-        .instructions ol {
-            padding-left: 20px;
-            line-height: 1.8;
-        }
-        .instructions li {
-            margin-bottom: 8px;
-            color: rgba(255, 255, 255, 0.9);
+            letter-spacing: 5px;
         }
         .footer {
-            text-align: center;
             margin-top: 30px;
-            padding-top: 25px;
-            border-top: 2px solid rgba(139, 92, 246, 0.3);
-            font-size: 0.9em;
-            color: rgba(255, 255, 255, 0.6);
+            text-align: center;
             position: relative;
             z-index: 1;
         }
-        .footer a {
-            color: var(--primary);
-            text-decoration: none;
-            transition: color 0.3s;
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
         }
-        .footer a:hover {
-            color: var(--accent);
+        .social-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3em;
+            transition: all 0.3s ease;
+            border: 2px solid;
+        }
+        .social-btn.whatsapp {
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            border-color: #25D366;
+        }
+        .social-btn.github {
+            background: linear-gradient(135deg, #333, #000);
+            border-color: #fff;
+        }
+        .social-btn.youtube {
+            background: linear-gradient(135deg, #FF0000, #CC0000);
+            border-color: #FF0000;
+        }
+        .social-btn:hover {
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 10px 25px rgba(255, 255, 255, 0.3);
+        }
+        .copyright {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.85em;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        @media (max-width: 480px) {
+            .time-display { font-size: 2em; }
+            .bot-title { font-size: 1.8em; }
+            .qr-box img { max-width: 240px; }
+            .code-display { font-size: 2em; letter-spacing: 3px; }
         }
     </style>
 </head>
 <body>
-    <div class="particles"></div>
+    <div class="particles" id="particles"></div>
     <div class="container">
         <div class="header-time">
             <div class="time-display" id="time">00:00:00</div>
-            <div class="date-display" id="date">LOADING...</div>
+            <div class="date-display" id="date">Loading...</div>
         </div>
+        
         <div class="main-card">
             <h1 class="bot-title">YOUSAF-BALOCH-MD</h1>
-            <p class="bot-subtitle">⚡ ULTRA PREMIUM WHATSAPP BOT ⚡</p>
+            <p class="bot-subtitle">🚀 PREMIUM MULTI-DEVICE WHATSAPP BOT 🚀</p>
+            
             <div class="dev-info">
-                <div class="dev-name">👨‍💻 MR YOUSAF BALOCH</div>
+                <div class="dev-name">⚡ MR YOUSAF BALOCH ⚡</div>
                 <div class="dev-contact">📱 +92 317 0636110</div>
             </div>
-            <div style="text-align: center; margin-bottom: 30px;">
-                <span class="status-badge" id="status">⏳ Waiting...</span>
+            
+            <div style="text-align: center;">
+                <span class="status-badge">✨ ULTRA PREMIUM EDITION ✨</span>
             </div>
-            <div class="method-tabs">
-                <button class="tab-btn" onclick="showQR()">📱 QR CODE</button>
-                <button class="tab-btn active" onclick="showPairing()">🔐 PAIRING CODE</button>
+            
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('qr')">QR CODE</div>
+                <div class="tab" onclick="switchTab('pairing')">PAIRING CODE</div>
             </div>
-            <div id="qr-section" class="method-section">
+            
+            <div id="qr-tab" class="tab-content active">
                 <div class="qr-container">
-                    <div id="qrcode"></div>
-                </div>
-                <div class="qr-timer" id="qr-timer">⏰ LOADING...</div>
-                <div class="instructions">
-                    <h3>📱 HOW TO CONNECT</h3>
-                    <ol>
-                        <li>Open WhatsApp on your phone</li>
-                        <li>Tap Menu or Settings → Linked Devices</li>
-                        <li>Tap "Link a Device"</li>
-                        <li>Scan this QR code</li>
-                    </ol>
+                    <div class="qr-box">
+                        <img id="qr-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='280'%3E%3Crect width='280' height='280' fill='%23fff'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%23000' font-family='monospace' font-size='16'%3ELoading QR...%3C/text%3E%3C/svg%3E" alt="QR Code">
+                    </div>
+                    <div class="info-text">📱 SCAN WITH WHATSAPP</div>
+                    <div class="info-text">Settings → Linked Devices → Link a Device</div>
+                    <div class="info-text">⏰ QR Code expires in 60 seconds</div>
                 </div>
             </div>
-            <div id="pairing-section" class="method-section active">
-                <div class="input-group">
-                    <label class="input-label">📱 ENTER PHONE NUMBER (WITH COUNTRY CODE)</label>
-                    <input type="tel" id="phone" class="phone-input" placeholder="923170636110" maxlength="15">
+            
+            <div id="pairing-tab" class="tab-content">
+                <div class="pairing-form">
+                    <div class="input-group">
+                        <label>📱 ENTER YOUR PHONE NUMBER</label>
+                        <input type="tel" id="phone" placeholder="923170636110" maxlength="15">
+                    </div>
+                    <button class="btn btn-primary" onclick="generateCode()">
+                        🔐 GENERATE PAIRING CODE
+                    </button>
                 </div>
-                <button class="generate-btn" onclick="generateCode()">🔐 GENERATE CODE</button>
-                <div id="code-result" style="margin-top: 25px;"></div>
-                <div class="instructions">
-                    <h3>🔐 HOW TO USE PAIRING CODE</h3>
-                    <ol>
-                        <li>Enter your WhatsApp number with country code</li>
-                        <li>Click "Generate Code" button</li>
-                        <li>Open WhatsApp → Linked Devices</li>
-                        <li>Select "Link with Phone Number"</li>
-                        <li>Enter the code within 60 seconds</li>
-                    </ol>
-                </div>
+                <div id="pairing-result"></div>
             </div>
+            
             <div class="footer">
-                Powered by <a href="https://github.com/YOUSAF-BALOCH-MD" target="_blank">YOUSAF-BALOCH-MD</a> © 2026
+                <div class="social-links">
+                    <a href="https://wa.me/923170636110" target="_blank" class="social-btn whatsapp">📱</a>
+                    <a href="https://github.com/musakhanbaloch03-sad" target="_blank" class="social-btn github">💻</a>
+                    <a href="https://youtube.com/@yousafbaloch" target="_blank" class="social-btn youtube">📺</a>
+                </div>
+                <div class="copyright">
+                    © 2024 YOUSAF-BALOCH-MD | Made with ❤️ in Pakistan 🇵🇰
+                </div>
             </div>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+
     <script>
-        const particles = document.querySelector('.particles');
-        function createParticles() {
-            for (let i = 0; i < 30; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                const size = Math.random() * 5 + 2;
-                particle.style.width = size + 'px';
-                particle.style.height = size + 'px';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 20 + 's';
-                particle.style.animationDuration = (Math.random() * 10 + 15) + 's';
-                particles.appendChild(particle);
+        // Particles
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 20; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.width = Math.random() * 4 + 2 + 'px';
+            particle.style.height = particle.style.width;
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 20 + 's';
+            particle.style.animationDuration = Math.random() * 10 + 15 + 's';
+            particlesContainer.appendChild(particle);
+        }
+
+        // Time & Date
+        function updateTime() {
+            const now = new Date();
+            const time = now.toLocaleTimeString('en-US', { hour12: false });
+            const date = now.toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            document.getElementById('time').textContent = time;
+            document.getElementById('date').textContent = date;
+        }
+        updateTime();
+        setInterval(updateTime, 1000);
+
+        // Tab switching
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            if (tab === 'qr') {
+                document.querySelector('.tab:first-child').classList.add('active');
+                document.getElementById('qr-tab').classList.add('active');
+            } else {
+                document.querySelector('.tab:last-child').classList.add('active');
+                document.getElementById('pairing-tab').classList.add('active');
             }
         }
-        createParticles();
-        function updateDateTime() {
-            const now = new Date();
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const seconds = String(now.getSeconds()).padStart(2, '0');
-            document.getElementById('time').textContent = \`\${hours}:\${minutes}:\${seconds}\`;
-            const days = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
-            const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-            const day = days[now.getDay()];
-            const month = months[now.getMonth()];
-            const date = now.getDate();
-            const year = now.getFullYear();
-            document.getElementById('date').textContent = \`\${day}, \${month} \${date}, \${year}\`;
-        }
-        setInterval(updateDateTime, 1000);
-        updateDateTime();
-        function updateStatus() {
-            fetch('/status').then(r => r.json()).then(data => {
-                const statusEl = document.getElementById('status');
-                if (data.connected) {
-                    statusEl.className = 'status-badge status connected';
-                    statusEl.innerHTML = '✅ CONNECTED: ' + data.number;
-                } else {
-                    statusEl.className = 'status-badge';
-                    statusEl.textContent = '⏳ Waiting...';
-                }
-             }).catch(() => {});
-        }
-        setInterval(updateStatus, 3000);
-        function showQR() {
-            document.getElementById('qr-section').classList.add('active');
-            document.getElementById('pairing-section').classList.remove('active');
-            document.querySelectorAll('.tab-btn')[0].classList.add('active');
-            document.querySelectorAll('.tab-btn')[1].classList.remove('active');
-            loadQR();
-        }
-        function showPairing() {
-            document.getElementById('pairing-section').classList.add('active');
-            document.getElementById('qr-section').classList.remove('active');
-            document.querySelectorAll('.tab-btn')[1].classList.add('active');
-            document.querySelectorAll('.tab-btn')[0].classList.remove('active');
-        }
-        function loadQR() {
-            fetch('/qr').then(r => r.json()).then(data => {
+
+        // QR Code updates
+        async function updateQR() {
+            try {
+                const response = await fetch('/qr');
+                const data = await response.json();
                 if (data.qr) {
-                    const qrDiv = document.getElementById('qrcode');
-                    qrDiv.innerHTML = '';
-                    new QRCode(qrDiv, {
-                        text: data.qr,
-                        width: 256,
-                        height: 256,
-                        colorDark: '#000000',
-                        colorLight: '#ffffff'
-                    });
-                    startQRTimer();
+                    const qrImg = document.getElementById('qr-img');
+                    qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=' + encodeURIComponent(data.qr);
                 }
-            });
+            } catch (error) {
+                console.error('QR update error:', error);
+            }
         }
-        let timerInterval;
-        function startQRTimer() {
-            let seconds = 60;
-            const timerEl = document.getElementById('qr-timer');
-            clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                seconds--;
-                timerEl.textContent = \`⏰ EXPIRES IN \${seconds}S\`;
-                if (seconds <= 0) {
-                    clearInterval(timerInterval);
-                    timerEl.textContent = '⚠️ EXPIRED! REFRESH PAGE';
-                }
-            }, 1000);
-        }
+        setInterval(updateQR, 3000);
+        updateQR();
+
+        // Pairing code generation
         async function generateCode() {
-            const phone = document.getElementById('phone').value.replace(/[^0-9]/g, '');
-            const resultEl = document.getElementById('code-result');
-            if (!phone || phone.length < 10) {
+            const phone = document.getElementById('phone').value.replace(/\D/g, '');
+            const resultEl = document.getElementById('pairing-result');
+            
+            if (phone.length < 10) {
                 resultEl.innerHTML = '<div class="info-text" style="color: #ff0080;">❌ INVALID NUMBER</div>';
                 return;
             }
-            resultEl.innerHTML = '<div class="info-text"><span class="spinner"></span> GENERATING...</div>';
+            
+            resultEl.innerHTML = '<div class="info-text">⏳ GENERATING CODE...</div>';
+            
             try {
                 const response = await fetch('/pairing', {
                     method: 'POST',
@@ -594,11 +559,11 @@ app.get('/', (req, res) => {
                 });
                 const data = await response.json();
                 if (data.code) {
-                    resultEl.innerHTML = \`
+                    resultEl.innerHTML = `
                         <div class="code-display">\${data.code}</div>
                         <div class="info-text">⏰ ENTER IN WHATSAPP WITHIN 60 SECONDS</div>
                         <div class="info-text">WhatsApp → Linked Devices → Link with Phone Number</div>
-                    \`;
+                    `;
                 } else {
                     resultEl.innerHTML = '<div class="info-text" style="color: #ff0080;">❌ ' + data.error + '</div>';
                 }
@@ -670,6 +635,14 @@ let isReconnecting = false;
 let reconnectAttempts = 0;
 const MAX_RECONNECT_ATTEMPTS = 5;
 
+// FIX 3: Initialize message store BEFORE startBot function
+const store = {
+  messages: {},
+  loadMessage: async (jid, id) => {
+    return store.messages[jid]?.[id];
+  }
+};
+
 async function startBot() {
   try {
     const sessionFolder = path.join(__dirname, 'sessions');
@@ -690,7 +663,7 @@ async function startBot() {
       markOnlineOnConnect: true,
       generateHighQualityLinkPreview: true,
       syncFullHistory: false,
-      // FIX 3: Add getMessage handler to prevent disconnections
+      // FIX 4: getMessage handler - now store is already defined above
       getMessage: async (key) => {
         if (store) {
           const msg = await store.loadMessage(key.remoteJid, key.id);
@@ -700,24 +673,18 @@ async function startBot() {
           conversation: 'Hello'
         };
       },
-      // FIX 4: Add connection options
+      // FIX 5: Improved connection options to prevent timeout
       connectTimeoutMs: 60000,
-      defaultQueryTimeoutMs: 0,
+      defaultQueryTimeoutMs: undefined,
       keepAliveIntervalMs: 10000,
       emitOwnEvents: true,
       fireInitQueries: true,
-      shouldIgnoreJid: (jid) => false
+      shouldIgnoreJid: (jid) => false,
+      // FIX 6: Add this to prevent history sync issues
+      shouldSyncHistoryMessage: () => false
     });
 
     global.conn = sock;
-    
-    // Simple message store
-    const store = {
-      messages: {},
-      loadMessage: async (jid, id) => {
-        return store.messages[jid]?.[id];
-      }
-    };
 
     sock.ev.on('messages.upsert', ({ messages }) => {
       for (const msg of messages) {
@@ -742,7 +709,7 @@ async function startBot() {
         connectionStatus = 'connected';
         isReconnecting = false;
         reconnectAttempts = 0;
-        console.log(chalk.green('✅ BOT CONNECTED!\n'));
+        console.log(chalk.green('✅ ✅ ✅ BOT SUCCESSFULLY CONNECTED! ✅ ✅ ✅\n'));
         console.log(chalk.cyan(`📱 Number: ${sock.user.id.split(':')[0]}\n`));
       }
       
@@ -755,7 +722,7 @@ async function startBot() {
         
         const shouldReconnect = statusCode !== DisconnectReason.loggedOut;
         
-        // FIX 5: Improved reconnection logic with exponential backoff
+        // FIX 7: Improved reconnection logic with exponential backoff
         if (shouldReconnect && !isReconnecting && reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
           isReconnecting = true;
           reconnectAttempts++;
@@ -797,7 +764,7 @@ async function startBot() {
   }
 }
 
-// FIX 6: Graceful shutdown handling
+// FIX 8: Graceful shutdown handling
 process.on('SIGINT', () => {
   console.log(chalk.yellow('\n⚠️  Shutting down gracefully...\n'));
   if (global.conn) {
