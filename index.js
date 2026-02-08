@@ -13,11 +13,18 @@ import chalk from 'chalk';
 import Pino from 'pino';
 import figlet from 'figlet';
 import express from 'express';
+import { readFileSync, existsSync, mkdirSync } from 'fs';
 
-const { DisconnectReason, useMultiFileAuthState, fetchLatestBaileysVersion, makeCacheableSignalKeyStore, makeWASocket } = await import('@whiskeysockets/baileys');
+const { DisconnectReason, useMultiFileAuthState, fetchLatestBaileysVersion, makeCacheableSignalKeyStore, makeWASocket, delay } = await import('@whiskeysockets/baileys');
 
 const PORT = process.env.PORT || 8000;
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Ensure sessions directory exists
+const sessionsDir = path.join(__dirname, 'sessions');
+if (!existsSync(sessionsDir)) {
+  mkdirSync(sessionsDir, { recursive: true });
+}
 
 global.opts = new Object(yargs(process.argv.slice(2)).exitProcess(false).parse());
 
@@ -31,6 +38,7 @@ console.log(chalk.cyan('━━━━━━━━━━━━━━━━━━�
 const app = express();
 let currentQR = null;
 let connectionStatus = 'waiting';
+let qrUpdateTime = null;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -69,31 +77,7 @@ app.get('/', (req, res) => {
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
-        .particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            z-index: 0;
-        }
-        .particle {
-            position: absolute;
-            background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
-            border-radius: 50%;
-            animation: float 20s infinite;
-            opacity: 0.3;
-        }
-        @keyframes float {
-            0%, 100% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
-            10% { opacity: 0.3; }
-            90% { opacity: 0.3; }
-            100% { transform: translateY(-100vh) translateX(100px) rotate(360deg); opacity: 0; }
-        }
         .container {
-            position: relative;
-            z-index: 1;
             max-width: 500px;
             margin: 0 auto;
             padding: 20px;
@@ -102,43 +86,6 @@ app.get('/', (req, res) => {
             flex-direction: column;
             justify-content: center;
         }
-        .header-time {
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(20px);
-            border: 2px solid rgba(0, 242, 255, 0.3);
-            border-radius: 25px;
-            padding: 25px;
-            margin-bottom: 25px;
-            box-shadow: 0 0 40px rgba(0, 242, 255, 0.2);
-            animation: slideDown 0.8s ease;
-        }
-        @keyframes slideDown {
-            from { transform: translateY(-50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        .time-display {
-            font-family: 'Orbitron', monospace;
-            font-size: 2.5em;
-            font-weight: 900;
-            text-align: center;
-            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
-            background-size: 200% 200%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: gradientFlow 3s ease infinite;
-            margin-bottom: 10px;
-        }
-        @keyframes gradientFlow {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-        .date-display {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.1em;
-            text-align: center;
-            color: rgba(255, 255, 255, 0.8);
-        }
         .main-card {
             background: rgba(10, 10, 10, 0.8);
             backdrop-filter: blur(30px);
@@ -146,28 +93,6 @@ app.get('/', (req, res) => {
             border-radius: 30px;
             padding: 40px 30px;
             box-shadow: 0 20px 60px rgba(139, 92, 246, 0.3);
-            animation: scaleUp 0.8s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        .main-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(139, 92, 246, 0.1), transparent);
-            transform: rotate(45deg);
-            animation: shimmer 3s linear infinite;
-        }
-        @keyframes shimmer {
-            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
-        }
-        @keyframes scaleUp {
-            from { transform: scale(0.9); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
         }
         .bot-title {
             font-family: 'Orbitron', sans-serif;
@@ -178,41 +103,12 @@ app.get('/', (req, res) => {
             background-size: 300% 300%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
             animation: rainbowShift 5s ease infinite;
             margin-bottom: 10px;
-            position: relative;
-            z-index: 1;
         }
         @keyframes rainbowShift {
             0%, 100% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
-        }
-        .bot-subtitle {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 0.9em;
-            text-align: center;
-            color: var(--accent);
-            margin-bottom: 20px;
-            position: relative;
-            z-index: 1;
-        }
-        .dev-info {
-            text-align: center;
-            margin-bottom: 30px;
-            position: relative;
-            z-index: 1;
-        }
-        .dev-name {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.3em;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 5px;
-        }
-        .dev-contact {
-            font-size: 0.95em;
-            color: rgba(255, 255, 255, 0.7);
         }
         .status-badge {
             display: inline-block;
@@ -220,30 +116,18 @@ app.get('/', (req, res) => {
             border-radius: 50px;
             font-family: 'Orbitron', sans-serif;
             font-weight: 700;
-            font-size: 1em;
-            margin-bottom: 30px;
+            margin: 20px 0;
             background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 128, 0, 0.2));
             border: 2px solid var(--accent);
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
-            animation: pulse 2s ease infinite;
-            position: relative;
-            z-index: 1;
-        }
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(255, 215, 0, 0.3); }
-            50% { transform: scale(1.05); box-shadow: 0 0 30px rgba(255, 215, 0, 0.5); }
         }
         .status.connected {
             background: linear-gradient(135deg, rgba(0, 255, 128, 0.2), rgba(0, 242, 255, 0.2));
             border-color: var(--primary);
-            box-shadow: 0 0 30px rgba(0, 242, 255, 0.5);
         }
         .method-tabs {
             display: flex;
             gap: 10px;
-            margin-bottom: 25px;
-            position: relative;
-            z-index: 1;
+            margin: 25px 0;
         }
         .tab-btn {
             flex: 1;
@@ -252,66 +136,31 @@ app.get('/', (req, res) => {
             background: rgba(139, 92, 246, 0.1);
             color: white;
             border-radius: 15px;
-            font-family: 'Space Grotesk', sans-serif;
             font-weight: 600;
-            font-size: 1em;
             cursor: pointer;
             transition: all 0.3s;
-        }
-        .tab-btn:hover {
-            background: rgba(139, 92, 246, 0.3);
-            box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
         }
         .tab-btn.active {
             background: linear-gradient(135deg, var(--purple), var(--primary));
             border-color: var(--primary);
-            box-shadow: 0 0 30px rgba(0, 242, 255, 0.5);
         }
         .method-section {
             display: none;
-            animation: fadeIn 0.5s ease;
-            position: relative;
-            z-index: 1;
         }
         .method-section.active {
             display: block;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
         }
         .qr-container {
             background: white;
             border-radius: 20px;
             padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 10px 40px rgba(0, 242, 255, 0.3);
-        }
-        #qrcode {
+            margin: 20px 0;
+            min-height: 296px;
             display: flex;
-            justify-content: center;
             align-items: center;
-            min-height: 256px;
+            justify-content: center;
         }
-        .qr-timer {
-            text-align: center;
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 700;
-            color: var(--accent);
-            margin-top: 15px;
-            font-size: 1em;
-        }
-        .input-group {
-            margin-bottom: 20px;
-        }
-        .input-label {
-            display: block;
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: var(--primary);
-            font-size: 1em;
-        }
+        #qrcode { display: flex; justify-content: center; align-items: center; }
         .phone-input {
             width: 100%;
             padding: 18px;
@@ -320,13 +169,7 @@ app.get('/', (req, res) => {
             background: rgba(0, 0, 0, 0.5);
             color: white;
             font-size: 1.1em;
-            font-family: 'Orbitron', monospace;
-            transition: all 0.3s;
-        }
-        .phone-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 20px rgba(0, 242, 255, 0.3);
+            margin: 15px 0;
         }
         .generate-btn {
             width: 100%;
@@ -337,17 +180,7 @@ app.get('/', (req, res) => {
             color: white;
             font-size: 1.1em;
             font-weight: 700;
-            font-family: 'Space Grotesk', sans-serif;
             cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 5px 20px rgba(139, 92, 246, 0.4);
-        }
-        .generate-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(139, 92, 246, 0.6);
-        }
-        .generate-btn:active {
-            transform: translateY(0);
         }
         .code-display {
             background: linear-gradient(135deg, var(--primary), var(--purple));
@@ -357,21 +190,54 @@ app.get('/', (req, res) => {
             font-size: 2.5em;
             font-weight: 900;
             text-align: center;
-            letter-spacing: 0.1em;
-            margin-bottom: 20px;
-            box-shadow: 0 0 40px rgba(0, 242, 255, 0.5);
-            animation: codeGlow 2s ease infinite;
+            margin: 20px 0;
         }
-        @keyframes codeGlow {
-            0%, 100% { box-shadow: 0 0 40px rgba(0, 242, 255, 0.5); }
-            50% { box-shadow: 0 0 60px rgba(0, 242, 255, 0.8); }
+        .social-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 30px 0 20px 0;
+        }
+        .social-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 18px;
+            border-radius: 15px;
+            font-weight: 700;
+            font-size: 1.1em;
+            text-decoration: none;
+            transition: all 0.3s;
+            border: 2px solid;
+        }
+        .btn-github {
+            background: linear-gradient(135deg, #24292e, #000000);
+            border-color: #ffffff;
+            color: white;
+        }
+        .btn-youtube {
+            background: linear-gradient(135deg, #ff0000, #cc0000);
+            border-color: #ff0000;
+            color: white;
+        }
+        .btn-tiktok {
+            background: linear-gradient(135deg, #000000, #00f2ea);
+            border-color: #00f2ea;
+            color: white;
+        }
+        .btn-whatsapp {
+            background: linear-gradient(135deg, #25d366, #128c7e);
+            border-color: #25d366;
+            color: white;
+        }
+        .social-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 30px rgba(255, 255, 255, 0.3);
         }
         .info-text {
             text-align: center;
-            font-size: 0.95em;
+            margin: 10px 0;
             color: rgba(255, 255, 255, 0.8);
-            margin-bottom: 10px;
-            line-height: 1.6;
         }
         .spinner {
             display: inline-block;
@@ -381,243 +247,44 @@ app.get('/', (req, res) => {
             border-top: 2px solid white;
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin-right: 8px;
         }
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
-        .instructions {
-            background: rgba(139, 92, 246, 0.1);
-            border: 2px solid rgba(139, 92, 246, 0.3);
-            border-radius: 15px;
-            padding: 20px;
-            margin-top: 25px;
-            position: relative;
-            z-index: 1;
-        }
-        .instructions h3 {
-            font-family: 'Orbitron', sans-serif;
-            color: var(--primary);
-            margin-bottom: 15px;
-            font-size: 1.2em;
-        }
-        .instructions ol {
-            padding-left: 20px;
-            line-height: 1.8;
-        }
-        .instructions li {
-            margin-bottom: 8px;
-            color: rgba(255, 255, 255, 0.9);
-        }
-        .footer {
-            text-align: center;
-            margin-top: 30px;
-            padding-top: 25px;
-            border-top: 2px solid rgba(139, 92, 246, 0.3);
-            font-size: 0.9em;
-            color: rgba(255, 255, 255, 0.6);
-            position: relative;
-            z-index: 1;
-        }
-        .social-buttons {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        .social-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 18px;
-            border-radius: 15px;
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 700;
-            font-size: 1.1em;
-            text-decoration: none;
-            transition: all 0.3s;
-            border: 2px solid;
-            position: relative;
-            overflow: hidden;
-        }
-        .social-btn::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
-        .social-btn:hover::before {
-            width: 300px;
-            height: 300px;
-        }
-        .social-btn span {
-            position: relative;
-            z-index: 1;
-        }
-        .btn-github {
-            background: linear-gradient(135deg, #24292e, #000000);
-            border-color: #ffffff;
-            color: white;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
-        }
-        .btn-github:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 30px rgba(255, 255, 255, 0.5);
-        }
-        .btn-youtube {
-            background: linear-gradient(135deg, #ff0000, #cc0000);
-            border-color: #ff0000;
-            color: white;
-            box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
-        }
-        .btn-youtube:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 30px rgba(255, 0, 0, 0.5);
-        }
-        .btn-tiktok {
-            background: linear-gradient(135deg, #000000, #00f2ea);
-            border-color: #00f2ea;
-            color: white;
-            box-shadow: 0 0 20px rgba(0, 242, 234, 0.3);
-        }
-        .btn-tiktok:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 30px rgba(0, 242, 234, 0.5);
-        }
-        .btn-whatsapp {
-            background: linear-gradient(135deg, #25d366, #128c7e);
-            border-color: #25d366;
-            color: white;
-            box-shadow: 0 0 20px rgba(37, 211, 102, 0.3);
-        }
-        .btn-whatsapp:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 30px rgba(37, 211, 102, 0.5);
-        }
-        .footer-text {
-            margin-top: 15px;
-        }
-        .footer a {
-            color: var(--primary);
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-        .footer a:hover {
-            color: var(--accent);
-        }
     </style>
 </head>
 <body>
-    <div class="particles"></div>
     <div class="container">
-        <div class="header-time">
-            <div class="time-display" id="time">00:00:00</div>
-            <div class="date-display" id="date">LOADING...</div>
-        </div>
         <div class="main-card">
             <h1 class="bot-title">YOUSAF-BALOCH-MD</h1>
-            <p class="bot-subtitle">⚡ ULTRA PREMIUM WHATSAPP BOT ⚡</p>
-            <div class="dev-info">
-                <div class="dev-name">👨‍💻 MR YOUSAF BALOCH</div>
-                <div class="dev-contact">📱 +92 317 0636110</div>
-            </div>
-            <div style="text-align: center; margin-bottom: 30px;">
-                <span class="status-badge" id="status">⏳ Waiting...</span>
+            <div style="text-align: center;">
+                <span class="status-badge" id="status">⏳ WAITING...</span>
             </div>
             <div class="method-tabs">
-                <button class="tab-btn" onclick="showQR()">📱 QR CODE</button>
-                <button class="tab-btn active" onclick="showPairing()">🔐 PAIRING CODE</button>
+                <button class="tab-btn active" onclick="showQR()">📱 QR CODE</button>
+                <button class="tab-btn" onclick="showPairing()">🔐 PAIRING CODE</button>
             </div>
-            <div id="qr-section" class="method-section">
-                <div class="qr-container">
-                    <div id="qrcode"></div>
+            <div id="qr-section" class="method-section active">
+                <div class="qr-container" id="qrcode">
+                    <div class="info-text"><span class="spinner"></span> LOADING...</div>
                 </div>
-                <div class="qr-timer" id="qr-timer">⏰ LOADING...</div>
-                <div class="instructions">
-                    <h3>📱 HOW TO CONNECT</h3>
-                    <ol>
-                        <li>Open WhatsApp on your phone</li>
-                        <li>Tap Menu or Settings → Linked Devices</li>
-                        <li>Tap "Link a Device"</li>
-                        <li>Scan this QR code</li>
-                    </ol>
-                </div>
+                <div class="info-text" id="qr-timer">⏰ WAITING FOR QR CODE</div>
             </div>
-            <div id="pairing-section" class="method-section active">
-                <div class="input-group">
-                    <label class="input-label">📱 ENTER PHONE NUMBER (WITH COUNTRY CODE)</label>
-                    <input type="tel" id="phone" class="phone-input" placeholder="923170636110" maxlength="15">
-                </div>
+            <div id="pairing-section" class="method-section">
+                <input type="tel" id="phone" class="phone-input" placeholder="923170636110" maxlength="15">
                 <button class="generate-btn" onclick="generateCode()">🔐 GENERATE CODE</button>
                 <div id="code-result" style="margin-top: 25px;"></div>
-                <div class="instructions">
-                    <h3>🔐 HOW TO USE PAIRING CODE</h3>
-                    <ol>
-                        <li>Enter your WhatsApp number with country code</li>
-                        <li>Click "Generate Code" button</li>
-                        <li>Open WhatsApp → Linked Devices</li>
-                        <li>Select "Link with Phone Number"</li>
-                        <li>Enter the code within 60 seconds</li>
-                    </ol>
-                </div>
             </div>
-            <div class="footer">
-                Powered by <a href="https://github.com/YOUSAF-BALOCH-MD" target="_blank">YOUSAF-BALOCH-MD</a> © 2026
+            <div class="social-buttons">
+                <a href="https://github.com/musakhanbaloch03-sad/YOUSAF-PAIRING-V1" target="_blank" class="social-btn btn-github">⭐ GITHUB</a>
+                <a href="https://www.youtube.com/@Yousaf_Baloch_Tech" target="_blank" class="social-btn btn-youtube">📺 YOUTUBE</a>
+                <a href="https://tiktok.com/@loser_boy.110" target="_blank" class="social-btn btn-tiktok">🎵 TIKTOK</a>
+                <a href="https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j" target="_blank" class="social-btn btn-whatsapp">📢 CHANNEL</a>
             </div>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <script>
-        const particles = document.querySelector('.particles');
-        function createParticles() {
-            for (let i = 0; i < 30; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                const size = Math.random() * 5 + 2;
-                particle.style.width = size + 'px';
-                particle.style.height = size + 'px';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 20 + 's';
-                particle.style.animationDuration = (Math.random() * 10 + 15) + 's';
-                particles.appendChild(particle);
-            }
-        }
-        createParticles();
-        function updateDateTime() {
-            const now = new Date();
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const seconds = String(now.getSeconds()).padStart(2, '0');
-            document.getElementById('time').textContent = \`\${hours}:\${minutes}:\${seconds}\`;
-            const days = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
-            const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-            const day = days[now.getDay()];
-            const month = months[now.getMonth()];
-            const date = now.getDate();
-            const year = now.getFullYear();
-            document.getElementById('date').textContent = \`\${day}, \${month} \${date}, \${year}\`;
-        }
-        setInterval(updateDateTime, 1000);
-        updateDateTime();
-        function updateStatus() {
-            fetch('/status').then(r => r.json()).then(data => {
-                const statusEl = document.getElementById('status');
-                if (data.connected) {
-                    statusEl.className = 'status-badge status connected';
-                    statusEl.innerHTML = '✅ CONNECTED: ' + data.number;
-                } else {
-                    statusEl.className = 'status-badge';
-                    statusEl.textContent = '⏳ Waiting...';
-                }
-            }).catch(() => {});
-        }
-        setInterval(updateStatus, 3000);
         function showQR() {
             document.getElementById('qr-section').classList.add('active');
             document.getElementById('pairing-section').classList.remove('active');
@@ -632,9 +299,9 @@ app.get('/', (req, res) => {
             document.querySelectorAll('.tab-btn')[0].classList.remove('active');
         }
         function loadQR() {
+            const qrDiv = document.getElementById('qrcode');
             fetch('/qr').then(r => r.json()).then(data => {
                 if (data.qr) {
-                    const qrDiv = document.getElementById('qrcode');
                     qrDiv.innerHTML = '';
                     new QRCode(qrDiv, {
                         text: data.qr,
@@ -643,23 +310,23 @@ app.get('/', (req, res) => {
                         colorDark: '#000000',
                         colorLight: '#ffffff'
                     });
-                    startQRTimer();
+                    document.getElementById('qr-timer').textContent = '⏰ SCAN WITHIN 60 SECONDS';
+                } else {
+                    setTimeout(loadQR, 2000);
                 }
-            });
+            }).catch(() => setTimeout(loadQR, 2000));
         }
-        let timerInterval;
-        function startQRTimer() {
-            let seconds = 60;
-            const timerEl = document.getElementById('qr-timer');
-            clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                seconds--;
-                timerEl.textContent = \`⏰ EXPIRES IN \${seconds}S\`;
-                if (seconds <= 0) {
-                    clearInterval(timerInterval);
-                    timerEl.textContent = '⚠️ EXPIRED! REFRESH PAGE';
+        function updateStatus() {
+            fetch('/status').then(r => r.json()).then(data => {
+                const el = document.getElementById('status');
+                if (data.connected) {
+                    el.className = 'status-badge status connected';
+                    el.textContent = '✅ CONNECTED: ' + data.number;
+                } else {
+                    el.className = 'status-badge';
+                    el.textContent = data.status === 'connecting' ? '🔄 CONNECTING...' : '⏳ WAITING...';
                 }
-            }, 1000);
+            }).catch(() => {});
         }
         async function generateCode() {
             const phone = document.getElementById('phone').value.replace(/[^0-9]/g, '');
@@ -677,21 +344,17 @@ app.get('/', (req, res) => {
                 });
                 const data = await response.json();
                 if (data.code) {
-                    resultEl.innerHTML = \`
-                        <div class="code-display">\${data.code}</div>
-                        <div class="info-text">⏰ ENTER IN WHATSAPP WITHIN 60 SECONDS</div>
-                        <div class="info-text">WhatsApp → Linked Devices → Link with Phone Number</div>
-                    \`;
+                    resultEl.innerHTML = \`<div class="code-display">\${data.code}</div><div class="info-text">⏰ ENTER IN WHATSAPP NOW</div>\`;
                 } else {
                     resultEl.innerHTML = '<div class="info-text" style="color: #ff0080;">❌ ' + data.error + '</div>';
                 }
             } catch (error) {
-                resultEl.innerHTML = '<div class="info-text" style="color: #ff0080;">❌ ERROR OCCURRED</div>';
+                resultEl.innerHTML = '<div class="info-text" style="color: #ff0080;">❌ ERROR</div>';
             }
         }
-        document.getElementById('phone').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') { generateCode(); }
-        });
+        setInterval(updateStatus, 3000);
+        updateStatus();
+        loadQR();
     </script>
 </body>
 </html>
@@ -701,12 +364,17 @@ app.get('/', (req, res) => {
 app.get('/status', (req, res) => {
   res.json({
     connected: connectionStatus === 'connected',
-    number: global.conn?.user?.id?.split(':')[0] || null
+    status: connectionStatus,
+    number: global.conn?.user?.id?.split(':')[0] || null,
+    qrReady: !!currentQR
   });
 });
 
 app.get('/qr', (req, res) => {
-  res.json({ qr: currentQR });
+  res.json({ 
+    qr: currentQR,
+    timestamp: qrUpdateTime 
+  });
 });
 
 app.post('/pairing', async (req, res) => {
@@ -715,92 +383,106 @@ app.post('/pairing', async (req, res) => {
     if (!phone || phone.length < 10) {
       return res.json({ error: 'Invalid phone number' });
     }
-    
-    // FIX 1: Check if connection exists before requesting code
     if (!global.conn) {
-      return res.json({ error: 'Bot is starting, please wait...' });
+      return res.json({ error: 'Bot starting, wait 10 seconds' });
     }
-    
     const code = await global.conn.requestPairingCode(phone);
     const formattedCode = code?.match(/.{1,4}/g)?.join('-') || code;
-    console.log(chalk.green(`\n🔐 Code: ${formattedCode} for ${phone}\n`));
+    console.log(chalk.green(`\n✅ Code: ${formattedCode} for ${phone}\n`));
     res.json({ code: formattedCode });
   } catch (error) {
-    console.error('Pairing error:', error);
-    res.json({ error: 'Failed to generate code. Please try again.' });
+    console.error(chalk.red('Pairing error:'), error.message);
+    res.json({ error: 'Failed to generate code' });
   }
 });
 
 app.get('/health', (req, res) => {
-  res.json({ status: 'healthy', uptime: process.uptime() });
+  res.json({ status: 'ok', uptime: process.uptime() });
 });
 
 app.listen(PORT, () => {
   console.log(chalk.green(`\n✅ Server running on port ${PORT}\n`));
 });
 
-// FIX 2: Prevent multiple reconnection attempts
-let isReconnecting = false;
+// Bot connection logic
+let connectionAttempts = 0;
+const MAX_ATTEMPTS = 3;
+let isConnecting = false;
 
 async function startBot() {
+  if (isConnecting) return;
+  if (connectionAttempts >= MAX_ATTEMPTS) {
+    console.log(chalk.red('\n❌ Max attempts reached. Service requires restart.\n'));
+    return;
+  }
+
   try {
-    const sessionFolder = path.join(__dirname, 'sessions');
-    const {state, saveCreds} = await useMultiFileAuthState(sessionFolder);
+    isConnecting = true;
+    connectionAttempts++;
+
+    const {state, saveCreds} = await useMultiFileAuthState(sessionsDir);
     const {version} = await fetchLatestBaileysVersion();
     
-    console.log(chalk.green(`✅ Baileys version: ${version}\n`));
+    console.log(chalk.green(`✅ Baileys version: ${version.join(',')}\n`));
     
     const sock = makeWASocket({
       version,
       logger: Pino({level: 'silent'}),
       printQRInTerminal: false,
-      browser: ['YOUSAF-BALOCH-MD', 'Safari', '1.0.0'],
+      browser: ['YOUSAF-BALOCH-MD', 'Chrome', '120.0.0'],
       auth: {
         creds: state.creds,
         keys: makeCacheableSignalKeyStore(state.keys, Pino({level: 'silent'})),
       },
-      markOnlineOnConnect: true,
-      generateHighQualityLinkPreview: true,
-      // FIX 3: Add getMessage handler to prevent disconnections
-      getMessage: async (key) => {
-        return { conversation: 'Hello' };
-      }
+      markOnlineOnConnect: false,
+      generateHighQualityLinkPreview: false,
+      syncFullHistory: false,
+      getMessage: async () => ({ conversation: '' }),
+      defaultQueryTimeoutMs: 60000,
+      connectTimeoutMs: 60000,
+      keepAliveIntervalMs: 30000,
+      qrTimeout: 60000,
+      retryRequestDelayMs: 1000,
+      maxMsgRetryCount: 2
     });
 
     global.conn = sock;
+    isConnecting = false;
 
     sock.ev.on('connection.update', async (update) => {
       const {connection, lastDisconnect, qr} = update;
       
       if (qr) {
         currentQR = qr;
+        qrUpdateTime = Date.now();
+        connectionStatus = 'qr_ready';
         console.log(chalk.yellow('📱 QR Code updated\n'));
+      }
+      
+      if (connection === 'connecting') {
+        connectionStatus = 'connecting';
       }
       
       if (connection === 'open') {
         connectionStatus = 'connected';
-        isReconnecting = false;
-        console.log(chalk.green('✅ BOT CONNECTED!\n'));
+        connectionAttempts = 0;
+        currentQR = null;
+        console.log(chalk.green('\n✅ CONNECTED!\n'));
         console.log(chalk.cyan(`📱 Number: ${sock.user.id.split(':')[0]}\n`));
       }
       
       if (connection === 'close') {
         connectionStatus = 'closed';
-        console.log(chalk.red('❌ Connection closed\n'));
-        
         const code = lastDisconnect?.error?.output?.statusCode;
-        const shouldReconnect = code !== DisconnectReason.loggedOut;
+        console.log(chalk.red(`\n❌ Connection closed (Code: ${code})\n`));
         
-        // FIX 4: Improved reconnection logic
-        if (shouldReconnect && !isReconnecting) {
-          isReconnecting = true;
-          console.log(chalk.yellow('⚠️  Reconnecting in 5 seconds...\n'));
-          setTimeout(() => {
-            isReconnecting = false;
-            startBot();
-          }, 5000);
+        if (code !== DisconnectReason.loggedOut && connectionAttempts < MAX_ATTEMPTS) {
+          console.log(chalk.yellow(`⚠️  Reconnecting in 10 seconds...\n`));
+          await delay(10000);
+          startBot();
         } else if (code === DisconnectReason.loggedOut) {
-          console.log(chalk.red('❌ Logged out. Please reconnect using QR or pairing code.\n'));
+          console.log(chalk.red('❌ Logged out. Scan QR or use pairing code.\n'));
+          connectionAttempts = 0;
         }
       }
     });
@@ -808,13 +490,12 @@ async function startBot() {
     sock.ev.on('creds.update', saveCreds);
     
   } catch (error) {
-    console.error(chalk.red('❌ Bot startup error:'), error);
-    if (!isReconnecting) {
-      isReconnecting = true;
-      setTimeout(() => {
-        isReconnecting = false;
-        startBot();
-      }, 5000);
+    isConnecting = false;
+    console.error(chalk.red('❌ Bot Error:'), error.message);
+    if (connectionAttempts < MAX_ATTEMPTS) {
+      console.log(chalk.yellow('⚠️  Retrying in 15 seconds...\n'));
+      await delay(15000);
+      startBot();
     }
   }
 }
@@ -822,9 +503,9 @@ async function startBot() {
 startBot();
 
 process.on('unhandledRejection', (err) => {
-  console.error(chalk.red('Unhandled Rejection:'), err);
+  console.error(chalk.red('Unhandled Rejection:'), err.message);
 });
 
 process.on('uncaughtException', (err) => {
-  console.error(chalk.red('Uncaught Exception:'), err);
+  console.error(chalk.red('Uncaught Exception:'), err.message);
 });
