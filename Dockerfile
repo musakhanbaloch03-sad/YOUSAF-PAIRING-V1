@@ -1,43 +1,47 @@
-# YOUSAF-PAIRING-V1 - WhatsApp Pairing Service
-# Developer: Muhammad Yousaf Baloch
+FROM node:20-alpine
 
-FROM node:18-slim
-
-# Metadata
-LABEL maintainer="Muhammad Yousaf Baloch <musakhanbaloch03@gmail.com>"
-LABEL description="YOUSAF WhatsApp Pairing Service"
-LABEL version="1.0.0"
-
-# Install git and other dependencies (CRITICAL!)
-RUN apt-get update && apt-get install -y \
+# Install system dependencies
+RUN apk add --no-cache \
+    python3 \
+    make \
+    g++ \
     git \
-    && rm -rf /var/lib/apt/lists/*
+    bash \
+    chromium \
+    nss \
+    freetype \
+    freetype-dev \
+    harfbuzz \
+    ca-certificates \
+    ttf-freefont
 
 # Set working directory
 WORKDIR /app
 
-# Copy package files first (for better caching)
+# Copy package files
 COPY package*.json ./
 
-# Install Node.js dependencies
-RUN npm install --production
+# Install Node dependencies with legacy peer deps
+RUN npm ci --legacy-peer-deps --omit=dev || npm install --legacy-peer-deps --omit=dev
 
-# Copy all application files
+# Copy all files
 COPY . .
 
-# Create session directory (FIXED: sessions not session)
+# Create sessions directory
 RUN mkdir -p sessions
 
-# Set environment variable
+# Environment variables
 ENV NODE_ENV=production
 ENV PORT=8000
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 # Expose port
 EXPOSE 8000
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:8000/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})" || exit 1
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:8000/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
 
 # Start application
-CMD ["npm", "start"]
+CMD ["node", "index.js"]
