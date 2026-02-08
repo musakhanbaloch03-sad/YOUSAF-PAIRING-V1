@@ -25,19 +25,19 @@ RUN npm install --production
 # Copy all application files
 COPY . .
 
-# Create session directory
-RUN mkdir -p session
+# Create session directory (FIXED: sessions not session)
+RUN mkdir -p sessions
 
 # Set environment variable
 ENV NODE_ENV=production
 ENV PORT=8000
 
 # Expose port
-EXPOSE ${PORT}
+EXPOSE 8000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:${PORT}/', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})" || exit 1
+  CMD node -e "require('http').get('http://localhost:8000/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})" || exit 1
 
 # Start application
 CMD ["npm", "start"]
