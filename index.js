@@ -2,13 +2,13 @@
 ╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮
 ┃     YOUSAF-BALOCH-MD WhatsApp Bot      ┃
 ┃        Ultra Premium Edition           ┃
-┃           FIXED VERSION                ┃
 ╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯
 */
 
 import { createRequire } from 'module';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { existsSync, mkdirSync } from 'fs';
 import yargs from 'yargs';
 import chalk from 'chalk';
 import Pino from 'pino';
@@ -26,83 +26,39 @@ console.clear();
 console.log(chalk.cyan('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'));
 console.log(chalk.green(figlet.textSync('YOUSAF-BALOCH-MD', { font: 'Standard' })));
 console.log(chalk.cyan('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'));
-console.log(chalk.yellow('🚀 Ultra Premium WhatsApp Bot - FIXED VERSION'));
+console.log(chalk.yellow('🚀 Ultra Premium WhatsApp Bot'));
+console.log(chalk.green(`🌐 Server starting on port ${PORT}...`));
 console.log(chalk.cyan('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'));
 
 const app = express();
 let currentQR = null;
 let connectionStatus = 'waiting';
+let connectedNumber = null;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.get('/', (req, res) => {
-  res.send(`
-<!DOCTYPE html>
+  res.send(`<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YOUSAF-BALOCH-MD - Premium WhatsApp Bot</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <title>YOUSAF-BALOCH-MD - Premium Bot</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #00f2ff;
-            --secondary: #ff0080;
-            --accent: #ffd700;
-            --dark: #0a0a0a;
-            --purple: #8b5cf6;
-        }
+        :root { --primary: #00f2ff; --secondary: #ff0080; --accent: #ffd700; --purple: #8b5cf6; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(-45deg, #000000, #0a0033, #1a0033, #330066, #000033);
+            background: linear-gradient(-45deg, #000000, #0a0033, #1a0033, #330066);
             background-size: 400% 400%;
             animation: gradientShift 20s ease infinite;
             min-height: 100vh;
-            overflow-x: hidden;
             color: white;
         }
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        .particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            z-index: 0;
-        }
-        .particle {
-            position: absolute;
-            background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
-            border-radius: 50%;
-            animation: float 20s infinite;
-            opacity: 0.3;
-        }
-        @keyframes float {
-            0%, 100% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
-            10% { opacity: 0.3; }
-            90% { opacity: 0.3; }
-            100% { transform: translateY(-100vh) translateX(100px) rotate(360deg); opacity: 0; }
-        }
-        .container {
-            position: relative;
-            z-index: 1;
-            max-width: 500px;
-            margin: 0 auto;
-            padding: 20px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
+        @keyframes gradientShift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+        .container { position: relative; z-index: 1; max-width: 500px; margin: 50px auto; padding: 20px; }
         .header-time {
             background: rgba(0, 0, 0, 0.6);
             backdrop-filter: blur(20px);
@@ -110,12 +66,6 @@ app.get('/', (req, res) => {
             border-radius: 25px;
             padding: 25px;
             margin-bottom: 25px;
-            box-shadow: 0 0 40px rgba(0, 242, 255, 0.2);
-            animation: slideDown 0.8s ease;
-        }
-        @keyframes slideDown {
-            from { transform: translateY(-50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
         }
         .time-display {
             font-family: 'Orbitron', monospace;
@@ -126,49 +76,17 @@ app.get('/', (req, res) => {
             background-size: 200% 200%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
             animation: gradientFlow 3s ease infinite;
             margin-bottom: 10px;
         }
-        @keyframes gradientFlow {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-        .date-display {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.1em;
-            text-align: center;
-            color: rgba(255, 255, 255, 0.8);
-        }
+        @keyframes gradientFlow { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+        .date-display { font-size: 1.1em; text-align: center; color: rgba(255, 255, 255, 0.8); }
         .main-card {
             background: rgba(10, 10, 10, 0.8);
             backdrop-filter: blur(30px);
             border: 2px solid rgba(139, 92, 246, 0.4);
             border-radius: 30px;
             padding: 40px 30px;
-            box-shadow: 0 20px 60px rgba(139, 92, 246, 0.3);
-            animation: scaleUp 0.8s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        .main-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(139, 92, 246, 0.1), transparent);
-            transform: rotate(45deg);
-            animation: shimmer 3s linear infinite;
-        }
-        @keyframes shimmer {
-            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
-        }
-        @keyframes scaleUp {
-            from { transform: scale(0.9); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
         }
         .bot-title {
             font-family: 'Orbitron', sans-serif;
@@ -176,414 +94,258 @@ app.get('/', (req, res) => {
             font-weight: 900;
             text-align: center;
             background: linear-gradient(135deg, var(--primary), var(--purple), var(--secondary));
-            background-size: 300% 300%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: rainbowShift 5s ease infinite;
             margin-bottom: 10px;
-            position: relative;
-            z-index: 1;
         }
-        @keyframes rainbowShift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-        .bot-subtitle {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 0.9em;
-            text-align: center;
-            color: var(--accent);
-            margin-bottom: 20px;
-            position: relative;
-            z-index: 1;
-        }
-        .dev-info {
-            text-align: center;
-            margin-bottom: 30px;
-            position: relative;
-            z-index: 1;
-        }
-        .dev-name {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.3em;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 5px;
-        }
-        .dev-contact {
-            font-size: 0.95em;
-            color: rgba(255, 255, 255, 0.7);
-        }
+        .bot-subtitle { text-align: center; color: var(--accent); margin-bottom: 20px; }
+        .dev-info { text-align: center; margin-bottom: 30px; }
+        .dev-name { font-family: 'Orbitron', sans-serif; font-size: 1.3em; color: var(--primary); margin-bottom: 5px; }
+        .dev-contact { font-size: 0.95em; color: rgba(255, 255, 255, 0.7); }
         .status-badge {
             display: inline-block;
             padding: 12px 30px;
             border-radius: 50px;
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 700;
-            font-size: 1em;
-            margin-bottom: 30px;
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 128, 0, 0.2));
+            background: rgba(255, 215, 0, 0.2);
             border: 2px solid var(--accent);
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
-            animation: pulse 2s ease infinite;
-            position: relative;
-            z-index: 1;
+            margin-bottom: 30px;
         }
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(255, 215, 0, 0.3); }
-            50% { transform: scale(1.05); box-shadow: 0 0 30px rgba(255, 215, 0, 0.5); }
-        }
-        .tabs {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 25px;
-            position: relative;
-            z-index: 1;
-        }
-        .tab {
-            flex: 1;
-            padding: 15px;
-            text-align: center;
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 700;
-            font-size: 0.95em;
-            border-radius: 15px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 2px solid rgba(139, 92, 246, 0.3);
-            background: rgba(139, 92, 246, 0.1);
-        }
-        .tab.active {
-            background: linear-gradient(135deg, var(--purple), var(--primary));
-            border-color: var(--primary);
-            box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
-            transform: translateY(-3px);
-        }
-        .tab-content {
-            display: none;
-            position: relative;
-            z-index: 1;
-        }
-        .tab-content.active {
-            display: block;
-            animation: fadeIn 0.5s ease;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .qr-container {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-        .qr-box {
-            background: white;
-            padding: 20px;
+        .status-text { color: var(--accent); }
+        .status.connected { color: #00ff00; }
+        .buttons-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
+        .method-btn {
+            background: linear-gradient(135deg, rgba(0, 242, 255, 0.2), rgba(139, 92, 246, 0.2));
+            border: 2px solid var(--primary);
             border-radius: 20px;
-            display: inline-block;
-            margin-bottom: 15px;
-            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.2);
+            padding: 25px 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
         }
-        .qr-box img {
-            max-width: 280px;
+        .method-btn:hover { transform: translateY(-5px); }
+        .method-icon { font-size: 3em; margin-bottom: 10px; }
+        .method-title { font-family: 'Orbitron', sans-serif; font-size: 1.1em; margin-bottom: 5px; }
+        .method-desc { font-size: 0.85em; color: rgba(255, 255, 255, 0.6); }
+        .modal-section { display: none; }
+        .modal-section.active { display: block; }
+        .modal-title { font-family: 'Orbitron', sans-serif; font-size: 1.5em; text-align: center; color: var(--primary); margin-bottom: 20px; }
+        .qr-container { background: white; border-radius: 20px; padding: 20px; margin: 20px 0; display: flex; justify-content: center; }
+        #qrcode { display: inline-block; }
+        .qr-timer { font-family: 'Orbitron', monospace; font-size: 1.2em; color: var(--accent); text-align: center; margin-top: 15px; }
+        input {
             width: 100%;
-            height: auto;
-        }
-        .info-text {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 0.95em;
-            color: rgba(255, 255, 255, 0.8);
-            margin-bottom: 10px;
-        }
-        .pairing-form {
-            margin-bottom: 25px;
-        }
-        .input-group {
-            margin-bottom: 20px;
-        }
-        .input-group label {
-            display: block;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.9em;
-            margin-bottom: 10px;
-            color: var(--accent);
-        }
-        .input-group input {
-            width: 100%;
-            padding: 15px 20px;
-            border-radius: 15px;
-            border: 2px solid rgba(0, 242, 255, 0.3);
+            padding: 18px 20px;
             background: rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(0, 242, 255, 0.3);
+            border-radius: 15px;
             color: white;
-            font-family: 'Orbitron', sans-serif;
             font-size: 1.1em;
-            transition: all 0.3s ease;
+            margin-bottom: 15px;
         }
-        .input-group input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 20px rgba(0, 242, 255, 0.3);
-        }
-        .btn {
+        input::placeholder { color: rgba(255, 255, 255, 0.4); }
+        input:focus { outline: none; border-color: var(--primary); }
+        .generate-btn {
             width: 100%;
             padding: 18px;
-            border-radius: 15px;
+            background: linear-gradient(135deg, var(--primary), var(--purple));
             border: none;
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 700;
-            font-size: 1.1em;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, var(--purple), var(--primary));
+            border-radius: 15px;
             color: white;
-            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4);
+            font-size: 1.1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
         }
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(139, 92, 246, 0.6);
-        }
-        .btn-primary:active {
-            transform: translateY(-1px);
-        }
+        .generate-btn:hover { transform: translateY(-3px); }
         .code-display {
             font-family: 'Orbitron', monospace;
             font-size: 2.5em;
             font-weight: 900;
+            letter-spacing: 15px;
+            color: var(--primary);
             text-align: center;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            background-size: 200% 200%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: gradientFlow 3s ease infinite;
-            margin-bottom: 15px;
-            letter-spacing: 5px;
+            padding: 30px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 3px solid var(--primary);
+            border-radius: 20px;
+            margin: 20px 0;
         }
-        .footer {
-            margin-top: 30px;
-            text-align: center;
-            position: relative;
-            z-index: 1;
-        }
-        .social-links {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
+        .info-text { text-align: center; color: rgba(255, 255, 255, 0.7); margin: 15px 0; }
+        .social-links { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 30px; }
         .social-btn {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.3em;
-            transition: all 0.3s ease;
-            border: 2px solid;
+            gap: 10px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
         }
-        .social-btn.whatsapp {
-            background: linear-gradient(135deg, #25D366, #128C7E);
-            border-color: #25D366;
-        }
-        .social-btn.github {
-            background: linear-gradient(135deg, #333, #000);
-            border-color: #fff;
-        }
-        .social-btn.youtube {
-            background: linear-gradient(135deg, #FF0000, #CC0000);
-            border-color: #FF0000;
-        }
-        .social-btn:hover {
-            transform: translateY(-5px) scale(1.1);
-            box-shadow: 0 10px 25px rgba(255, 255, 255, 0.3);
-        }
-        .copyright {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 0.85em;
-            color: rgba(255, 255, 255, 0.6);
-        }
-        @media (max-width: 480px) {
+        .social-btn:hover { background: rgba(255, 0, 128, 0.2); transform: translateY(-3px); }
+        .spinner { display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(0, 242, 255, 0.3); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @media (max-width: 600px) {
             .time-display { font-size: 2em; }
             .bot-title { font-size: 1.8em; }
-            .qr-box img { max-width: 240px; }
-            .code-display { font-size: 2em; letter-spacing: 3px; }
+            .code-display { font-size: 1.8em; letter-spacing: 8px; }
         }
     </style>
 </head>
 <body>
-    <div class="particles" id="particles"></div>
     <div class="container">
         <div class="header-time">
             <div class="time-display" id="time">00:00:00</div>
             <div class="date-display" id="date">Loading...</div>
         </div>
-        
         <div class="main-card">
-            <h1 class="bot-title">YOUSAF-BALOCH-MD</h1>
-            <p class="bot-subtitle">🚀 PREMIUM MULTI-DEVICE WHATSAPP BOT 🚀</p>
-            
+            <h1 class="bot-title">⚡ YOUSAF-BALOCH-MD ⚡</h1>
+            <div class="bot-subtitle">ULTRA PREMIUM EDITION</div>
             <div class="dev-info">
-                <div class="dev-name">⚡ MR YOUSAF BALOCH ⚡</div>
-                <div class="dev-contact">📱 +92 317 0636110</div>
+                <div class="dev-name">MUHAMMAD YOUSAF BALOCH</div>
+                <div class="dev-contact">📞 +923710636110</div>
             </div>
-            
-            <div style="text-align: center;">
-                <span class="status-badge">✨ ULTRA PREMIUM EDITION ✨</span>
+            <div class="status-badge">
+                <div class="status-text">Status: <span id="status">⏳ Waiting...</span></div>
             </div>
-            
-            <div class="tabs">
-                <div class="tab active" onclick="switchTab('qr')">QR CODE</div>
-                <div class="tab" onclick="switchTab('pairing')">PAIRING CODE</div>
-            </div>
-            
-            <div id="qr-tab" class="tab-content active">
-                <div class="qr-container">
-                    <div class="qr-box">
-                        <img id="qr-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='280'%3E%3Crect width='280' height='280' fill='%23fff'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%23000' font-family='monospace' font-size='16'%3ELoading QR...%3C/text%3E%3C/svg%3E" alt="QR Code">
-                    </div>
-                    <div class="info-text">📱 SCAN WITH WHATSAPP</div>
-                    <div class="info-text">Settings → Linked Devices → Link a Device</div>
-                    <div class="info-text">⏰ QR Code expires in 60 seconds</div>
+            <div class="buttons-grid">
+                <div class="method-btn" onclick="showQR()">
+                    <div class="method-icon">📱</div>
+                    <div class="method-title">QR CODE</div>
+                    <div class="method-desc">Scan & Connect</div>
+                </div>
+                <div class="method-btn" onclick="showPairing()">
+                    <div class="method-icon">🔐</div>
+                    <div class="method-title">PAIRING</div>
+                    <div class="method-desc">8-Digit Code</div>
                 </div>
             </div>
-            
-            <div id="pairing-tab" class="tab-content">
-                <div class="pairing-form">
-                    <div class="input-group">
-                        <label>📱 ENTER YOUR PHONE NUMBER</label>
-                        <input type="tel" id="phone" placeholder="923170636110" maxlength="15">
-                    </div>
-                    <button class="btn btn-primary" onclick="generateCode()">
-                        🔐 GENERATE PAIRING CODE
-                    </button>
-                </div>
-                <div id="pairing-result"></div>
+            <div id="qr-section" class="modal-section">
+                <div class="modal-title">📱 SCAN QR CODE</div>
+                <div class="info-text">WhatsApp → Linked Devices → Link a Device</div>
+                <div class="qr-container" id="qrcode"></div>
+                <div class="qr-timer" id="qr-timer"></div>
             </div>
-            
-            <div class="footer">
-                <div class="social-links">
-                    <a href="https://wa.me/923170636110" target="_blank" class="social-btn whatsapp">📱</a>
-                    <a href="https://github.com/musakhanbaloch03-sad" target="_blank" class="social-btn github">💻</a>
-                    <a href="https://youtube.com/@yousafbaloch" target="_blank" class="social-btn youtube">📺</a>
+            <div id="pairing-section" class="modal-section">
+                <div class="modal-title">🔐 PAIRING CODE</div>
+                <div class="input-wrapper">
+                    <input type="tel" id="phone" placeholder="923710636110" maxlength="15">
+                    <button class="generate-btn" onclick="generateCode()">🚀 GENERATE CODE</button>
                 </div>
-                <div class="copyright">
-                    © 2024 YOUSAF-BALOCH-MD | Made with ❤️ in Pakistan 🇵🇰
-                </div>
+                <div id="code-result"></div>
+            </div>
+            <div class="social-links">
+                <a href="https://github.com/musakhanbaloch03-sad" target="_blank" class="social-btn"><span>💻</span><span>GitHub</span></a>
+                <a href="https://www.youtube.com/@Yousaf_Baloch_Tech" target="_blank" class="social-btn"><span>📺</span><span>YouTube</span></a>
+                <a href="https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j" target="_blank" class="social-btn"><span>📢</span><span>Channel</span></a>
+                <a href="https://tiktok.com/@loser_boy.110" target="_blank" class="social-btn"><span>🎵</span><span>TikTok</span></a>
             </div>
         </div>
     </div>
-
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <script>
-        // Particles
-        const particlesContainer = document.getElementById('particles');
-        for (let i = 0; i < 20; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'particle';
-            particle.style.width = Math.random() * 4 + 2 + 'px';
-            particle.style.height = particle.style.width;
-            particle.style.left = Math.random() * 100 + '%';
-            particle.style.animationDelay = Math.random() * 20 + 's';
-            particle.style.animationDuration = Math.random() * 10 + 15 + 's';
-            particlesContainer.appendChild(particle);
-        }
-
-        // Time & Date
-        function updateTime() {
+        function updateDateTime() {
             const now = new Date();
-            const time = now.toLocaleTimeString('en-US', { hour12: false });
-            const date = now.toLocaleDateString('en-US', { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
-            });
-            document.getElementById('time').textContent = time;
-            document.getElementById('date').textContent = date;
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            const s = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('time').textContent = h + ':' + m + ':' + s;
+            const days = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
+            const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+            document.getElementById('date').textContent = days[now.getDay()] + ', ' + months[now.getMonth()] + ' ' + now.getDate() + ', ' + now.getFullYear();
         }
-        updateTime();
-        setInterval(updateTime, 1000);
-
-        // Tab switching
-        function switchTab(tab) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            
-            if (tab === 'qr') {
-                document.querySelector('.tab:first-child').classList.add('active');
-                document.getElementById('qr-tab').classList.add('active');
-            } else {
-                document.querySelector('.tab:last-child').classList.add('active');
-                document.getElementById('pairing-tab').classList.add('active');
-            }
-        }
-
-        // QR Code updates
-        async function updateQR() {
-            try {
-                const response = await fetch('/qr');
-                const data = await response.json();
-                if (data.qr) {
-                    const qrImg = document.getElementById('qr-img');
-                    qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=' + encodeURIComponent(data.qr);
+        setInterval(updateDateTime, 1000);
+        updateDateTime();
+        
+        function updateStatus() {
+            fetch('/status').then(r => r.json()).then(d => {
+                const s = document.getElementById('status');
+                if (d.connected) {
+                    s.className = 'status connected';
+                    s.innerHTML = '✅ CONNECTED: ' + d.number;
+                } else {
+                    s.className = 'status';
+                    s.textContent = '⏳ Waiting...';
                 }
-            } catch (error) {
-                console.error('QR update error:', error);
-            }
+            }).catch(() => {});
         }
-        setInterval(updateQR, 3000);
-        updateQR();
-
-        // Pairing code generation
+        setInterval(updateStatus, 3000);
+        
+        function showQR() {
+            document.getElementById('qr-section').classList.add('active');
+            document.getElementById('pairing-section').classList.remove('active');
+            loadQR();
+        }
+        
+        function showPairing() {
+            document.getElementById('pairing-section').classList.add('active');
+            document.getElementById('qr-section').classList.remove('active');
+        }
+        
+        function loadQR() {
+            fetch('/qr').then(r => r.json()).then(d => {
+                if (d.qr) {
+                    const qr = document.getElementById('qrcode');
+                    qr.innerHTML = '';
+                    new QRCode(qr, { text: d.qr, width: 256, height: 256 });
+                    startTimer();
+                }
+            });
+        }
+        
+        let ti;
+        function startTimer() {
+            let sec = 60;
+            const t = document.getElementById('qr-timer');
+            clearInterval(ti);
+            ti = setInterval(() => {
+                sec--;
+                t.textContent = '⏰ EXPIRES IN ' + sec + 'S';
+                if (sec <= 0) {
+                    clearInterval(ti);
+                    t.textContent = '⚠️ EXPIRED! REFRESH';
+                }
+            }, 1000);
+        }
+        
         async function generateCode() {
-            const phone = document.getElementById('phone').value.replace(/\D/g, '');
-            const resultEl = document.getElementById('pairing-result');
-            
-            if (phone.length < 10) {
-                resultEl.innerHTML = '<div class="info-text" style="color: #ff0080;">❌ INVALID NUMBER</div>';
+            const phone = document.getElementById('phone').value.replace(/[^0-9]/g, '');
+            const r = document.getElementById('code-result');
+            if (!phone || phone.length < 10) {
+                r.innerHTML = '<div class="info-text" style="color: #ff0080;">❌ INVALID NUMBER</div>';
                 return;
             }
-            
-            resultEl.innerHTML = '<div class="info-text">⏳ GENERATING CODE...</div>';
-            
+            r.innerHTML = '<div class="info-text"><span class="spinner"></span> GENERATING...</div>';
             try {
-                const response = await fetch('/pairing', {
+                const res = await fetch('/pairing', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ phone })
+                    body: JSON.stringify({ phone: phone })
                 });
-                const data = await response.json();
-                if (data.code) {
-                    resultEl.innerHTML = `
-                        <div class="code-display">\${data.code}</div>
-                        <div class="info-text">⏰ ENTER IN WHATSAPP WITHIN 60 SECONDS</div>
-                        <div class="info-text">WhatsApp → Linked Devices → Link with Phone Number</div>
-                    `;
+                const d = await res.json();
+                if (d.code) {
+                    r.innerHTML = '<div class="code-display">' + d.code + '</div><div class="info-text">⏰ ENTER IN WHATSAPP WITHIN 60 SECONDS</div><div class="info-text">WhatsApp → Linked Devices → Link with Phone Number</div>';
                 } else {
-                    resultEl.innerHTML = '<div class="info-text" style="color: #ff0080;">❌ ' + data.error + '</div>';
+                    r.innerHTML = '<div class="info-text" style="color: #ff0080;">❌ ' + d.error + '</div>';
                 }
             } catch (error) {
-                resultEl.innerHTML = '<div class="info-text" style="color: #ff0080;">❌ ERROR OCCURRED</div>';
+                r.innerHTML = '<div class="info-text" style="color: #ff0080;">❌ ERROR</div>';
             }
         }
-        document.getElementById('phone').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') { generateCode(); }
-        });
+        
+        document.getElementById('phone').addEventListener('keypress', e => { if (e.key === 'Enter') generateCode(); });
     </script>
 </body>
-</html>
-  `);
+</html>`);
 });
 
 app.get('/status', (req, res) => {
   res.json({
     connected: connectionStatus === 'connected',
-    number: global.conn?.user?.id?.split(':')[0] || null
+    number: connectedNumber
   });
 });
 
@@ -597,55 +359,37 @@ app.post('/pairing', async (req, res) => {
     if (!phone || phone.length < 10) {
       return res.json({ error: 'Invalid phone number' });
     }
-    
-    // FIX 1: Check if connection exists before requesting code
     if (!global.conn) {
-      return res.json({ error: 'Bot is starting, please wait 10 seconds...' });
+      return res.json({ error: 'Bot not ready' });
     }
-    
-    // Check if bot is ready
-    if (connectionStatus === 'closed' || !global.conn.user) {
-      return res.json({ error: 'Bot is reconnecting, please wait...' });
-    }
-    
     const code = await global.conn.requestPairingCode(phone);
     const formattedCode = code?.match(/.{1,4}/g)?.join('-') || code;
-    console.log(chalk.green(`\n🔐 Code: ${formattedCode} for ${phone}\n`));
+    console.log(chalk.green(`\n🔐 Pairing Code: ${formattedCode} for ${phone}\n`));
     res.json({ code: formattedCode });
   } catch (error) {
     console.error('Pairing error:', error);
-    res.json({ error: 'Failed to generate code. Try again in 10 seconds.' });
+    res.json({ error: 'Failed to generate' });
   }
 });
 
 app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'healthy', 
-    uptime: process.uptime(),
-    connected: connectionStatus === 'connected'
-  });
+  res.json({ status: 'healthy', uptime: process.uptime(), connected: connectionStatus === 'connected' });
 });
 
 app.listen(PORT, () => {
-  console.log(chalk.green(`\n✅ Server running on port ${PORT}\n`));
+  console.log(chalk.green(`✅ Server running on port ${PORT}`));
+  console.log(chalk.cyan(`🌐 Open browser to connect\n`));
 });
 
-// FIX 2: Prevent multiple reconnection attempts
-let isReconnecting = false;
-let reconnectAttempts = 0;
-const MAX_RECONNECT_ATTEMPTS = 5;
-
-// FIX 3: Initialize message store BEFORE startBot function
-const store = {
-  messages: {},
-  loadMessage: async (jid, id) => {
-    return store.messages[jid]?.[id];
-  }
-};
+const store = { messages: {}, loadMessage: async (jid, id) => store.messages[jid]?.[id] };
 
 async function startBot() {
   try {
     const sessionFolder = path.join(__dirname, 'sessions');
+    if (!existsSync(sessionFolder)) {
+      mkdirSync(sessionFolder, { recursive: true });
+    }
+
     const {state, saveCreds} = await useMultiFileAuthState(sessionFolder);
     const {version} = await fetchLatestBaileysVersion();
     
@@ -656,31 +400,17 @@ async function startBot() {
       logger: Pino({level: 'silent'}),
       printQRInTerminal: false,
       browser: ['YOUSAF-BALOCH-MD', 'Chrome', '1.0.0'],
-      auth: {
-        creds: state.creds,
-        keys: makeCacheableSignalKeyStore(state.keys, Pino({level: 'silent'})),
-      },
+      auth: { creds: state.creds, keys: makeCacheableSignalKeyStore(state.keys, Pino({level: 'silent'})) },
       markOnlineOnConnect: true,
       generateHighQualityLinkPreview: true,
       syncFullHistory: false,
-      // FIX 4: getMessage handler - now store is already defined above
       getMessage: async (key) => {
-        if (store) {
-          const msg = await store.loadMessage(key.remoteJid, key.id);
-          return msg?.message || undefined;
-        }
-        return {
-          conversation: 'Hello'
-        };
+        const msg = await store.loadMessage(key.remoteJid, key.id);
+        return msg?.message || { conversation: 'Hi' };
       },
-      // FIX 5: Improved connection options to prevent timeout
       connectTimeoutMs: 60000,
-      defaultQueryTimeoutMs: undefined,
       keepAliveIntervalMs: 10000,
       emitOwnEvents: true,
-      fireInitQueries: true,
-      shouldIgnoreJid: (jid) => false,
-      // FIX 6: Add this to prevent history sync issues
       shouldSyncHistoryMessage: () => false
     });
 
@@ -689,9 +419,7 @@ async function startBot() {
     sock.ev.on('messages.upsert', ({ messages }) => {
       for (const msg of messages) {
         if (msg.key.remoteJid && msg.key.id) {
-          if (!store.messages[msg.key.remoteJid]) {
-            store.messages[msg.key.remoteJid] = {};
-          }
+          if (!store.messages[msg.key.remoteJid]) store.messages[msg.key.remoteJid] = {};
           store.messages[msg.key.remoteJid][msg.key.id] = msg;
         }
       }
@@ -707,43 +435,20 @@ async function startBot() {
       
       if (connection === 'open') {
         connectionStatus = 'connected';
-        isReconnecting = false;
-        reconnectAttempts = 0;
-        console.log(chalk.green('✅ ✅ ✅ BOT SUCCESSFULLY CONNECTED! ✅ ✅ ✅\n'));
-        console.log(chalk.cyan(`📱 Number: ${sock.user.id.split(':')[0]}\n`));
+        connectedNumber = sock.user.id.split(':')[0];
+        console.log(chalk.green('✅ BOT CONNECTED!\n'));
+        console.log(chalk.cyan(`📱 Number: ${connectedNumber}\n`));
       }
       
       if (connection === 'close') {
         connectionStatus = 'closed';
-        const statusCode = lastDisconnect?.error?.output?.statusCode;
-        const reason = lastDisconnect?.error?.output?.payload?.error;
+        const reason = lastDisconnect?.error?.message || 'Unknown';
+        console.log(chalk.red(`❌ Connection closed - Reason: ${reason}\n`));
         
-        console.log(chalk.red(`❌ Connection closed - Reason: ${reason || 'Unknown'}\n`));
-        
-        const shouldReconnect = statusCode !== DisconnectReason.loggedOut;
-        
-        // FIX 7: Improved reconnection logic with exponential backoff
-        if (shouldReconnect && !isReconnecting && reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
-          isReconnecting = true;
-          reconnectAttempts++;
-          
-          const delay = Math.min(5000 * reconnectAttempts, 30000); // Max 30 seconds
-          console.log(chalk.yellow(`⚠️  Reconnecting in ${delay/1000} seconds... (Attempt ${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})\n`));
-          
-          setTimeout(() => {
-            isReconnecting = false;
-            startBot();
-          }, delay);
-        } else if (statusCode === DisconnectReason.loggedOut) {
-          console.log(chalk.red('❌ Logged out. Delete sessions folder and reconnect.\n'));
-          reconnectAttempts = 0;
-        } else if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
-          console.log(chalk.red('❌ Max reconnection attempts reached. Waiting 60 seconds...\n'));
-          setTimeout(() => {
-            reconnectAttempts = 0;
-            isReconnecting = false;
-            startBot();
-          }, 60000);
+        const code = lastDisconnect?.error?.output?.statusCode;
+        if (code !== DisconnectReason.loggedOut) {
+          console.log(chalk.yellow('⚠️ Reconnecting in 5 seconds...\n'));
+          setTimeout(() => startBot(), 5000);
         }
       }
     });
@@ -751,43 +456,12 @@ async function startBot() {
     sock.ev.on('creds.update', saveCreds);
     
   } catch (error) {
-    console.error(chalk.red('❌ Bot startup error:'), error);
-    if (!isReconnecting && reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
-      isReconnecting = true;
-      reconnectAttempts++;
-      console.log(chalk.yellow(`⚠️  Restarting in 10 seconds...\n`));
-      setTimeout(() => {
-        isReconnecting = false;
-        startBot();
-      }, 10000);
-    }
+    console.error(chalk.red('Bot error:'), error);
+    setTimeout(() => startBot(), 10000);
   }
 }
 
-// FIX 8: Graceful shutdown handling
-process.on('SIGINT', () => {
-  console.log(chalk.yellow('\n⚠️  Shutting down gracefully...\n'));
-  if (global.conn) {
-    global.conn.end();
-  }
-  process.exit(0);
-});
-
-process.on('SIGTERM', () => {
-  console.log(chalk.yellow('\n⚠️  Received SIGTERM, shutting down...\n'));
-  if (global.conn) {
-    global.conn.end();
-  }
-  process.exit(0);
-});
-
-process.on('unhandledRejection', (err) => {
-  console.error(chalk.red('Unhandled Rejection:'), err);
-});
-
-process.on('uncaughtException', (err) => {
-  console.error(chalk.red('Uncaught Exception:'), err);
-});
-
-// Start the bot
 startBot();
+
+process.on('unhandledRejection', (err) => console.error(chalk.red('Unhandled Rejection:'), err));
+process.on('uncaughtException', (err) => console.error(chalk.red('Uncaught Exception:'), err));
