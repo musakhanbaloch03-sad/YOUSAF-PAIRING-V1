@@ -1,27 +1,22 @@
 {
   "name": "yousaf-pairing-v1",
   "version": "1.0.0",
-  "description": "YOUSAF WhatsApp Pairing Service",
+  "description": "YOUSAF-BALOCH-MD Pairing System",
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node index.js",
-    "clean": "rm -rf node_modules package-lock.json && npm install"
-  },
-  "keywords": ["whatsapp", "pairing", "yousaf-baloch"],
-  "author": "Muhammad Yousaf Baloch",
-  "license": "MIT",
-  "engines": {
-    "node": ">=18.0.0"
+    "start": "node index.js"
   },
   "dependencies": {
-    "@whiskeysockets/baileys": "6.7.8",
+    "@whiskeysockets/baileys": "^6.7.8",
     "express": "^4.19.2",
-    "pino": "^8.19.0",
-    "qrcode": "^1.5.3",
-    "qrcode-terminal": "^0.12.0",
-    "yargs": "^17.7.2",
+    "pino": "^9.4.0",
     "chalk": "^5.3.0",
-    "figlet": "^1.7.0"
+    "figlet": "^1.7.0",
+    "yargs": "^17.7.2",
+    "qrcode-terminal": "^0.12.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
