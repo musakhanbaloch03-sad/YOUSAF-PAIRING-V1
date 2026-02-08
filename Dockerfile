@@ -1,6 +1,5 @@
 # YOUSAF-PAIRING-V1 - WhatsApp Pairing Service
 # Developer: Muhammad Yousaf Baloch
-# GitHub: https://github.com/musakhanbaloch03-sad
 
 FROM node:18-slim
 
@@ -9,24 +8,36 @@ LABEL maintainer="Muhammad Yousaf Baloch <musakhanbaloch03@gmail.com>"
 LABEL description="YOUSAF WhatsApp Pairing Service"
 LABEL version="1.0.0"
 
+# Install git and other dependencies (CRITICAL!)
+RUN apt-get update && apt-get install -y \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
 # Set working directory
 WORKDIR /app
 
-# Copy package files
+# Copy package files first (for better caching)
 COPY package*.json ./
 
-# Install dependencies
+# Install Node.js dependencies
 RUN npm install --production
 
-# Copy all files
+# Copy all application files
 COPY . .
 
+# Create session directory
+RUN mkdir -p session
+
+# Set environment variable
+ENV NODE_ENV=production
+ENV PORT=8000
+
 # Expose port
-EXPOSE ${PORT:-8000}
+EXPOSE ${PORT}
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=30s \
-  CMD node -e "require('http').get('http://localhost:${PORT:-8000}/', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:${PORT}/', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})" || exit 1
 
 # Start application
 CMD ["npm", "start"]
