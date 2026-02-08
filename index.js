@@ -215,301 +215,283 @@ app.get('/', (req, res) => {
             color: rgba(255, 255, 255, 0.7);
         }
         .status-badge {
-            background: rgba(255, 215, 0, 0.1);
-            border: 2px solid var(--accent);
+            display: inline-block;
+            padding: 12px 30px;
             border-radius: 50px;
-            padding: 12px 25px;
-            text-align: center;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 1em;
             margin-bottom: 30px;
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 600;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 128, 0, 0.2));
+            border: 2px solid var(--accent);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
             animation: pulse 2s ease infinite;
             position: relative;
             z-index: 1;
         }
         @keyframes pulse {
-            0%, 100% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.3); }
-            50% { box-shadow: 0 0 40px rgba(255, 215, 0, 0.6); }
+            0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(255, 215, 0, 0.3); }
+            50% { transform: scale(1.05); box-shadow: 0 0 30px rgba(255, 215, 0, 0.5); }
         }
-        .status-text { color: var(--accent); }
-        .status.connected { color: #00ff00; }
-        .buttons-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 30px;
+        .status.connected {
+            background: linear-gradient(135deg, rgba(0, 255, 128, 0.2), rgba(0, 242, 255, 0.2));
+            border-color: var(--primary);
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.5);
+        }
+        .method-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
             position: relative;
             z-index: 1;
         }
-        .method-btn {
-            background: linear-gradient(135deg, rgba(0, 242, 255, 0.2), rgba(139, 92, 246, 0.2));
-            border: 2px solid var(--primary);
-            border-radius: 20px;
-            padding: 25px 15px;
+        .tab-btn {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid rgba(139, 92, 246, 0.5);
+            background: rgba(139, 92, 246, 0.1);
+            color: white;
+            border-radius: 15px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            font-size: 1em;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            position: relative;
-            overflow: hidden;
+            transition: all 0.3s;
         }
-        .method-btn::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            background: radial-gradient(circle, rgba(0, 242, 255, 0.3), transparent);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-            border-radius: 50%;
+        .tab-btn:hover {
+            background: rgba(139, 92, 246, 0.3);
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
         }
-        .method-btn:hover::before {
-            width: 300px;
-            height: 300px;
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--purple), var(--primary));
+            border-color: var(--primary);
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.5);
         }
-        .method-btn:hover {
-            transform: translateY(-5px) scale(1.05);
-            box-shadow: 0 15px 40px rgba(0, 242, 255, 0.4);
-            border-color: var(--secondary);
-        }
-        .method-icon {
-            font-size: 3em;
-            margin-bottom: 10px;
-            filter: drop-shadow(0 0 10px currentColor);
-        }
-        .method-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.1em;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-        .method-desc {
-            font-size: 0.85em;
-            color: rgba(255, 255, 255, 0.6);
-        }
-        .modal-section {
+        .method-section {
             display: none;
-            animation: modalFadeIn 0.5s ease;
+            animation: fadeIn 0.5s ease;
             position: relative;
             z-index: 1;
         }
-        .modal-section.active { display: block; }
-        @keyframes modalFadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        .method-section.active {
+            display: block;
         }
-        .modal-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.5em;
-            text-align: center;
-            color: var(--primary);
-            margin-bottom: 20px;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .qr-container {
             background: white;
             border-radius: 20px;
             padding: 20px;
-            margin: 20px 0;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0, 242, 255, 0.3);
+        }
+        #qrcode {
             display: flex;
             justify-content: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            align-items: center;
+            min-height: 256px;
         }
-        #qrcode { display: inline-block; }
         .qr-timer {
-            font-family: 'Orbitron', monospace;
-            font-size: 1.2em;
-            color: var(--accent);
             text-align: center;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            color: var(--accent);
             margin-top: 15px;
+            font-size: 1em;
         }
-        .input-wrapper { margin: 20px 0; }
-        input {
+        .input-group {
+            margin-bottom: 20px;
+        }
+        .input-label {
+            display: block;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--primary);
+            font-size: 1em;
+        }
+        .phone-input {
             width: 100%;
-            padding: 18px 20px;
-            background: rgba(0, 0, 0, 0.5);
-            border: 2px solid rgba(0, 242, 255, 0.3);
+            padding: 18px;
+            border: 2px solid rgba(139, 92, 246, 0.5);
             border-radius: 15px;
+            background: rgba(0, 0, 0, 0.5);
             color: white;
             font-size: 1.1em;
-            font-family: 'Space Grotesk', sans-serif;
+            font-family: 'Orbitron', monospace;
             transition: all 0.3s;
-            margin-bottom: 15px;
         }
-        input::placeholder { color: rgba(255, 255, 255, 0.4); }
-        input:focus {
+        .phone-input:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 25px rgba(0, 242, 255, 0.3);
-            background: rgba(0, 0, 0, 0.7);
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.3);
         }
         .generate-btn {
             width: 100%;
             padding: 18px;
-            background: linear-gradient(135deg, var(--primary), var(--purple));
+            background: linear-gradient(135deg, var(--purple), var(--primary));
             border: none;
             border-radius: 15px;
             color: white;
             font-size: 1.1em;
             font-weight: 700;
-            font-family: 'Orbitron', sans-serif;
+            font-family: 'Space Grotesk', sans-serif;
             cursor: pointer;
             transition: all 0.3s;
-            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3);
+            box-shadow: 0 5px 20px rgba(139, 92, 246, 0.4);
         }
         .generate-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(139, 92, 246, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(139, 92, 246, 0.6);
+        }
+        .generate-btn:active {
+            transform: translateY(0);
         }
         .code-display {
+            background: linear-gradient(135deg, var(--primary), var(--purple));
+            padding: 25px;
+            border-radius: 15px;
             font-family: 'Orbitron', monospace;
             font-size: 2.5em;
             font-weight: 900;
-            letter-spacing: 15px;
-            color: var(--primary);
             text-align: center;
-            padding: 30px;
-            background: rgba(0, 0, 0, 0.6);
-            border: 3px solid var(--primary);
-            border-radius: 20px;
-            margin: 20px 0;
-            text-shadow: 0 0 30px var(--primary);
+            letter-spacing: 0.1em;
+            margin-bottom: 20px;
+            box-shadow: 0 0 40px rgba(0, 242, 255, 0.5);
             animation: codeGlow 2s ease infinite;
         }
         @keyframes codeGlow {
-            0%, 100% { box-shadow: 0 0 20px rgba(0, 242, 255, 0.5); }
-            50% { box-shadow: 0 0 40px rgba(0, 242, 255, 0.8); }
+            0%, 100% { box-shadow: 0 0 40px rgba(0, 242, 255, 0.5); }
+            50% { box-shadow: 0 0 60px rgba(0, 242, 255, 0.8); }
         }
         .info-text {
             text-align: center;
-            color: rgba(255, 255, 255, 0.7);
-            margin: 15px 0;
             font-size: 0.95em;
-        }
-        .social-links {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-top: 30px;
-            position: relative;
-            z-index: 1;
-        }
-        .social-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            color: white;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s;
-            font-size: 0.9em;
-        }
-        .social-btn:hover {
-            background: rgba(255, 0, 128, 0.2);
-            border-color: var(--secondary);
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(255, 0, 128, 0.3);
-        }
-        .social-icon { font-size: 1.3em; }
-        .footer {
-            text-align: center;
-            margin-top: 30px;
-            padding: 20px;
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 0.9em;
-            position: relative;
-            z-index: 1;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 10px;
+            line-height: 1.6;
         }
         .spinner {
             display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(0, 242, 255, 0.3);
-            border-top-color: var(--primary);
+            width: 15px;
+            height: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid white;
             border-radius: 50%;
             animation: spin 1s linear infinite;
+            margin-right: 8px;
         }
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
-        @media (max-width: 600px) {
-            .time-display { font-size: 2em; }
-            .bot-title { font-size: 1.8em; }
-            .method-icon { font-size: 2.5em; }
-            .code-display { font-size: 1.8em; letter-spacing: 8px; }
+        .instructions {
+            background: rgba(139, 92, 246, 0.1);
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 25px;
+            position: relative;
+            z-index: 1;
+        }
+        .instructions h3 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+        .instructions ol {
+            padding-left: 20px;
+            line-height: 1.8;
+        }
+        .instructions li {
+            margin-bottom: 8px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 2px solid rgba(139, 92, 246, 0.3);
+            font-size: 0.9em;
+            color: rgba(255, 255, 255, 0.6);
+            position: relative;
+            z-index: 1;
+        }
+        .footer a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .footer a:hover {
+            color: var(--accent);
         }
     </style>
 </head>
 <body>
-    <div class="particles" id="particles"></div>
+    <div class="particles"></div>
     <div class="container">
         <div class="header-time">
             <div class="time-display" id="time">00:00:00</div>
-            <div class="date-display" id="date">Loading...</div>
+            <div class="date-display" id="date">LOADING...</div>
         </div>
         <div class="main-card">
-            <h1 class="bot-title">⚡ YOUSAF-BALOCH-MD ⚡</h1>
-            <div class="bot-subtitle">ULTRA PREMIUM EDITION</div>
+            <h1 class="bot-title">YOUSAF-BALOCH-MD</h1>
+            <p class="bot-subtitle">⚡ ULTRA PREMIUM WHATSAPP BOT ⚡</p>
             <div class="dev-info">
-                <div class="dev-name">MUHAMMAD YOUSAF BALOCH</div>
-                <div class="dev-contact">📞 +923710636110</div>
+                <div class="dev-name">👨‍💻 MR YOUSAF BALOCH</div>
+                <div class="dev-contact">📱 +92 317 0636110</div>
             </div>
-            <div class="status-badge">
-                <div class="status-text">
-                    Status: <span id="status">⏳ Waiting...</span>
+            <div style="text-align: center; margin-bottom: 30px;">
+                <span class="status-badge" id="status">⏳ Waiting...</span>
+            </div>
+            <div class="method-tabs">
+                <button class="tab-btn" onclick="showQR()">📱 QR CODE</button>
+                <button class="tab-btn active" onclick="showPairing()">🔐 PAIRING CODE</button>
+            </div>
+            <div id="qr-section" class="method-section">
+                <div class="qr-container">
+                    <div id="qrcode"></div>
+                </div>
+                <div class="qr-timer" id="qr-timer">⏰ LOADING...</div>
+                <div class="instructions">
+                    <h3>📱 HOW TO CONNECT</h3>
+                    <ol>
+                        <li>Open WhatsApp on your phone</li>
+                        <li>Tap Menu or Settings → Linked Devices</li>
+                        <li>Tap "Link a Device"</li>
+                        <li>Scan this QR code</li>
+                    </ol>
                 </div>
             </div>
-            <div class="buttons-grid">
-                <div class="method-btn" onclick="showQR()">
-                    <div class="method-icon">📱</div>
-                    <div class="method-title">QR CODE</div>
-                    <div class="method-desc">Scan & Connect</div>
+            <div id="pairing-section" class="method-section active">
+                <div class="input-group">
+                    <label class="input-label">📱 ENTER PHONE NUMBER (WITH COUNTRY CODE)</label>
+                    <input type="tel" id="phone" class="phone-input" placeholder="923170636110" maxlength="15">
                 </div>
-                <div class="method-btn" onclick="showPairing()">
-                    <div class="method-icon">🔐</div>
-                    <div class="method-title">PAIRING</div>
-                    <div class="method-desc">8-Digit Code</div>
+                <button class="generate-btn" onclick="generateCode()">🔐 GENERATE CODE</button>
+                <div id="code-result" style="margin-top: 25px;"></div>
+                <div class="instructions">
+                    <h3>🔐 HOW TO USE PAIRING CODE</h3>
+                    <ol>
+                        <li>Enter your WhatsApp number with country code</li>
+                        <li>Click "Generate Code" button</li>
+                        <li>Open WhatsApp → Linked Devices</li>
+                        <li>Select "Link with Phone Number"</li>
+                        <li>Enter the code within 60 seconds</li>
+                    </ol>
                 </div>
             </div>
-            <div id="qr-section" class="modal-section">
-                <div class="modal-title">📱 SCAN QR CODE</div>
-                <div class="info-text">WhatsApp → Linked Devices → Link a Device</div>
-                <div class="qr-container" id="qrcode"></div>
-                <div class="qr-timer" id="qr-timer"></div>
-            </div>
-            <div id="pairing-section" class="modal-section">
-                <div class="modal-title">🔐 PAIRING CODE</div>
-                <div class="input-wrapper">
-                    <input type="tel" id="phone" placeholder="923710636110" maxlength="15" autocomplete="tel">
-                    <button class="generate-btn" onclick="generateCode()">🚀 GENERATE CODE</button>
-                </div>
-                <div id="code-result"></div>
-            </div>
-            <div class="social-links">
-                <a href="https://github.com/musakhanbaloch03-sad" target="_blank" class="social-btn">
-                    <span class="social-icon">💻</span><span>GitHub</span>
-                </a>
-                <a href="https://www.youtube.com/@Yousaf_Baloch_Tech" target="_blank" class="social-btn">
-                    <span class="social-icon">📺</span><span>YouTube</span>
-                </a>
-                <a href="https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j" target="_blank" class="social-btn">
-                    <span class="social-icon">📢</span><span>Channel</span>
-                </a>
-                <a href="https://tiktok.com/@loser_boy.110" target="_blank" class="social-btn">
-                    <span class="social-icon">🎵</span><span>TikTok</span>
-                </a>
+            <div class="footer">
+                Powered by <a href="https://github.com/YOUSAF-BALOCH-MD" target="_blank">YOUSAF-BALOCH-MD</a> © 2026
             </div>
         </div>
-        <div class="footer">© 2026 YOUSAF-BALOCH-MD | All Rights Reserved</div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <script>
+        const particles = document.querySelector('.particles');
         function createParticles() {
-            const particles = document.getElementById('particles');
             for (let i = 0; i < 30; i++) {
                 const particle = document.createElement('div');
                 particle.className = 'particle';
@@ -543,10 +525,10 @@ app.get('/', (req, res) => {
             fetch('/status').then(r => r.json()).then(data => {
                 const statusEl = document.getElementById('status');
                 if (data.connected) {
-                    statusEl.className = 'status connected';
+                    statusEl.className = 'status-badge status connected';
                     statusEl.innerHTML = '✅ CONNECTED: ' + data.number;
                 } else {
-                    statusEl.className = 'status';
+                    statusEl.className = 'status-badge';
                     statusEl.textContent = '⏳ Waiting...';
                 }
             }).catch(() => {});
