@@ -419,6 +419,90 @@ app.get('/', (req, res) => {
             position: relative;
             z-index: 1;
         }
+        .social-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .social-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 18px;
+            border-radius: 15px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 1.1em;
+            text-decoration: none;
+            transition: all 0.3s;
+            border: 2px solid;
+            position: relative;
+            overflow: hidden;
+        }
+        .social-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        .social-btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        .social-btn span {
+            position: relative;
+            z-index: 1;
+        }
+        .btn-github {
+            background: linear-gradient(135deg, #24292e, #000000);
+            border-color: #ffffff;
+            color: white;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+        .btn-github:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 30px rgba(255, 255, 255, 0.5);
+        }
+        .btn-youtube {
+            background: linear-gradient(135deg, #ff0000, #cc0000);
+            border-color: #ff0000;
+            color: white;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
+        }
+        .btn-youtube:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 30px rgba(255, 0, 0, 0.5);
+        }
+        .btn-tiktok {
+            background: linear-gradient(135deg, #000000, #00f2ea);
+            border-color: #00f2ea;
+            color: white;
+            box-shadow: 0 0 20px rgba(0, 242, 234, 0.3);
+        }
+        .btn-tiktok:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 30px rgba(0, 242, 234, 0.5);
+        }
+        .btn-whatsapp {
+            background: linear-gradient(135deg, #25d366, #128c7e);
+            border-color: #25d366;
+            color: white;
+            box-shadow: 0 0 20px rgba(37, 211, 102, 0.3);
+        }
+        .btn-whatsapp:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 30px rgba(37, 211, 102, 0.5);
+        }
+        .footer-text {
+            margin-top: 15px;
+        }
         .footer a {
             color: var(--primary);
             text-decoration: none;
@@ -479,18 +563,12 @@ app.get('/', (req, res) => {
                         <li>Click "Generate Code" button</li>
                         <li>Open WhatsApp → Linked Devices</li>
                         <li>Select "Link with Phone Number"</li>
-                        <li>Enter the code within 60 seconds</li>
+                         <li>Enter the code within 60 seconds</li>
                     </ol>
                 </div>
             </div>
             <div class="footer">
-                <div style="margin-bottom: 15px;">
-                    <a href="https://github.com/musakhanbaloch03-sad/YOUSAF-PAIRING-V1" target="_blank" style="margin: 0 10px; font-size: 1.1em;">⭐ GitHub</a>
-                    <a href="https://www.youtube.com/@Yousaf_Baloch_Tech" target="_blank" style="margin: 0 10px; font-size: 1.1em;">📺 YouTube</a>
-                    <a href="https://tiktok.com/@loser_boy.110" target="_blank" style="margin: 0 10px; font-size: 1.1em;">🎵 TikTok</a>
-                    <a href="https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j" target="_blank" style="margin: 0 10px; font-size: 1.1em;">📢 Channel</a>
-                </div>
-                Powered by <a href="https://github.com/musakhanbaloch03-sad" target="_blank">MR YOUSAF BALOCH</a> © 2026
+                Powered by <a href="https://github.com/YOUSAF-BALOCH-MD" target="_blank">YOUSAF-BALOCH-MD</a> © 2026
             </div>
         </div>
     </div>
