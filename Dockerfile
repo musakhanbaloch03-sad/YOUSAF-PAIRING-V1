@@ -1,39 +1,32 @@
-FROM node:18-alpine
+# YOUSAF-PAIRING-V1 - WhatsApp Pairing Service
+# Developer: Muhammad Yousaf Baloch
+# GitHub: https://github.com/musakhanbaloch03-sad
 
+FROM node:18-slim
+
+# Metadata
+LABEL maintainer="Muhammad Yousaf Baloch <musakhanbaloch03@gmail.com>"
+LABEL description="YOUSAF WhatsApp Pairing Service"
+LABEL version="1.0.0"
+
+# Set working directory
 WORKDIR /app
 
-RUN apk add --no-cache \
-    python3 \
-    make \
-    g++ \
-    cairo-dev \
-    jpeg-dev \
-    pango-dev \
-    giflib-dev \
-    pixman-dev \
-    pangomm-dev \
-    libjpeg-turbo-dev \
-    freetype-dev \
-    wget \
-    git
-
+# Copy package files
 COPY package*.json ./
 
-RUN npm install --omit=dev --ignore-scripts && \
-    npm cache clean --force
+# Install dependencies
+RUN npm install --production
 
+# Copy all files
 COPY . .
 
-RUN mkdir -p sessions tmp && \
-    chmod -R 755 sessions tmp
+# Expose port
+EXPOSE ${PORT:-8000}
 
-ENV NODE_ENV=production \
-    PORT=8000 \
-    TZ=Asia/Karachi
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s \
+  CMD node -e "require('http').get('http://localhost:${PORT:-8000}/', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
 
-EXPOSE 8000
-
-HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:8000/health || exit 1
-
-CMD ["node", "index.js"]
+# Start application
+CMD ["npm", "start"]
