@@ -2,6 +2,7 @@
 ╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮
 ┃     YOUSAF-BALOCH-MD WhatsApp Bot      ┃
 ┃        Ultra Premium Edition           ┃
+┃           FIXED VERSION                ┃
 ╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯
 */
 
@@ -25,7 +26,7 @@ console.clear();
 console.log(chalk.cyan('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'));
 console.log(chalk.green(figlet.textSync('YOUSAF-BALOCH-MD', { font: 'Standard' })));
 console.log(chalk.cyan('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'));
-console.log(chalk.yellow('🚀 Ultra Premium WhatsApp Bot'));
+console.log(chalk.yellow('🚀 Ultra Premium WhatsApp Bot - FIXED VERSION'));
 console.log(chalk.cyan('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'));
 
 const app = express();
@@ -419,90 +420,6 @@ app.get('/', (req, res) => {
             position: relative;
             z-index: 1;
         }
-        .social-buttons {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        .social-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 18px;
-            border-radius: 15px;
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 700;
-            font-size: 1.1em;
-            text-decoration: none;
-            transition: all 0.3s;
-            border: 2px solid;
-            position: relative;
-            overflow: hidden;
-        }
-        .social-btn::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
-        .social-btn:hover::before {
-            width: 300px;
-            height: 300px;
-        }
-        .social-btn span {
-            position: relative;
-            z-index: 1;
-        }
-        .btn-github {
-            background: linear-gradient(135deg, #24292e, #000000);
-            border-color: #ffffff;
-            color: white;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
-        }
-        .btn-github:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 30px rgba(255, 255, 255, 0.5);
-        }
-        .btn-youtube {
-            background: linear-gradient(135deg, #ff0000, #cc0000);
-            border-color: #ff0000;
-            color: white;
-            box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
-        }
-        .btn-youtube:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 30px rgba(255, 0, 0, 0.5);
-        }
-        .btn-tiktok {
-            background: linear-gradient(135deg, #000000, #00f2ea);
-            border-color: #00f2ea;
-            color: white;
-            box-shadow: 0 0 20px rgba(0, 242, 234, 0.3);
-        }
-        .btn-tiktok:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 30px rgba(0, 242, 234, 0.5);
-        }
-        .btn-whatsapp {
-            background: linear-gradient(135deg, #25d366, #128c7e);
-            border-color: #25d366;
-            color: white;
-            box-shadow: 0 0 20px rgba(37, 211, 102, 0.3);
-        }
-        .btn-whatsapp:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 30px rgba(37, 211, 102, 0.5);
-        }
-        .footer-text {
-            margin-top: 15px;
-        }
         .footer a {
             color: var(--primary);
             text-decoration: none;
@@ -563,7 +480,7 @@ app.get('/', (req, res) => {
                         <li>Click "Generate Code" button</li>
                         <li>Open WhatsApp → Linked Devices</li>
                         <li>Select "Link with Phone Number"</li>
-                         <li>Enter the code within 60 seconds</li>
+                        <li>Enter the code within 60 seconds</li>
                     </ol>
                 </div>
             </div>
@@ -615,7 +532,7 @@ app.get('/', (req, res) => {
                     statusEl.className = 'status-badge';
                     statusEl.textContent = '⏳ Waiting...';
                 }
-            }).catch(() => {});
+             }).catch(() => {});
         }
         setInterval(updateStatus, 3000);
         function showQR() {
@@ -718,7 +635,12 @@ app.post('/pairing', async (req, res) => {
     
     // FIX 1: Check if connection exists before requesting code
     if (!global.conn) {
-      return res.json({ error: 'Bot is starting, please wait...' });
+      return res.json({ error: 'Bot is starting, please wait 10 seconds...' });
+    }
+    
+    // Check if bot is ready
+    if (connectionStatus === 'closed' || !global.conn.user) {
+      return res.json({ error: 'Bot is reconnecting, please wait...' });
     }
     
     const code = await global.conn.requestPairingCode(phone);
@@ -727,12 +649,16 @@ app.post('/pairing', async (req, res) => {
     res.json({ code: formattedCode });
   } catch (error) {
     console.error('Pairing error:', error);
-    res.json({ error: 'Failed to generate code. Please try again.' });
+    res.json({ error: 'Failed to generate code. Try again in 10 seconds.' });
   }
 });
 
 app.get('/health', (req, res) => {
-  res.json({ status: 'healthy', uptime: process.uptime() });
+  res.json({ 
+    status: 'healthy', 
+    uptime: process.uptime(),
+    connected: connectionStatus === 'connected'
+  });
 });
 
 app.listen(PORT, () => {
@@ -741,6 +667,8 @@ app.listen(PORT, () => {
 
 // FIX 2: Prevent multiple reconnection attempts
 let isReconnecting = false;
+let reconnectAttempts = 0;
+const MAX_RECONNECT_ATTEMPTS = 5;
 
 async function startBot() {
   try {
@@ -748,26 +676,59 @@ async function startBot() {
     const {state, saveCreds} = await useMultiFileAuthState(sessionFolder);
     const {version} = await fetchLatestBaileysVersion();
     
-    console.log(chalk.green(`✅ Baileys version: ${version}\n`));
+    console.log(chalk.green(`✅ Baileys version: ${version.join('.')}\n`));
     
     const sock = makeWASocket({
       version,
       logger: Pino({level: 'silent'}),
       printQRInTerminal: false,
-      browser: ['YOUSAF-BALOCH-MD', 'Safari', '1.0.0'],
+      browser: ['YOUSAF-BALOCH-MD', 'Chrome', '1.0.0'],
       auth: {
         creds: state.creds,
         keys: makeCacheableSignalKeyStore(state.keys, Pino({level: 'silent'})),
       },
       markOnlineOnConnect: true,
       generateHighQualityLinkPreview: true,
+      syncFullHistory: false,
       // FIX 3: Add getMessage handler to prevent disconnections
       getMessage: async (key) => {
-        return { conversation: 'Hello' };
-      }
+        if (store) {
+          const msg = await store.loadMessage(key.remoteJid, key.id);
+          return msg?.message || undefined;
+        }
+        return {
+          conversation: 'Hello'
+        };
+      },
+      // FIX 4: Add connection options
+      connectTimeoutMs: 60000,
+      defaultQueryTimeoutMs: 0,
+      keepAliveIntervalMs: 10000,
+      emitOwnEvents: true,
+      fireInitQueries: true,
+      shouldIgnoreJid: (jid) => false
     });
 
     global.conn = sock;
+    
+    // Simple message store
+    const store = {
+      messages: {},
+      loadMessage: async (jid, id) => {
+        return store.messages[jid]?.[id];
+      }
+    };
+
+    sock.ev.on('messages.upsert', ({ messages }) => {
+      for (const msg of messages) {
+        if (msg.key.remoteJid && msg.key.id) {
+          if (!store.messages[msg.key.remoteJid]) {
+            store.messages[msg.key.remoteJid] = {};
+          }
+          store.messages[msg.key.remoteJid][msg.key.id] = msg;
+        }
+      }
+    });
 
     sock.ev.on('connection.update', async (update) => {
       const {connection, lastDisconnect, qr} = update;
@@ -780,27 +741,42 @@ async function startBot() {
       if (connection === 'open') {
         connectionStatus = 'connected';
         isReconnecting = false;
+        reconnectAttempts = 0;
         console.log(chalk.green('✅ BOT CONNECTED!\n'));
         console.log(chalk.cyan(`📱 Number: ${sock.user.id.split(':')[0]}\n`));
       }
       
       if (connection === 'close') {
         connectionStatus = 'closed';
-        console.log(chalk.red('❌ Connection closed\n'));
+        const statusCode = lastDisconnect?.error?.output?.statusCode;
+        const reason = lastDisconnect?.error?.output?.payload?.error;
         
-        const code = lastDisconnect?.error?.output?.statusCode;
-        const shouldReconnect = code !== DisconnectReason.loggedOut;
+        console.log(chalk.red(`❌ Connection closed - Reason: ${reason || 'Unknown'}\n`));
         
-        // FIX 4: Improved reconnection logic
-        if (shouldReconnect && !isReconnecting) {
+        const shouldReconnect = statusCode !== DisconnectReason.loggedOut;
+        
+        // FIX 5: Improved reconnection logic with exponential backoff
+        if (shouldReconnect && !isReconnecting && reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
           isReconnecting = true;
-          console.log(chalk.yellow('⚠️  Reconnecting in 5 seconds...\n'));
+          reconnectAttempts++;
+          
+          const delay = Math.min(5000 * reconnectAttempts, 30000); // Max 30 seconds
+          console.log(chalk.yellow(`⚠️  Reconnecting in ${delay/1000} seconds... (Attempt ${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})\n`));
+          
           setTimeout(() => {
             isReconnecting = false;
             startBot();
-          }, 5000);
-        } else if (code === DisconnectReason.loggedOut) {
-          console.log(chalk.red('❌ Logged out. Please reconnect using QR or pairing code.\n'));
+          }, delay);
+        } else if (statusCode === DisconnectReason.loggedOut) {
+          console.log(chalk.red('❌ Logged out. Delete sessions folder and reconnect.\n'));
+          reconnectAttempts = 0;
+        } else if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
+          console.log(chalk.red('❌ Max reconnection attempts reached. Waiting 60 seconds...\n'));
+          setTimeout(() => {
+            reconnectAttempts = 0;
+            isReconnecting = false;
+            startBot();
+          }, 60000);
         }
       }
     });
@@ -809,17 +785,34 @@ async function startBot() {
     
   } catch (error) {
     console.error(chalk.red('❌ Bot startup error:'), error);
-    if (!isReconnecting) {
+    if (!isReconnecting && reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
       isReconnecting = true;
+      reconnectAttempts++;
+      console.log(chalk.yellow(`⚠️  Restarting in 10 seconds...\n`));
       setTimeout(() => {
         isReconnecting = false;
         startBot();
-      }, 5000);
+      }, 10000);
     }
   }
 }
 
-startBot();
+// FIX 6: Graceful shutdown handling
+process.on('SIGINT', () => {
+  console.log(chalk.yellow('\n⚠️  Shutting down gracefully...\n'));
+  if (global.conn) {
+    global.conn.end();
+  }
+  process.exit(0);
+});
+
+process.on('SIGTERM', () => {
+  console.log(chalk.yellow('\n⚠️  Received SIGTERM, shutting down...\n'));
+  if (global.conn) {
+    global.conn.end();
+  }
+  process.exit(0);
+});
 
 process.on('unhandledRejection', (err) => {
   console.error(chalk.red('Unhandled Rejection:'), err);
@@ -828,3 +821,6 @@ process.on('unhandledRejection', (err) => {
 process.on('uncaughtException', (err) => {
   console.error(chalk.red('Uncaught Exception:'), err);
 });
+
+// Start the bot
+startBot();
