@@ -1,47 +1,39 @@
-FROM node:20-alpine
+FROM node:18-alpine
 
-# Install system dependencies
+WORKDIR /app
+
 RUN apk add --no-cache \
     python3 \
     make \
     g++ \
-    git \
-    bash \
-    chromium \
-    nss \
-    freetype \
+    cairo-dev \
+    jpeg-dev \
+    pango-dev \
+    giflib-dev \
+    pixman-dev \
+    pangomm-dev \
+    libjpeg-turbo-dev \
     freetype-dev \
-    harfbuzz \
-    ca-certificates \
-    ttf-freefont
+    wget \
+    git
 
-# Set working directory
-WORKDIR /app
-
-# Copy package files
 COPY package*.json ./
 
-# Install Node dependencies with legacy peer deps
-RUN npm ci --legacy-peer-deps --omit=dev || npm install --legacy-peer-deps --omit=dev
+RUN npm install --omit=dev && \
+    npm cache clean --force
 
-# Copy all files
 COPY . .
 
-# Create sessions directory
-RUN mkdir -p sessions
+RUN mkdir -p sessions tmp && \
+    chmod -R 755 sessions tmp
 
-# Environment variables
-ENV NODE_ENV=production
-ENV PORT=8000
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+ENV NODE_ENV=production \
+    PORT=8000 \
+    TZ=Asia/Karachi
 
-# Expose port
 EXPOSE 8000
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:8000/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:8000/health || exit 1
 
-# Start application
 CMD ["node", "index.js"]
