@@ -18,7 +18,7 @@ RUN apk add --no-cache \
 
 COPY package*.json ./
 
-RUN npm ci --only=production --ignore-scripts && \
+RUN npm install --omit=dev --ignore-scripts && \
     npm cache clean --force
 
 COPY . .
