@@ -4,8 +4,7 @@ const {
   DisconnectReason,
   fetchLatestBaileysVersion,
   makeCacheableSignalKeyStore,
-  Browsers,
-  delay
+  Browsers
 } = require('@whiskeysockets/baileys');
 const pino = require('pino');
 const express = require('express');
@@ -15,19 +14,15 @@ const qrcode = require('qrcode');
 const app = express();
 const PORT = process.env.PORT || 8000;
 
-// QR Management
-let currentQR = '';
-let lastQRUpdate = 0;
-const QR_UPDATE_INTERVAL = 5000; // Only update QR every 5 seconds
-let isConnecting = false;
-let connectionAttempts = 0;
-const MAX_ATTEMPTS = 3;
+let currentQR = null;
+let sock = null;
+let isStarting = false;
 
-// Serve HTML
+// HTML Interface
 app.get('/', (req, res) => {
   res.send(`
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -35,7 +30,7 @@ app.get('/', (req, res) => {
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: system-ui, -apple-system, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
@@ -52,9 +47,9 @@ app.get('/', (req, res) => {
             width: 100%;
             text-align: center;
         }
-        h1 { color: #333; margin-bottom: 10px; font-size: 28px; }
-        .qr-container {
-            background: #f8f9fa;
+        h1 { color: #333; margin-bottom: 20px; }
+        .qr-box {
+            background: #f5f5f5;
             padding: 20px;
             border-radius: 15px;
             margin: 20px 0;
@@ -63,7 +58,7 @@ app.get('/', (req, res) => {
             align-items: center;
             justify-content: center;
         }
-        #qrcode { max-width: 280px; width: 100%; }
+        #qr { max-width: 280px; }
         .status {
             padding: 15px;
             border-radius: 10px;
@@ -71,26 +66,16 @@ app.get('/', (req, res) => {
             background: #fff3cd;
             color: #856404;
         }
-        .instructions {
-            text-align: left;
-            background: #e7f3ff;
-            padding: 20px;
-            border-radius: 10px;
-            margin: 20px 0;
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
         }
-        .instructions ol { margin-left: 20px; margin-top: 10px; }
-        .instructions li { margin: 8px 0; color: #004085; }
-        .footer {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 2px solid #eee;
-        }
-        .social-links a {
-            display: inline-block;
-            margin: 5px 10px;
-            color: #667eea;
-            text-decoration: none;
-        }
+        .btn:hover { background: #764ba2; }
     </style>
 </head>
 <body>
@@ -98,216 +83,192 @@ app.get('/', (req, res) => {
         <h1>🤖 YOUSAF-BALOCH-MD</h1>
         <p style="color: #666; margin-bottom: 20px;">WhatsApp Pairing Service</p>
         
-        <div class="qr-container">
-            <img id="qrcode" src="/qr" alt="Loading QR Code...">
+        <div class="qr-box">
+            <img id="qr" src="/qr" alt="QR Code Loading...">
         </div>
         
-        <div class="status">
-            ⏳ Scan QR code within 30 seconds
-        </div>
+        <div class="status">Scan QR code to connect</div>
         
-        <div class="instructions">
-            <strong>📱 Steps:</strong>
-            <ol>
-                <li>Open WhatsApp</li>
-                <li>Tap Menu → Linked Devices</li>
-                <li>Tap "Link a Device"</li>
-                <li>Scan this QR code</li>
-            </ol>
-        </div>
+        <button class="btn" onclick="location.reload()">🔄 Refresh</button>
         
-        <div class="footer">
-            <p><strong>Developer:</strong> Muhammad Yousaf Baloch</p>
-            <div class="social-links">
-                <a href="https://www.youtube.com/@Yousaf_Baloch_Tech">📺 YouTube</a>
-                <a href="https://wa.me/923710636110">📱 WhatsApp</a>
-                <a href="https://github.com/musakhanbaloch03-sad">🐙 GitHub</a>
-            </div>
-        </div>
+        <p style="margin-top: 30px; color: #666;">
+            Developer: Muhammad Yousaf Baloch<br>
+            <a href="https://github.com/musakhanbaloch03-sad" style="color: #667eea;">GitHub</a>
+        </p>
     </div>
-    
     <script>
-        // Refresh QR image every 10 seconds (not too frequent)
         setInterval(() => {
-            document.getElementById('qrcode').src = '/qr?t=' + Date.now();
-        }, 10000);
+            document.getElementById('qr').src = '/qr?t=' + Date.now();
+        }, 15000);
     </script>
 </body>
 </html>
   `);
 });
 
-// Serve QR with caching
+// QR Endpoint
 app.get('/qr', async (req, res) => {
   if (currentQR) {
     try {
-      const qrImage = await qrcode.toDataURL(currentQR);
-      const base64Data = qrImage.replace(/^data:image\/png;base64,/, '');
-      const imgBuffer = Buffer.from(base64Data, 'base64');
-      
-      res.writeHead(200, {
-        'Content-Type': 'image/png',
-        'Content-Length': imgBuffer.length,
-        'Cache-Control': 'no-cache'
-      });
-      res.end(imgBuffer);
-    } catch (err) {
-      console.error('QR generation error:', err);
-      res.status(500).send('Error generating QR');
+      const img = await qrcode.toDataURL(currentQR);
+      const buf = Buffer.from(img.split(',')[1], 'base64');
+      res.writeHead(200, { 'Content-Type': 'image/png' });
+      res.end(buf);
+    } catch (e) {
+      res.status(500).send('QR Error');
     }
   } else {
-    res.status(404).send('QR not available yet');
+    res.status(404).send('QR Not Ready');
   }
 });
 
+// Health Check
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', qr: !!currentQR });
 });
 
+// Start Server
 app.listen(PORT, () => {
   console.log(`🌐 Server: http://localhost:${PORT}`);
-  startBot();
+  setTimeout(startBot, 3000); // Wait 3 seconds before starting
 });
 
+// Bot Function with CRASH PREVENTION
 async function startBot() {
-  if (isConnecting) {
-    console.log('⚠️ Already connecting, skipping...');
+  // Prevent multiple simultaneous starts
+  if (isStarting) {
+    console.log('⚠️ Already starting...');
     return;
   }
   
-  isConnecting = true;
+  isStarting = true;
   
   try {
-    // Clear old session if too many failed attempts
-    if (connectionAttempts >= MAX_ATTEMPTS) {
-      console.log('🧹 Clearing session after max attempts...');
-      if (fs.existsSync('./session')) {
-        fs.rmSync('./session', { recursive: true });
-      }
-      connectionAttempts = 0;
-      await delay(5000);
-    }
+    console.log('🚀 Initializing bot...');
     
+    // Get auth state
     const { state, saveCreds } = await useMultiFileAuthState('./session');
-    const { version } = await fetchLatestBaileysVersion();
     
-    console.log(`✅ Baileys version: ${version.join('.')}`);
-
-    const sock = makeWASocket({
+    // Get Baileys version
+    const { version } = await fetchLatestBaileysVersion();
+    console.log(`✅ Baileys: ${version.join('.')}`);
+    
+    // Create socket with STRICT settings
+    sock = makeWASocket({
       version,
       logger: pino({ level: 'silent' }),
-      printQRInTerminal: true, // Also print in terminal for debugging
+      printQRInTerminal: true,
       auth: {
         creds: state.creds,
         keys: makeCacheableSignalKeyStore(state.keys, pino({ level: 'silent' }))
       },
       browser: Browsers.ubuntu('Chrome'),
       
-      // CRITICAL: Increase timeouts
-      connectTimeoutMs: 90000, // 90 seconds
-      defaultQueryTimeoutMs: 60000, // 60 seconds
-      keepAliveIntervalMs: 30000, // 30 seconds
+      // CRITICAL: Proper timeouts
+      connectTimeoutMs: 60000,
+      defaultQueryTimeoutMs: 0, // Disable query timeout
+      keepAliveIntervalMs: 30000,
+      qrTimeout: 40000,
       
-      // Retry settings
-      retryRequestDelayMs: 5000,
-      maxMsgRetryCount: 3,
+      // IMPORTANT: Disable auto-reconnect
+      shouldReconnect: () => false,
       
-      // QR generation settings
-      qrTimeout: 30000, // 30 second QR timeout
+      // Prevent rapid retries
+      retryRequestDelayMs: 10000,
+      maxMsgRetryCount: 2,
       
-      // Don't auto-reconnect
-      shouldReconnect: () => false
+      // Message handling
+      getMessage: async () => undefined
     });
-
+    
+    // Save credentials
     sock.ev.on('creds.update', saveCreds);
-
+    
+    // Connection handler
     sock.ev.on('connection.update', async (update) => {
       const { connection, lastDisconnect, qr } = update;
-
-      // Handle QR with debouncing (prevent spam)
+      
+      // QR Code
       if (qr) {
-        const now = Date.now();
-        
-        // Only update QR if enough time has passed
-        if (now - lastQRUpdate >= QR_UPDATE_INTERVAL) {
-          currentQR = qr;
-          lastQRUpdate = now;
-          console.log('📱 QR Code ready');
-        }
+        currentQR = qr;
+        console.log('📱 QR Code available');
       }
-
+      
+      // Connected
       if (connection === 'open') {
-        console.log('✅ Connected!');
-        isConnecting = false;
-        connectionAttempts = 0;
-        currentQR = '';
+        console.log('✅ CONNECTED!');
+        currentQR = null;
+        isStarting = false;
         
-        // Save session
-        const creds = fs.readFileSync('./session/creds.json', 'utf-8');
-        const sessionId = Buffer.from(creds).toString('base64');
-        
-        console.log('\n════════════════════════════════');
-        console.log('✅ SESSION ID:');
-        console.log(sessionId);
-        console.log('════════════════════════════════\n');
+        try {
+          const creds = fs.readFileSync('./session/creds.json', 'utf-8');
+          const sessionId = Buffer.from(creds).toString('base64');
+          console.log('\n' + '='.repeat(50));
+          console.log('SESSION ID:');
+          console.log(sessionId);
+          console.log('='.repeat(50) + '\n');
+        } catch (e) {
+          console.error('Session read error:', e.message);
+        }
       }
-
+      
+      // Disconnected
       if (connection === 'close') {
-        isConnecting = false;
-        const statusCode = lastDisconnect?.error?.output?.statusCode;
-        const shouldReconnect = statusCode !== DisconnectReason.loggedOut;
+        isStarting = false;
+        currentQR = null;
         
-        console.log(`❌ Disconnected: ${DisconnectReason[statusCode] || statusCode}`);
-
-        if (!shouldReconnect) {
+        const statusCode = lastDisconnect?.error?.output?.statusCode;
+        const reason = lastDisconnect?.error?.output?.payload?.error || 'Unknown';
+        
+        console.log(`❌ Disconnected: ${reason} (${statusCode})`);
+        
+        // Handle logout
+        if (statusCode === DisconnectReason.loggedOut) {
           console.log('🚪 Logged out - clearing session');
-          if (fs.existsSync('./session')) {
-            fs.rmSync('./session', { recursive: true });
+          try {
+            if (fs.existsSync('./session')) {
+              fs.rmSync('./session', { recursive: true, force: true });
+            }
+          } catch (e) {
+            console.error('Session clear error:', e);
           }
-          currentQR = '';
-          connectionAttempts = 0;
-          
-          setTimeout(() => startBot(), 5000);
-          return;
         }
-
-        // Handle timeout specifically
-        if (statusCode === DisconnectReason.timedOut) {
-          connectionAttempts++;
-          
-          if (connectionAttempts >= MAX_ATTEMPTS) {
-            console.log(`❌ Max attempts (${MAX_ATTEMPTS}) reached`);
-            console.log('⏸️ Cooling down for 2 minutes...');
-            currentQR = '';
-            
-            setTimeout(() => {
-              connectionAttempts = 0;
-              startBot();
-            }, 120000); // 2 minute cooldown
-          } else {
-            const delay = 30000; // Fixed 30 second delay
-            console.log(`⚠️ Retry ${connectionAttempts}/${MAX_ATTEMPTS} in ${delay/1000}s...`);
-            currentQR = '';
-            
-            setTimeout(() => startBot(), delay);
-          }
-        } else {
-          // Other errors
-          currentQR = '';
-          setTimeout(() => startBot(), 10000);
-        }
+        
+        // CRITICAL: Add delay before restart to prevent crash loop
+        console.log('⏳ Restarting in 10 seconds...');
+        setTimeout(() => {
+          console.log('🔄 Restarting...');
+          startBot();
+        }, 10000); // 10 second delay
       }
     });
-
+    
   } catch (error) {
-    isConnecting = false;
-    console.error('💥 Error:', error.message);
-    currentQR = '';
-    setTimeout(() => startBot(), 30000);
+    isStarting = false;
+    console.error('💥 Fatal error:', error.message);
+    console.log('⏳ Retry in 30 seconds...');
+    
+    // Long delay after fatal error
+    setTimeout(startBot, 30000);
   }
 }
 
-process.on('SIGINT', () => {
-  console.log('\n👋 Shutting down...');
+// Graceful shutdown
+process.on('SIGINT', async () => {
+  console.log('\n⚠️ Shutting down...');
+  if (sock) {
+    try {
+      await sock.logout();
+    } catch (e) {}
+  }
   process.exit(0);
+});
+
+// Prevent unhandled crashes
+process.on('uncaughtException', (err) => {
+  console.error('💥 Uncaught Exception:', err.message);
+});
+
+process.on('unhandledRejection', (err) => {
+  console.error('💥 Unhandled Rejection:', err);
 });
