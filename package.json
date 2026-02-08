@@ -1,7 +1,7 @@
 {
   "name": "yousaf-baloch-md-pairing",
   "version": "2.0.0",
-  "description": "WhatsApp Bot Pairing Site - Yousaf Baloch MD",
+  "description": "WhatsApp Bot Pairing Site",
   "main": "index.js",
   "type": "module",
   "scripts": {
@@ -10,17 +10,16 @@
   "author": "Muhammad Yousaf Baloch",
   "license": "MIT",
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.0.0"
   },
   "dependencies": {
-    "@whiskeysockets/baileys": "github:WhiskeySockets/Baileys",
+    "@whiskeysockets/baileys": "^6.7.8",
     "express": "^4.19.2",
     "qrcode": "^1.5.3",
     "qrcode-terminal": "^0.12.0",
     "chalk": "^5.3.0",
     "figlet": "^1.7.0",
     "pino": "^9.0.0",
-    "yargs": "^17.7.2",
-    "node-cache": "^5.1.2"
+    "yargs": "^17.7.2"
   }
 }
