@@ -1,6 +1,7 @@
-FROM node:20-alpine
+FROM node:18-alpine
 
-# Professional dependencies installation for Yousaf-Baloch-MD
+WORKDIR /app
+
 RUN apk add --no-cache \
     python3 \
     make \
@@ -10,28 +11,28 @@ RUN apk add --no-cache \
     pango-dev \
     giflib-dev \
     pixman-dev \
-    git \
-    bash \
-    ffmpeg
+    pangomm-dev \
+    libjpeg-turbo-dev \
+    freetype-dev \
+    wget
 
-# Set working directory
-WORKDIR /app
+COPY package*.json ./
 
-# Copy package files
-COPY package.json package-lock.json* ./
+RUN npm ci --only=production --ignore-scripts && \
+    npm cache clean --force
 
-# Install dependencies (Fixed)
-RUN npm ci --legacy-peer-deps || npm install --legacy-peer-deps
-
-# Copy project files
 COPY . .
 
-# Environment settings
-ENV NODE_ENV=production
-ENV PORT=8000
+RUN mkdir -p sessions tmp && \
+    chmod -R 755 sessions tmp
 
-# Expose port
+ENV NODE_ENV=production \
+    PORT=8000 \
+    TZ=Asia/Karachi
+
 EXPOSE 8000
 
-# Start command
-CMD ["npm", "start"]
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:8000/health || exit 1
+
+CMD ["node", "index.js"]
