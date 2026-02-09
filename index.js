@@ -2,10 +2,12 @@
 ╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮
 ┃     YOUSAF-BALOCH-MD WhatsApp Bot      ┃
 ┃        Ultra Premium Edition           ┃
-┃        FIXED & STABLE VERSION          ┃
+┃      DESIGN: NEON CYBERPUNK UI         ┃
+┃      DEVELOPED BY: MR YOUSAF           ┃
 ╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯
 */
 
+import { createRequire } from 'module';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
@@ -15,25 +17,12 @@ import Pino from 'pino';
 import figlet from 'figlet';
 import express from 'express';
 
-// ✅ Baileys Fixed Import for ESM
-import pkg from '@whiskeysockets/baileys';
-const { 
-    default: makeWASocket, 
-    useMultiFileAuthState, 
-    fetchLatestBaileysVersion, 
-    makeCacheableSignalKeyStore, 
-    DisconnectReason 
-} = pkg;
+const { DisconnectReason, useMultiFileAuthState, fetchLatestBaileysVersion, makeCacheableSignalKeyStore, makeWASocket } = await import('@whiskeysockets/baileys');
 
 const PORT = process.env.PORT || 8000;
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 global.opts = new Object(yargs(process.argv.slice(2)).exitProcess(false).parse());
-
-console.clear();
-console.log(chalk.cyan('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'));
-console.log(chalk.green(figlet.textSync('YOUSAF-BALOCH-MD', { font: 'Standard' })));
-console.log(chalk.cyan('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'));
 
 const app = express();
 let currentQR = null;
@@ -42,7 +31,7 @@ let connectionStatus = 'waiting';
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// 🎨 Your Professional UI with Clock, Date and Social Links
+// 🎨 Ultra-Professional UI Logic (As per screenshots 194252 & 194253)
 app.get('/', (req, res) => {
   res.send(`
 <!DOCTYPE html>
@@ -50,81 +39,157 @@ app.get('/', (req, res) => {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YOUSAF-BALOCH-MD</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+    <title>YOUSAF-BALOCH-MD - Pairing System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #00f2ff; --secondary: #ff0080; --dark: #0a0a0a; }
+        :root {
+            --primary: #00f2ff;
+            --secondary: #ff0080;
+            --purple: #b06ab3;
+            --blue-grad: linear-gradient(135deg, #00f2ff, #0066ff);
+            --pink-grad: linear-gradient(135deg, #ff6b6b, #ff0080);
+        }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Poppins', sans-serif;
-            background: radial-gradient(circle at center, #1a0033 0%, #000 100%);
-            color: white; min-height: 100vh; display: flex; align-items: center; justify-content: center;
+            background: #fdfdfd; 
+            background: linear-gradient(180deg, #ffffff 0%, #eef2f3 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            color: #333;
         }
-        .main-card {
-            background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px);
-            border: 1px solid rgba(0, 242, 255, 0.2); border-radius: 30px;
-            padding: 40px; width: 90%; max-width: 450px; text-align: center;
-            box-shadow: 0 0 50px rgba(0, 242, 255, 0.1);
+        .container { width: 100%; max-width: 450px; text-align: center; }
+        .bot-icon { font-size: 80px; margin-bottom: 10px; }
+        .bot-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.2em;
+            font-weight: 900;
+            background: linear-gradient(to right, #4568dc, #b06ab3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
         }
+        .bot-subtitle { font-size: 0.9em; color: #777; margin-bottom: 30px; }
+
+        /* ⏰ Digital Clock (Screenshot 194252 style) */
         .clock-box {
-            background: rgba(0, 0, 0, 0.5); border-radius: 20px;
-            padding: 20px; margin-bottom: 25px; border: 1px solid var(--primary);
+            background: var(--blue-grad);
+            border-radius: 25px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0, 242, 255, 0.3);
+            color: white;
         }
-        #time { font-family: 'Orbitron', sans-serif; font-size: 2.5em; color: var(--primary); text-shadow: 0 0 10px var(--primary); }
-        #date { font-size: 1em; color: #aaa; margin-top: 5px; }
-        .bot-name { font-family: 'Orbitron', sans-serif; font-size: 1.8em; margin-bottom: 10px; background: linear-gradient(to right, #00f2ff, #ff0080); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .status-badge { display: inline-block; padding: 8px 20px; border-radius: 50px; font-weight: bold; margin: 20px 0; background: rgba(255, 215, 0, 0.1); border: 1px solid #ffd700; color: #ffd700; }
-        .status-badge.connected { border-color: #00ff88; color: #00ff88; background: rgba(0, 255, 136, 0.1); }
-        .input-group { margin-bottom: 20px; text-align: left; }
-        .phone-input { width: 100%; padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.3); color: white; font-size: 1.1em; outline: none; transition: 0.3s; }
-        .phone-input:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(0,242,255,0.3); }
-        .btn { width: 100%; padding: 15px; border-radius: 12px; border: none; background: linear-gradient(45deg, var(--primary), var(--secondary)); color: white; font-weight: bold; cursor: pointer; font-size: 1.1em; transition: 0.3s; }
-        .btn:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,242,255,0.4); }
-        #code-display { margin-top: 20px; font-family: 'Orbitron', sans-serif; font-size: 2em; letter-spacing: 5px; color: var(--primary); }
-        .social-links { margin-top: 30px; display: flex; justify-content: center; gap: 15px; }
-        .social-links a { color: white; text-decoration: none; font-size: 0.9em; opacity: 0.7; transition: 0.3s; }
-        .social-links a:hover { opacity: 1; color: var(--primary); }
+        #time { font-family: 'Orbitron', sans-serif; font-size: 3em; font-weight: 800; }
+        #date { font-size: 1.1em; opacity: 0.9; margin-top: 5px; }
+
+        /* 📑 Tab Buttons */
+        .tabs { display: flex; gap: 10px; margin-bottom: 30px; }
+        .tab {
+            flex: 1; padding: 15px; border-radius: 15px; background: #f0f0f0;
+            font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .tab.active {
+            background: var(--purple); color: white;
+            box-shadow: 0 5px 15px rgba(176, 106, 179, 0.4);
+        }
+
+        /* ⌨️ Input Section */
+        .input-card { text-align: left; margin-bottom: 25px; }
+        .input-label { font-weight: 700; font-size: 1.1em; margin-bottom: 10px; display: block; }
+        .phone-input {
+            width: 100%; padding: 20px; border-radius: 18px; border: 1px solid #ddd;
+            background: #f9f9f9; font-size: 1.3em; font-family: 'Orbitron', sans-serif;
+            outline: none; transition: 0.3s;
+        }
+        .phone-input:focus { border-color: var(--primary); background: #fff; }
+
+        /* ⚡ 3D Skeuomorphic Button */
+        .gen-btn {
+            width: 100%; padding: 22px; border-radius: 20px; border: none;
+            background: linear-gradient(135deg, #b06ab3, #4568dc);
+            color: white; font-size: 1.2em; font-weight: 900; font-family: 'Orbitron', sans-serif;
+            cursor: pointer; box-shadow: 0 8px 0px #2d45a3, 0 15px 25px rgba(0,0,0,0.1);
+            transition: 0.1s; margin-bottom: 30px;
+        }
+        .gen-btn:active { transform: translateY(4px); box-shadow: 0 4px 0px #2d45a3; }
+
+        /* 👤 Owner Details (Screenshot 194253 style) */
+        .owner-card {
+            background: var(--pink-grad); border-radius: 30px; padding: 30px;
+            margin-bottom: 20px; text-align: left; color: white;
+        }
+        .owner-title { font-family: 'Orbitron', sans-serif; font-size: 1.3em; font-weight: 800; margin-bottom: 20px; }
+        .info-row {
+            background: rgba(255,255,255,0.2); border-radius: 15px; padding: 15px;
+            margin-bottom: 10px; display: flex; justify-content: space-between; font-weight: 600;
+        }
+
+        /* 🔗 Social Media Buttons */
+        .social-btn {
+            width: 100%; padding: 18px; border-radius: 15px; margin-bottom: 12px;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            font-weight: 700; text-decoration: none; color: white; font-size: 1.1em;
+        }
+        .wa { background: #25D366; } .yt { background: #FF0000; } 
+        .tk { background: #000; } .call { background: #00a2ff; }
+
+        #code-display { font-size: 2.5em; font-family: 'Orbitron', sans-serif; color: #4568dc; margin-top: 20px; letter-spacing: 5px; font-weight: 900; }
     </style>
 </head>
 <body>
-    <div class="main-card">
+    <div class="container">
+        <div class="bot-icon">🤖</div>
+        <h1 class="bot-title">YOUSAF-BALOCH-MD</h1>
+        <p class="bot-subtitle">Premium WhatsApp Multi-Device Pairing System</p>
+
         <div class="clock-box">
             <div id="time">00:00:00</div>
             <div id="date">Loading...</div>
         </div>
-        <h1 class="bot-name">YOUSAF-BALOCH-MD</h1>
-        <p style="font-size: 0.9em; color: #888;">Owner: Muhammad Yousaf Baloch</p>
-        
-        <div id="status" class="status-badge">⏳ WAITING FOR CONNECTION</div>
 
-        <div class="input-group">
-            <input type="tel" id="phone" class="phone-input" placeholder="923170636110">
+        <div class="tabs">
+            <div class="tab active">📱 Phone Number</div>
+            <div class="tab">📷 QR Code</div>
         </div>
-        <button class="btn" onclick="generateCode()">GENERATE PAIRING CODE</button>
+
+        <div class="input-card">
+            <label class="input-label">📞 Enter Your WhatsApp Number</label>
+            <input type="tel" id="phone" class="phone-input" placeholder="923XXXXXXXXX">
+            <p style="font-size: 0.8em; color: #888; margin-top: 10px;">ℹ️ Format: Country code + number (e.g., 923170636110)</p>
+        </div>
+
+        <button class="gen-btn" onclick="generateCode()">⚡ GENERATE PAIRING CODE</button>
         <div id="code-display"></div>
 
-        <div class="social-links">
-            <a href="https://wa.me/923170636110">WhatsApp</a>
-            <a href="#">YouTube</a>
-            <a href="#">TikTok</a>
+        <div class="owner-card">
+            <div class="owner-title">👨‍💻 CREATED BY MUHAMMAD YOUSAF</div>
+            <div class="info-row"><span>📞 Phone:</span> <span>923170636110</span></div>
+            <div class="info-row"><span>🌐 Country:</span> <span>Pakistan 🇵🇰</span></div>
         </div>
+
+        <a href="https://wa.me/923170636110" class="social-btn wa">📱 WhatsApp</a>
+        <a href="#" class="social-btn yt">🎬 YouTube</a>
+        <a href="#" class="social-btn tk">🎵 TikTok</a>
+        <a href="tel:+923170636110" class="social-btn call">📞 Call</a>
     </div>
 
     <script>
-        function updateTime() {
+        function updateClock() {
             const now = new Date();
-            document.getElementById('time').textContent = now.toLocaleTimeString();
-            document.getElementById('date').textContent = now.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            document.getElementById('time').textContent = now.toLocaleTimeString('en-GB', { hour12: false });
+            document.getElementById('date').textContent = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
         }
-        setInterval(updateTime, 1000);
-        updateTime();
+        setInterval(updateClock, 1000); updateClock();
 
         async function generateCode() {
             const phone = document.getElementById('phone').value.replace(/[^0-9]/g, '');
             const display = document.getElementById('code-display');
-            if(!phone) return alert('Enter phone number!');
+            if(!phone || phone.length < 10) return alert('Enter valid number!');
             
-            display.innerHTML = '<span style="font-size: 0.5em;">GENERATING...</span>';
+            display.textContent = 'WAIT...';
             try {
                 const res = await fetch('/pairing', {
                     method: 'POST',
@@ -132,72 +197,49 @@ app.get('/', (req, res) => {
                     body: JSON.stringify({ phone })
                 });
                 const data = await res.json();
-                if(data.code) display.textContent = data.code;
-                else display.textContent = 'ERROR';
+                display.textContent = data.code || 'ERROR';
             } catch { display.textContent = 'ERROR'; }
         }
-
-        setInterval(async () => {
-            const res = await fetch('/status');
-            const data = await res.json();
-            const status = document.getElementById('status');
-            if(data.connected) {
-                status.textContent = '✅ CONNECTED';
-                status.classList.add('connected');
-            }
-        }, 3000);
     </script>
 </body>
 </html>
   `);
 });
 
-app.get('/status', (req, res) => res.json({ connected: connectionStatus === 'connected' }));
+// --- Baileys Backend Logic ---
 
 app.post('/pairing', async (req, res) => {
+  try {
     const { phone } = req.body;
-    try {
-        if (!global.conn) return res.json({ error: 'Not ready' });
-        let code = await global.conn.requestPairingCode(phone);
-        res.json({ code: code?.match(/.{1,4}/g)?.join('-') || code });
-    } catch { res.json({ error: 'Failed' }); }
+    if (!global.conn) return res.json({ error: 'Bot starting...' });
+    const code = await global.conn.requestPairingCode(phone);
+    res.json({ code: code?.match(/.{1,4}/g)?.join('-') || code });
+  } catch (error) { res.json({ error: 'Failed' }); }
 });
 
 async function startBot() {
-    const sessionPath = "./sessions";
-    if (!fs.existsSync(sessionPath)) fs.mkdirSync(sessionPath);
+  const { state, saveCreds } = await useMultiFileAuthState('./sessions');
+  const { version } = await fetchLatestBaileysVersion();
 
-    const { state, saveCreds } = await useMultiFileAuthState(sessionPath);
-    const { version } = await fetchLatestBaileysVersion();
+  const sock = makeWASocket({
+    version,
+    auth: { creds: state.creds, keys: makeCacheableSignalKeyStore(state.keys, Pino({ level: 'silent' })) },
+    printQRInTerminal: false,
+    logger: Pino({ level: 'silent' }),
+    browser: ['YOUSAF-BALOCH-MD', 'Chrome', '1.0.0']
+  });
 
-    const sock = makeWASocket({
-        version,
-        auth: {
-            creds: state.creds,
-            keys: makeCacheableSignalKeyStore(state.keys, Pino({ level: 'silent' })),
-        },
-        printQRInTerminal: false,
-        logger: Pino({ level: 'silent' }),
-        browser: ["Yousaf-MD", "Chrome", "1.0.0"]
-    });
-
-    global.conn = sock;
-
-    sock.ev.on('creds.update', saveCreds);
-
-    sock.ev.on('connection.update', (update) => {
-        const { connection, lastDisconnect } = update;
-        if (connection === 'open') {
-            connectionStatus = 'connected';
-            console.log(chalk.green('✅ Connected to WhatsApp!'));
-        }
-        if (connection === 'close') {
-            connectionStatus = 'closed';
-            const shouldReconnect = lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut;
-            if (shouldReconnect) startBot();
-        }
-    });
+  global.conn = sock;
+  sock.ev.on('creds.update', saveCreds);
+  sock.ev.on('connection.update', (update) => {
+    const { connection, lastDisconnect } = update;
+    if (connection === 'open') console.log(chalk.green('✅ Connected!'));
+    if (connection === 'close') {
+      const shouldReconnect = lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut;
+      if (shouldReconnect) startBot();
+    }
+  });
 }
 
-app.listen(PORT, () => console.log(chalk.blue(`[SERVER] Running on port ${PORT}`)));
+app.listen(PORT, () => console.log(chalk.blue(`🚀 Server on port ${PORT}`)));
 startBot();
