@@ -1,156 +1,664 @@
-import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
+/**
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * 🌟 YOUSAF-BALOCH-MD ULTRA PRO PREMIUM PAIRING SERVICE V2.0 🌟
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * 
+ * 👨‍💻 Developer: Muhammad Yousaf Baloch
+ * 📱 WhatsApp: +923710636110
+ * 📺 YouTube: https://www.youtube.com/@Yousaf_Baloch_Tech
+ * 🎵 TikTok: https://tiktok.com/@loser_boy.110
+ * 📢 WhatsApp Channel: https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j
+ * 🔗 GitHub Main Bot: https://github.com/musakhanbaloch03-sad/YOUSAF-BALOCH-MD
+ * 🔗 GitHub Pairing: https://github.com/musakhanbaloch03-sad/YOUSAF-PAIRING-V1
+ * 
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * 💎 ULTRA PRO PREMIUM QUALITY - PROFESSIONAL EDITION 💎
+ * ═══════════════════════════════════════════════════════════════════════════════
+ */
 
-import path from 'path';
-import { fileURLToPath } from 'url';
-import fs from 'fs-extra';
-import chalk from 'chalk';
-import Pino from 'pino';
-import express from 'express';
-import figlet from 'figlet';
-
-const baileys = require('@whiskeysockets/baileys');
-const { 
-    default: makeWASocket, 
-    useMultiFileAuthState, 
-    fetchLatestBaileysVersion, 
-    makeCacheableSignalKeyStore,
+const express = require('express');
+const fs = require('fs');
+const path = require('path');
+const {
+    default: makeWASocket,
+    useMultiFileAuthState,
     DisconnectReason,
-    Browsers,   // <--- Ye zaroori hai
-    delay       // <--- Delay add kiya taake WhatsApp server reject na kare
-} = baileys;
+    fetchLatestBaileysVersion,
+    Browsers
+} = require('@whiskeysockets/baileys');
+const pino = require('pino');
+const { Boom } = require('@hapi/boom');
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || 3000;
 
+app.use(express.static('public'));
 app.use(express.json());
 
-const sessionDir = path.join(__dirname, 'sessions');
-if (!fs.existsSync(sessionDir)) fs.ensureDirSync(sessionDir);
+const activeSessions = new Map();
 
-console.clear();
-console.log(chalk.cyan(figlet.textSync('YOUSAF V1', { font: 'Small' })));
-
-app.get('/', (req, res) => {
-    res.send(`
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YOUSAF-V1 PAIRING</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Poppins', sans-serif; background: #050505; color: white; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 15px; }
-        .card { background: rgba(255, 255, 255, 0.05); border-radius: 30px; padding: 30px; width: 100%; max-width: 450px; text-align: center; border: 1px solid #333; box-shadow: 0 0 30px rgba(0,242,255,0.1); }
-        .clock { background: #111; border: 2px solid #00f2ff; border-radius: 20px; padding: 20px; margin-bottom: 25px; box-shadow: 0 0 15px #00f2ff33; }
-        #time { font-family: 'Orbitron'; font-size: 2.8em; color: #00f2ff; text-shadow: 0 0 10px #00f2ff; }
-        #date { color: #888; font-size: 1.1em; margin-top: 5px; }
-        input { width: 90%; padding: 18px; border-radius: 15px; border: 1px solid #444; background: #000; color: white; font-size: 1.2em; text-align: center; margin-bottom: 15px; outline: none; }
-        input:focus { border-color: #00f2ff; box-shadow: 0 0 10px #00f2ff55; }
-        .btn { width: 100%; padding: 18px; border-radius: 15px; border: none; background: linear-gradient(45deg, #00f2ff, #0066ff); color: white; font-weight: bold; font-size: 1.1em; cursor: pointer; transition: 0.3s; }
-        .btn:hover { transform: scale(1.02); filter: brightness(1.2); }
-        #code { font-size: 2.5em; font-family: 'Orbitron'; color: #ffd700; margin-top: 20px; letter-spacing: 5px; text-shadow: 0 0 10px #ffd700; min-height: 60px; }
-        .social-box { margin-top: 25px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .social { padding: 15px; border-radius: 12px; color: white; text-decoration: none; font-weight: bold; font-size: 0.8em; transition: 0.3s; display: flex; align-items: center; justify-content: center; }
-        .wa { background: #25D366; } .yt { background: #FF0000; } .tk { background: #000; border: 1px solid #444; } .ch { background: #0072ff; }
-    </style>
-</head>
-<body>
-    <div class="card">
-        <div class="clock"><div id="time">00:00:00</div><div id="date">LOADING...</div></div>
-        <h2 style="color:#00f2ff; margin-bottom:20px; font-family:'Orbitron';">YOUSAF-V1</h2>
-        <input type="tel" id="num" placeholder="923170636110">
-        <button class="btn" onclick="getCode()">⚡ GET PAIRING CODE</button>
-        <div id="code"></div>
-        <div class="social-box">
-            <a href="https://wa.me/923170636110" class="social wa">WHATSAPP</a>
-            <a href="https://youtube.com/@Yousaf_Baloch_Tech" class="social yt">YOUTUBE</a>
-            <a href="https://tiktok.com/@loser_boy.110" class="social tk">TIKTOK</a>
-            <a href="https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j" class="social ch">CHANNEL</a>
-        </div>
-    </div>
-    <script>
-        function update() {
-            const n = new Date();
-            document.getElementById('time').innerText = n.toLocaleTimeString('en-GB');
-            document.getElementById('date').innerText = n.toLocaleDateString('en-US', {weekday:'long', day:'numeric', month:'long'});
-        } setInterval(update, 1000); update();
-        async function getCode() {
-            const p = document.getElementById('num').value.replace(/[^0-9]/g,'');
-            if(!p) return alert('Please enter your number!');
-            const resDiv = document.getElementById('code');
-            resDiv.innerText = 'WAIT...';
-            try {
-                const r = await fetch('/pairing', { 
-                    method:'POST', 
-                    headers:{'Content-Type':'application/json'}, 
-                    body:JSON.stringify({phone:p}) 
-                });
-                const d = await r.json();
-                if(d.code) {
-                    resDiv.innerText = d.code;
-                } else {
-                    resDiv.innerText = 'ERROR';
-                    alert(d.error || 'Check number format');
-                }
-            } catch { resDiv.innerText = 'SERVER ERR'; }
-        }
-    </script>
-</body>
-</html>
-    `);
+// ═══════════════════════════════════════════════════════════════════════════════
+// 🔒 YOUSAF BALOCH - HARDCODED OWNER INFORMATION (LOCKED - UNCHANGEABLE)
+// ═══════════════════════════════════════════════════════════════════════════════
+const YOUSAF_BALOCH = Object.freeze({
+    // Personal Information
+    NAME: "Yousuf Baloch",
+    FULL_NAME: "Muhammad Yousaf Baloch",
+    WHATSAPP_NUMBER: "923710636110",
+    
+    // Social Media Links (LOCKED)
+    YOUTUBE: "https://www.youtube.com/@Yousaf_Baloch_Tech",
+    TIKTOK: "https://tiktok.com/@loser_boy.110",
+    WHATSAPP_CHANNEL: "https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j",
+    
+    // GitHub Repositories (LOCKED)
+    GITHUB_PROFILE: "https://github.com/musakhanbaloch03-sad",
+    MAIN_BOT_REPO: "https://github.com/musakhanbaloch03-sad/YOUSAF-BALOCH-MD",
+    PAIRING_REPO: "https://github.com/musakhanbaloch03-sad/YOUSAF-PAIRING-V1",
+    
+    // Bot Information
+    BOT_NAME: "YOUSAF-BALOCH-MD",
+    VERSION: "2.0.0",
+    
+    // Custom Premium Logo (Ultra Pro Quality)
+    LOGO: "https://i.ibb.co/YDx8tFb/yousaf-baloch-md-logo.png"
 });
 
-// --- Pairing Engine with FIXED BROWSER ---
-async function startYousafV1() {
-    const { state, saveCreds } = await useMultiFileAuthState(sessionDir);
-    const { version } = await fetchLatestBaileysVersion();
+// ═══════════════════════════════════════════════════════════════════════════════
+// 🎨 ULTRA PRO PREMIUM COLORS (DEEP, VIBRANT, PURE)
+// ═══════════════════════════════════════════════════════════════════════════════
+const ULTRA_PRO_COLORS = {
+    RESET: '\x1b[0m',
+    BRIGHT: '\x1b[1m',
     
-    const sock = makeWASocket({
-        version,
-        auth: {
-            creds: state.creds,
-            keys: makeCacheableSignalKeyStore(state.keys, Pino({ level: 'silent' })),
-        },
-        printQRInTerminal: false,
-        logger: Pino({ level: 'silent' }),
-        // --- YEH HAI ASAL FIX: Ubuntu Chrome Identity ---
-        browser: Browsers.ubuntu("Chrome"),
-    });
+    // Deep Vibrant Colors
+    DEEP_RED: '\x1b[38;5;196m',
+    DEEP_GREEN: '\x1b[38;5;46m',
+    DEEP_BLUE: '\x1b[38;5;33m',
+    DEEP_YELLOW: '\x1b[38;5;226m',
+    DEEP_MAGENTA: '\x1b[38;5;201m',
+    DEEP_CYAN: '\x1b[38;5;51m',
+    
+    // Shiny Premium Colors
+    GOLD: '\x1b[38;5;220m',
+    SILVER: '\x1b[38;5;250m',
+    DIAMOND: '\x1b[38;5;231m',
+    RUBY: '\x1b[38;5;197m',
+    EMERALD: '\x1b[38;5;34m',
+    SAPPHIRE: '\x1b[38;5;27m'
+};
 
-    sock.ev.on('creds.update', saveCreds);
-
-    app.post('/pairing', async (req, res) => {
-        let phone = req.body.phone;
-        try {
-            if (!sock.authState.creds.registered) {
-                // Thora delay taake server reject na kare
-                await delay(1500); 
-                let code = await sock.requestPairingCode(phone);
-                res.json({ code: code });
-            } else {
-                res.json({ error: "Session Active. Clear Session first." });
-            }
-        } catch (err) {
-            console.error("Pairing Error:", err);
-            res.json({ error: "Try Again (Server Busy)" });
-        }
-    });
-
-    sock.ev.on('connection.update', (update) => {
-        const { connection, lastDisconnect } = update;
-        if (connection === 'close') {
-            const shouldReconnect = lastDisconnect.error?.output?.statusCode !== DisconnectReason.loggedOut;
-            if (shouldReconnect) startYousafV1();
-        } else if (connection === 'open') {
-            console.log(chalk.green('✅ YOUSAF-V1 Connected Successfully!'));
-        }
-    });
+function ultraProLog(message, type = 'info') {
+    const timestamp = new Date().toLocaleTimeString('en-US', { hour12: false });
+    
+    const styles = {
+        info: { icon: '📘', color: ULTRA_PRO_COLORS.DEEP_CYAN },
+        success: { icon: '✨', color: ULTRA_PRO_COLORS.DEEP_GREEN },
+        error: { icon: '❌', color: ULTRA_PRO_COLORS.DEEP_RED },
+        warning: { icon: '⚠️', color: ULTRA_PRO_COLORS.DEEP_YELLOW },
+        premium: { icon: '💎', color: ULTRA_PRO_COLORS.DEEP_MAGENTA },
+        ultra: { icon: '🌟', color: ULTRA_PRO_COLORS.GOLD }
+    };
+    
+    const style = styles[type];
+    console.log(
+        `${style.color}${ULTRA_PRO_COLORS.BRIGHT}${style.icon} ` +
+        `[${timestamp}] ${message}${ULTRA_PRO_COLORS.RESET}`
+    );
 }
 
+/**
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * 💎 SEND ULTRA PRO PREMIUM SUCCESS MESSAGE + SESSION ID TO USER'S WHATSAPP
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * THIS IS THE MAIN FUNCTION THAT FIXES THE SESSION ID DELIVERY PROBLEM
+ */
+async function sendUltraProSessionMessage(sock, sessionId) {
+    try {
+        const userJid = sock.user.id;
+        
+        ultraProLog(`Preparing Ultra Pro message for ${userJid}`, 'premium');
+        
+        const premiumMessage = `
+╔════════════════════════════════════════════════════════════════╗
+║                                                                ║
+║     ✨ YOUSAF-BALOCH-MD CONNECTED SUCCESSFULLY! ✨            ║
+║              💎 ULTRA PRO PREMIUM EDITION 💎                   ║
+║                                                                ║
+╚════════════════════════════════════════════════════════════════╝
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃   🎉 CONGRATULATIONS! YOUR BOT IS NOW ACTIVE! 🎉              ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+════════════════════════════════════════════════════════════════
+
+👑 *OWNER & DEVELOPER INFORMATION* 👑
+
+════════════════════════════════════════════════════════════════
+
+👨‍💻 *Name:* ${YOUSAF_BALOCH.FULL_NAME}
+📛 *Display Name:* ${YOUSAF_BALOCH.NAME}
+📱 *WhatsApp:* +${YOUSAF_BALOCH.WHATSAPP_NUMBER}
+
+════════════════════════════════════════════════════════════════
+
+🌐 *FOLLOW ME ON ALL PLATFORMS* 🌐
+
+════════════════════════════════════════════════════════════════
+
+📺 *YOUTUBE CHANNEL:*
+${YOUSAF_BALOCH.YOUTUBE}
+
+👉 Subscribe for:
+   • Bot Setup Tutorials
+   • Feature Updates
+   • Tips & Tricks
+   • Technical Support Videos
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎵 *TIKTOK ACCOUNT:*
+${YOUSAF_BALOCH.TIKTOK}
+
+👉 Follow for:
+   • Quick Tech Tips
+   • Bot Features Demos
+   • Short Tutorials
+   • Latest Updates
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📢 *WHATSAPP CHANNEL:*
+${YOUSAF_BALOCH.WHATSAPP_CHANNEL}
+
+👉 Join for:
+   • Instant Updates
+   • New Features Announcements
+   • Premium Content
+   • Direct Support
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔗 *GITHUB PROFILE:*
+${YOUSAF_BALOCH.GITHUB_PROFILE}
+
+👉 Star my repositories:
+   • Main Bot: ${YOUSAF_BALOCH.MAIN_BOT_REPO}
+   • Pairing: ${YOUSAF_BALOCH.PAIRING_REPO}
+
+════════════════════════════════════════════════════════════════
+
+🔐 *YOUR SESSION ID* 🔐
+
+════════════════════════════════════════════════════════════════
+
+\`\`\`${sessionId}\`\`\`
+
+════════════════════════════════════════════════════════════════
+
+⚠️ *CRITICAL SECURITY NOTICE* ⚠️
+
+════════════════════════════════════════════════════════════════
+
+🔒 *SAVE THIS SESSION ID IMMEDIATELY!*
+   • This is your bot's authentication key
+   • Required for deployment
+   • Keep it 100% secure
+
+🚫 *NEVER SHARE WITH ANYONE!*
+   • Not even with support (we never ask for it)
+   • Sharing = Full account access to others
+   • If compromised, reconnect immediately
+
+💾 *BACKUP RECOMMENDED:*
+   • Save in secure password manager
+   • Keep offline copy
+   • Don't store in public cloud
+
+════════════════════════════════════════════════════════════════
+
+🚀 *DEPLOYMENT INSTRUCTIONS* 🚀
+
+════════════════════════════════════════════════════════════════
+
+*UNIVERSAL DEPLOYMENT (Works on ALL platforms)*
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+*STEP 1:* Choose Your Platform
+   🟣 Heroku (Recommended - Stable)
+   🚂 Railway (Fast Deployment)
+   🎨 Render (Free Tier Available)
+   🟢 Koyeb (Good Performance)
+   🔷 Replit (Easy Setup)
+   🖥️ VPS (Full Control)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+*STEP 2:* Set Environment Variable
+   Variable Name: *SESSION_ID*
+   Value: [Paste your Session ID above]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+*STEP 3:* Deploy the Bot
+   Repository: ${YOUSAF_BALOCH.MAIN_BOT_REPO}
+
+════════════════════════════════════════════════════════════════
+
+🎯 *QUICK DEPLOY BUTTONS* 🎯
+
+════════════════════════════════════════════════════════════════
+
+🟣 *DEPLOY ON HEROKU:*
+https://heroku.com/deploy?template=${YOUSAF_BALOCH.MAIN_BOT_REPO}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🚂 *DEPLOY ON RAILWAY:*
+https://railway.app/new/template?template=${YOUSAF_BALOCH.MAIN_BOT_REPO}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎨 *DEPLOY ON RENDER:*
+https://render.com/deploy?repo=${YOUSAF_BALOCH.MAIN_BOT_REPO}
+
+════════════════════════════════════════════════════════════════
+
+💎 *ULTRA PRO PREMIUM FEATURES* 💎
+
+════════════════════════════════════════════════════════════════
+
+✨ *280+ Premium Commands*
+   • All-in-one bot solution
+   • Regular updates & new features
+
+🤖 *Advanced AI Integration*
+   • GPT-4, Gemini, Claude AI
+   • Smart conversations
+   • Context-aware responses
+
+📥 *Universal Media Downloader*
+   • YouTube, TikTok, Instagram
+   • Facebook, Twitter, Spotify
+   • HD Quality downloads
+
+👥 *Group Management Pro*
+   • Anti-link protection
+   • Welcome/Goodbye messages
+   • Auto-moderation tools
+   • Admin commands suite
+
+🛡️ *Security Features*
+   • Anti-spam protection
+   • Bad word filter
+   • NSFW detection
+   • Privacy controls
+
+💬 *Smart Auto-Reply*
+   • Custom responses
+   • Keyword triggers
+   • Time-based replies
+
+🎨 *Creative Tools*
+   • Sticker maker
+   • Logo generator
+   • Image editor
+   • Text-to-speech
+
+📊 *Analytics Dashboard*
+   • Usage statistics
+   • Performance metrics
+   • User insights
+
+🌍 *Multi-Language*
+   • English, Urdu, Hindi
+   • Arabic, Spanish, French
+   • And more!
+
+⚡ *Premium Performance*
+   • Lightning-fast responses
+   • 99.9% uptime
+   • Optimized code
+
+════════════════════════════════════════════════════════════════
+
+📞 *NEED HELP? CONTACT DEVELOPER* 📞
+
+════════════════════════════════════════════════════════════════
+
+📱 *WhatsApp Direct Support:*
+   wa.me/${YOUSAF_BALOCH.WHATSAPP_NUMBER}
+   
+   Available for:
+   • Deployment assistance
+   • Technical issues
+   • Feature requests
+   • Custom modifications
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📺 *Video Tutorials:*
+   ${YOUSAF_BALOCH.YOUTUBE}
+   
+   Watch step-by-step guides for:
+   • Complete setup walkthrough
+   • Feature demonstrations
+   • Troubleshooting tips
+   • Advanced configurations
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📢 *Latest Updates:*
+   ${YOUSAF_BALOCH.WHATSAPP_CHANNEL}
+   
+   Get notified about:
+   • New feature releases
+   • Important announcements
+   • Maintenance schedules
+   • Premium tips & tricks
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎵 *Quick Tips:*
+   ${YOUSAF_BALOCH.TIKTOK}
+   
+   Daily content:
+   • Bot hacks
+   • Hidden features
+   • Pro tips
+   • Fun demos
+
+════════════════════════════════════════════════════════════════
+
+💝 *THANK YOU FOR CHOOSING YOUSAF-BALOCH-MD!* 💝
+
+════════════════════════════════════════════════════════════════
+
+Made with ❤️ by *${YOUSAF_BALOCH.FULL_NAME}*
+© ${new Date().getFullYear()} ${YOUSAF_BALOCH.BOT_NAME} - All Rights Reserved
+
+════════════════════════════════════════════════════════════════
+
+🌟 *ULTRA PRO PREMIUM QUALITY - V${YOUSAF_BALOCH.VERSION}* 🌟
+💎 *PROFESSIONAL EDITION - WORLD-CLASS BOT* 💎
+
+════════════════════════════════════════════════════════════════
+        `.trim();
+        
+        // Send message to user's WhatsApp
+        await sock.sendMessage(userJid, { 
+            text: premiumMessage 
+        });
+        
+        // Send logo/image if available
+        if (YOUSAF_BALOCH.LOGO) {
+            await sock.sendMessage(userJid, {
+                image: { url: YOUSAF_BALOCH.LOGO },
+                caption: `🌟 ${YOUSAF_BALOCH.BOT_NAME} - Ultra Pro Premium Edition 🌟`
+            });
+        }
+        
+        ultraProLog(`✅ SUCCESS! Message sent to ${userJid}`, 'success');
+        ultraProLog(`🔐 Session ID delivered successfully!`, 'premium');
+        
+        // Save session to file for backup
+        const sessionDir = './sessions';
+        if (!fs.existsSync(sessionDir)) {
+            fs.mkdirSync(sessionDir, { recursive: true });
+        }
+        
+        const timestamp = Date.now();
+        const sessionFile = path.join(sessionDir, `session_${timestamp}.txt`);
+        const sessionData = {
+            sessionId,
+            userJid,
+            timestamp,
+            owner: YOUSAF_BALOCH.NAME,
+            youtube: YOUSAF_BALOCH.YOUTUBE,
+            tiktok: YOUSAF_BALOCH.TIKTOK,
+            channel: YOUSAF_BALOCH.WHATSAPP_CHANNEL
+        };
+        
+        fs.writeFileSync(sessionFile, JSON.stringify(sessionData, null, 2));
+        ultraProLog(`💾 Session backed up: ${sessionFile}`, 'ultra');
+        
+        return true;
+        
+    } catch (error) {
+        ultraProLog(`❌ ERROR sending message: ${error.message}`, 'error');
+        console.error('Full error:', error);
+        return false;
+    }
+}
+
+/**
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * 🚀 START PAIRING SESSION (UNIVERSAL - WORKS ON ALL PLATFORMS)
+ * ═══════════════════════════════════════════════════════════════════════════════
+ */
+async function startUniversalPairingSession(phoneNumber, sessionId) {
+    try {
+        ultraProLog(`🚀 Starting Ultra Pro Pairing for: ${phoneNumber}`, 'ultra');
+        
+        const authDir = `./auth_${sessionId}`;
+        const { state, saveCreds } = await useMultiFileAuthState(authDir);
+        const { version } = await fetchLatestBaileysVersion();
+        
+        ultraProLog(`📦 Baileys Version: ${version.join('.')}`, 'info');
+        
+        const sock = makeWASocket({
+            version,
+            auth: state,
+            printQRInTerminal: false,
+            logger: pino({ level: 'silent' }),
+            browser: Browsers.windows('Chrome'),
+            generateHighQualityLinkPreview: true
+        });
+        
+        sock.ev.on('creds.update', saveCreds);
+        
+        sock.ev.on('connection.update', async (update) => {
+            const { connection, lastDisconnect } = update;
+            
+            if (connection === 'open') {
+                ultraProLog(`✨ CONNECTION ESTABLISHED!`, 'success');
+                
+                // Generate Session ID from credentials
+                const credentialsData = JSON.stringify(state.creds, null, 2);
+                const base64SessionId = Buffer.from(credentialsData).toString('base64');
+                
+                ultraProLog(`🔐 Generating Session ID...`, 'premium');
+                ultraProLog(`📊 Size: ${(base64SessionId.length / 1024).toFixed(2)} KB`, 'info');
+                
+                // ⭐⭐⭐ MAIN ACTION: Send success message + Session ID to user ⭐⭐⭐
+                await sendUltraProSessionMessage(sock, base64SessionId);
+                
+                // Cleanup after successful delivery
+                setTimeout(async () => {
+                    try {
+                        await sock.logout();
+                        ultraProLog(`🔓 Logged out successfully`, 'info');
+                    } catch (e) {
+                        ultraProLog(`⚠️ Logout warning: ${e.message}`, 'warning');
+                    }
+                    
+                    // Clean auth directory
+                    if (fs.existsSync(authDir)) {
+                        fs.rmSync(authDir, { recursive: true, force: true });
+                        ultraProLog(`🧹 Auth directory cleaned`, 'info');
+                    }
+                    
+                    activeSessions.delete(sessionId);
+                    ultraProLog(`✅ Session ${sessionId} completed and cleaned`, 'success');
+                }, 5000);
+            }
+            
+            if (connection === 'close') {
+                const statusCode = (lastDisconnect?.error instanceof Boom) 
+                    ? lastDisconnect.error.output.statusCode 
+                    : 0;
+                
+                const reason = lastDisconnect?.error?.message || 'Unknown';
+                ultraProLog(`🔌 Connection closed - Code: ${statusCode}, Reason: ${reason}`, 'warning');
+                
+                // Cleanup
+                if (fs.existsSync(authDir)) {
+                    fs.rmSync(authDir, { recursive: true, force: true });
+                }
+                activeSessions.delete(sessionId);
+            }
+        });
+        
+        // Request pairing code
+        if (!state.creds.registered) {
+            const cleanNumber = phoneNumber.replace(/[^0-9]/g, '');
+            ultraProLog(`📱 Requesting pairing code for: ${cleanNumber}`, 'premium');
+            
+            const code = await sock.requestPairingCode(cleanNumber);
+            const formattedCode = code?.match(/.{1,4}/g)?.join('-') || code;
+            
+            ultraProLog(`🔑 PAIRING CODE GENERATED: ${formattedCode}`, 'success');
+            
+            activeSessions.set(sessionId, {
+                sock,
+                phoneNumber,
+                code: formattedCode,
+                timestamp: Date.now()
+            });
+            
+            return { success: true, code: formattedCode };
+        }
+        
+        return { success: false, error: 'Device already registered' };
+        
+    } catch (error) {
+        ultraProLog(`❌ PAIRING ERROR: ${error.message}`, 'error');
+        console.error('Full error stack:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+/**
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * 🌐 API ENDPOINTS
+ * ═══════════════════════════════════════════════════════════════════════════════
+ */
+
+// Get pairing code endpoint
+app.post('/get-code', async (req, res) => {
+    try {
+        const { phoneNumber } = req.body;
+        
+        if (!phoneNumber) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Phone number is required',
+                owner: YOUSAF_BALOCH.NAME
+            });
+        }
+        
+        const sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        const result = await startUniversalPairingSession(phoneNumber, sessionId);
+        
+        if (result.success) {
+            res.json({ 
+                success: true, 
+                code: result.code,
+                message: 'Pairing code generated! Enter it in WhatsApp and wait for Session ID.',
+                owner: YOUSAF_BALOCH.NAME,
+                youtube: YOUSAF_BALOCH.YOUTUBE,
+                tiktok: YOUSAF_BALOCH.TIKTOK,
+                channel: YOUSAF_BALOCH.WHATSAPP_CHANNEL
+            });
+        } else {
+            res.status(500).json({ 
+                success: false, 
+                error: result.error,
+                owner: YOUSAF_BALOCH.NAME
+            });
+        }
+        
+    } catch (error) {
+        ultraProLog(`❌ API ERROR: ${error.message}`, 'error');
+        res.status(500).json({ 
+            success: false, 
+            error: error.message,
+            owner: YOUSAF_BALOCH.NAME
+        });
+    }
+});
+
+// Home page
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+    res.json({ 
+        status: 'online',
+        service: 'YOUSAF-BALOCH-MD Pairing Service',
+        version: YOUSAF_BALOCH.VERSION,
+        quality: 'Ultra Pro Premium',
+        owner: {
+            name: YOUSAF_BALOCH.NAME,
+            whatsapp: YOUSAF_BALOCH.WHATSAPP_NUMBER,
+            youtube: YOUSAF_BALOCH.YOUTUBE,
+            tiktok: YOUSAF_BALOCH.TIKTOK,
+            channel: YOUSAF_BALOCH.WHATSAPP_CHANNEL,
+            github: YOUSAF_BALOCH.GITHUB_PROFILE,
+            mainRepo: YOUSAF_BALOCH.MAIN_BOT_REPO,
+            pairingRepo: YOUSAF_BALOCH.PAIRING_REPO
+        },
+        activeSessions: activeSessions.size
+    });
+});
+
+/**
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * 🎬 START ULTRA PRO SERVER
+ * ═══════════════════════════════════════════════════════════════════════════════
+ */
 app.listen(PORT, () => {
-    console.log(chalk.green(`🚀 YOUSAF-V1 LIVE ON PORT: ${PORT}`));
-    startYousafV1().catch(e => console.log(e));
+    console.log('');
+    console.log(ULTRA_PRO_COLORS.DEEP_MAGENTA + ULTRA_PRO_COLORS.BRIGHT + '╔══════════════════════════════════════════════════════════════════╗' + ULTRA_PRO_COLORS.RESET);
+    console.log(ULTRA_PRO_COLORS.DEEP_MAGENTA + ULTRA_PRO_COLORS.BRIGHT + '║                                                                  ║' + ULTRA_PRO_COLORS.RESET);
+    console.log(ULTRA_PRO_COLORS.GOLD + ULTRA_PRO_COLORS.BRIGHT + '║        🌟 YOUSAF-BALOCH-MD PAIRING SERVICE V2.0 🌟              ║' + ULTRA_PRO_COLORS.RESET);
+    console.log(ULTRA_PRO_COLORS.DIAMOND + ULTRA_PRO_COLORS.BRIGHT + '║            💎 ULTRA PRO PREMIUM EDITION 💎                       ║' + ULTRA_PRO_COLORS.RESET);
+    console.log(ULTRA_PRO_COLORS.DEEP_MAGENTA + ULTRA_PRO_COLORS.BRIGHT + '║                                                                  ║' + ULTRA_PRO_COLORS.RESET);
+    console.log(ULTRA_PRO_COLORS.DEEP_MAGENTA + ULTRA_PRO_COLORS.BRIGHT + '╚══════════════════════════════════════════════════════════════════╝' + ULTRA_PRO_COLORS.RESET);
+    console.log('');
+    ultraProLog(`🚀 SERVER RUNNING ON PORT: ${PORT}`, 'success');
+    ultraProLog(`👨‍💻 Developer: ${YOUSAF_BALOCH.FULL_NAME}`, 'premium');
+    ultraProLog(`📱 WhatsApp: +${YOUSAF_BALOCH.WHATSAPP_NUMBER}`, 'info');
+    console.log('');
+    ultraProLog(`📺 YouTube: ${YOUSAF_BALOCH.YOUTUBE}`, 'info');
+    ultraProLog(`🎵 TikTok: ${YOUSAF_BALOCH.TIKTOK}`, 'info');
+    ultraProLog(`📢 Channel: ${YOUSAF_BALOCH.WHATSAPP_CHANNEL}`, 'info');
+    console.log('');
+    ultraProLog(`🔗 GitHub Profile: ${YOUSAF_BALOCH.GITHUB_PROFILE}`, 'info');
+    ultraProLog(`🔗 Main Bot Repo: ${YOUSAF_BALOCH.MAIN_BOT_REPO}`, 'info');
+    ultraProLog(`🔗 Pairing Repo: ${YOUSAF_BALOCH.PAIRING_REPO}`, 'info');
+    console.log('');
+    console.log(ULTRA_PRO_COLORS.DEEP_GREEN + ULTRA_PRO_COLORS.BRIGHT + '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━' + ULTRA_PRO_COLORS.RESET);
+    console.log(ULTRA_PRO_COLORS.GOLD + ULTRA_PRO_COLORS.BRIGHT + '    🎨 ULTRA PRO PREMIUM QUALITY - PROFESSIONAL EDITION 🎨        ' + ULTRA_PRO_COLORS.RESET);
+    console.log(ULTRA_PRO_COLORS.DEEP_GREEN + ULTRA_PRO_COLORS.BRIGHT + '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━' + ULTRA_PRO_COLORS.RESET);
+    console.log('');
+});
+
+// Graceful shutdown
+process.on('SIGINT', () => {
+    ultraProLog('🛑 Shutting down gracefully...', 'warning');
+    
+    activeSessions.forEach((session, id) => {
+        const authDir = `./auth_${id}`;
+        if (fs.existsSync(authDir)) {
+            fs.rmSync(authDir, { recursive: true, force: true });
+        }
+    });
+    
+    ultraProLog('✅ Cleanup completed', 'success');
+    process.exit(0);
 });
