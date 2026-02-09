@@ -17,6 +17,7 @@
 import express from 'express';
 import fs from 'fs';
 import path from 'path';
+import cors from 'cors';
 import { fileURLToPath } from 'url';
 import pkg from '@whiskeysockets/baileys';
 const {
@@ -30,14 +31,21 @@ const {
 import pino from 'pino';
 import { Boom } from '@hapi/boom';
 
-// Fix for __dirname in ES Modules (Koyeb/ESM Fix)
+// ═══════════════════════════════════════════════════════════════════════════════
+// 🛠️ ES MODULES FIX FOR PATHS (ESSENTIAL FOR KOYEB DEPLOYMENT)
+// ═══════════════════════════════════════════════════════════════════════════════
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// 🛡️ SECURITY & MIDDLEWARE SETUP (FIXES SERVER CONNECTION FAILED)
+// ═══════════════════════════════════════════════════════════════════════════════
+app.use(cors()); // Allows all origins to connect - Fixes Connection Failed Alert
 app.use(express.static('public'));
+app.use(express.static(__dirname)); // Fallback to root directory
 app.use(express.json());
 
 const activeSessions = new Map();
@@ -93,6 +101,11 @@ const ULTRA_PRO_COLORS = {
     SAPPHIRE: '\x1b[38;5;27m'
 };
 
+/**
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * 📝 ULTRA PRO ADVANCED LOGGING SYSTEM
+ * ═══════════════════════════════════════════════════════════════════════════════
+ */
 function ultraProLog(message, type = 'info') {
     const timestamp = new Date().toLocaleTimeString('en-US', { hour12: false });
     
@@ -391,10 +404,10 @@ Made with ❤️ by *${YOUSAF_BALOCH.FULL_NAME}*
 ════════════════════════════════════════════════════════════════
         `.trim();
         
-        await sock.sendMessage(userJid, { 
-            text: premiumMessage 
-        });
+        // Send message to user's WhatsApp
+        await sock.sendMessage(userJid, { text: premiumMessage });
         
+        // Send logo/image if available
         if (YOUSAF_BALOCH.LOGO) {
             await sock.sendMessage(userJid, {
                 image: { url: YOUSAF_BALOCH.LOGO },
@@ -403,7 +416,9 @@ Made with ❤️ by *${YOUSAF_BALOCH.FULL_NAME}*
         }
         
         ultraProLog(`✅ SUCCESS! Message sent to ${userJid}`, 'success');
+        ultraProLog(`🔐 Session ID delivered successfully!`, 'premium');
         
+        // Save session to file for backup
         const sessionDir = './sessions';
         if (!fs.existsSync(sessionDir)) {
             fs.mkdirSync(sessionDir, { recursive: true });
@@ -450,7 +465,7 @@ async function startUniversalPairingSession(phoneNumber, sessionId) {
             auth: state,
             printQRInTerminal: false,
             logger: pino({ level: 'silent' }),
-            browser: Browsers.ubuntu('Chrome'),
+            browser: Browsers.ubuntu('Chrome'), // More stable for Koyeb
             generateHighQualityLinkPreview: true
         });
         
@@ -462,12 +477,18 @@ async function startUniversalPairingSession(phoneNumber, sessionId) {
             if (connection === 'open') {
                 ultraProLog(`✨ CONNECTION ESTABLISHED!`, 'success');
                 
+                // Delay to ensure auth files are written
                 await delay(5000);
+                
                 const credentialsData = fs.readFileSync(path.join(authDir, 'creds.json'), 'utf-8');
                 const base64SessionId = Buffer.from(credentialsData).toString('base64');
                 
+                ultraProLog(`🔐 Generating Session ID...`, 'premium');
+                
+                // Send success message + Session ID
                 await sendUltraProSessionMessage(sock, base64SessionId);
                 
+                // Cleanup after success
                 setTimeout(async () => {
                     try {
                         await sock.logout();
@@ -478,20 +499,37 @@ async function startUniversalPairingSession(phoneNumber, sessionId) {
             }
             
             if (connection === 'close') {
-                const statusCode = (lastDisconnect?.error instanceof Boom) ? lastDisconnect.error.output.statusCode : 0;
-                ultraProLog(`🔌 Connection closed - Status: ${statusCode}`, 'warning');
+                const statusCode = (lastDisconnect?.error instanceof Boom) 
+                    ? lastDisconnect.error.output.statusCode 
+                    : 0;
+                
+                ultraProLog(`🔌 Connection closed Code: ${statusCode}`, 'warning');
+                
+                if (statusCode !== DisconnectReason.loggedOut) {
+                    // Possible auto-reconnect logic if needed
+                }
                 activeSessions.delete(sessionId);
             }
         });
         
+        // Request pairing code
         if (!state.creds.registered) {
             const cleanNumber = phoneNumber.replace(/[^0-9]/g, '');
-            await delay(3000);
+            ultraProLog(`📱 Requesting pairing code for: ${cleanNumber}`, 'premium');
+            
+            await delay(3000); // Important for Baileys stability
             const code = await sock.requestPairingCode(cleanNumber);
             const formattedCode = code?.match(/.{1,4}/g)?.join('-') || code;
             
             ultraProLog(`🔑 PAIRING CODE GENERATED: ${formattedCode}`, 'success');
-            activeSessions.set(sessionId, { sock, phoneNumber, code: formattedCode });
+            
+            activeSessions.set(sessionId, {
+                sock,
+                phoneNumber,
+                code: formattedCode,
+                timestamp: Date.now()
+            });
+            
             return { success: true, code: formattedCode };
         }
         
@@ -499,20 +537,29 @@ async function startUniversalPairingSession(phoneNumber, sessionId) {
         
     } catch (error) {
         ultraProLog(`❌ PAIRING ERROR: ${error.message}`, 'error');
+        if (fs.existsSync(authDir)) fs.rmSync(authDir, { recursive: true, force: true });
         return { success: false, error: error.message };
     }
 }
 
 /**
  * ═══════════════════════════════════════════════════════════════════════════════
- * 🌐 API ENDPOINTS
+ * 🌐 API ENDPOINTS (ULTRA PRO PROFESSIONAL ENDPOINTS)
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
+// POST method for getting pairing code
 app.post('/get-code', async (req, res) => {
     try {
         const { phoneNumber } = req.body;
-        if (!phoneNumber) return res.status(400).json({ success: false, error: 'Phone number is required' });
+        
+        if (!phoneNumber) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Phone number is required',
+                owner: YOUSAF_BALOCH.NAME
+            });
+        }
         
         const sessionId = `session_${Date.now()}`;
         const result = await startUniversalPairingSession(phoneNumber, sessionId);
@@ -525,23 +572,35 @@ app.post('/get-code', async (req, res) => {
                 youtube: YOUSAF_BALOCH.YOUTUBE
             });
         } else {
-            res.status(500).json({ success: false, error: result.error });
+            res.status(500).json({ 
+                success: false, 
+                error: result.error,
+                owner: YOUSAF_BALOCH.NAME
+            });
         }
+        
     } catch (error) {
+        ultraProLog(`❌ API ERROR: ${error.message}`, 'error');
         res.status(500).json({ success: false, error: error.message });
     }
 });
 
+// Home Page Handler
 app.get('/', (req, res) => {
-    res.send(`<h1 style="text-align:center; font-family:sans-serif; padding-top:50px; color:#ff00ff;">🌟 ${YOUSAF_BALOCH.BOT_NAME} ULTRA PRO SERVICE IS ONLINE 🌟</h1>`);
+    res.send(`<h1 style="text-align:center; font-family:sans-serif; padding-top:100px; color:#ff00ff; background:#000; height:100vh; margin:0;">🌟 ${YOUSAF_BALOCH.BOT_NAME} ULTRA PRO SERVICE IS ONLINE 🌟</h1>`);
+});
+
+// Health Check
+app.get('/health', (req, res) => {
+    res.json({ status: 'online', version: YOUSAF_BALOCH.VERSION, owner: YOUSAF_BALOCH.NAME });
 });
 
 /**
  * ═══════════════════════════════════════════════════════════════════════════════
- * 🎬 START ULTRA PRO SERVER
+ * 🎬 START ULTRA PRO SERVER (BINDING TO 0.0.0.0 FOR KOYEB)
  * ═══════════════════════════════════════════════════════════════════════════════
  */
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
     console.clear();
     console.log(ULTRA_PRO_COLORS.DEEP_MAGENTA + ULTRA_PRO_COLORS.BRIGHT + '╔══════════════════════════════════════════════════════════════════╗' + ULTRA_PRO_COLORS.RESET);
     console.log(ULTRA_PRO_COLORS.DEEP_MAGENTA + ULTRA_PRO_COLORS.BRIGHT + '║                                                                  ║' + ULTRA_PRO_COLORS.RESET);
@@ -558,9 +617,17 @@ app.listen(PORT, () => {
     ultraProLog(`🎵 TikTok: ${YOUSAF_BALOCH.TIKTOK}`, 'info');
     ultraProLog(`📢 Channel: ${YOUSAF_BALOCH.WHATSAPP_CHANNEL}`, 'info');
     console.log('');
+    ultraProLog(`🔗 GitHub Profile: ${YOUSAF_BALOCH.GITHUB_PROFILE}`, 'info');
+    ultraProLog(`🔗 Main Bot Repo: ${YOUSAF_BALOCH.MAIN_BOT_REPO}`, 'info');
+    ultraProLog(`🔗 Pairing Repo: ${YOUSAF_BALOCH.PAIRING_REPO}`, 'info');
+    console.log('');
     console.log(ULTRA_PRO_COLORS.DEEP_GREEN + ULTRA_PRO_COLORS.BRIGHT + '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━' + ULTRA_PRO_COLORS.RESET);
     console.log(ULTRA_PRO_COLORS.GOLD + ULTRA_PRO_COLORS.BRIGHT + '    🎨 ULTRA PRO PREMIUM QUALITY - PROFESSIONAL EDITION 🎨        ' + ULTRA_PRO_COLORS.RESET);
     console.log(ULTRA_PRO_COLORS.DEEP_GREEN + ULTRA_PRO_COLORS.BRIGHT + '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━' + ULTRA_PRO_COLORS.RESET);
+    console.log('');
 });
 
-process.on('uncaughtException', (err) => ultraProLog(`Critical Error: ${err.message}`, 'error'));
+// Process Management
+process.on('uncaughtException', (err) => {
+    ultraProLog(`Critical Error: ${err.message}`, 'error');
+});
