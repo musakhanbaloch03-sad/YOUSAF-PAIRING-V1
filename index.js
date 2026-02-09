@@ -2,7 +2,7 @@
 ╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮
 ┃      YOUSAF-PAIRING-V1 SYSTEM         ┃
 ┃   DEVELOPER: MUHAMMAD YOUSAF BALOCH    ┃
-┃   FIXED: TYPEERROR & IMPORT ISSUE      ┃
+┃   STATUS: 100% FIXED & PROFESSIONAL   ┃
 ╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯
 */
 
@@ -14,14 +14,14 @@ import Pino from 'pino';
 import express from 'express';
 import figlet from 'figlet';
 
-// --- Baileys Import Fix (Is se TypeError khatam ho jayega) ---
+// --- Baileys Import Fix (Sabse Aham Hissa) ---
 import pkg from '@whiskeysockets/baileys';
 const { 
     default: makeWASocket, 
     useMultiFileAuthState, 
-    DisconnectReason, 
     fetchLatestBaileysVersion, 
-    makeCacheableSignalKeyStore 
+    makeCacheableSignalKeyStore,
+    DisconnectReason
 } = pkg;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -30,14 +30,16 @@ const PORT = process.env.PORT || 8000;
 
 app.use(express.json());
 
-// Session logic
+// Session Directory setup
 const sessionDir = './sessions';
-if (!fs.existsSync(sessionDir)) fs.mkdirSync(sessionDir);
+if (!fs.existsSync(sessionDir)) {
+    fs.mkdirSync(sessionDir, { recursive: true });
+}
 
 console.clear();
 console.log(chalk.cyan(figlet.textSync('YOUSAF V1', { font: 'Small' })));
 
-// --- UI Design ---
+// --- Dashboard UI (Modern Cyberpunk Design) ---
 app.get('/', (req, res) => {
     res.send(`
 <!DOCTYPE html>
@@ -45,33 +47,36 @@ app.get('/', (req, res) => {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YOUSAF-PAIRING-V1</title>
+    <title>YOUSAF-V1 PAIRING</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Poppins', sans-serif; background: #050505; color: white; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 15px; }
         .card { background: rgba(255, 255, 255, 0.05); border-radius: 30px; padding: 30px; width: 100%; max-width: 450px; text-align: center; border: 1px solid #333; box-shadow: 0 0 30px rgba(0,242,255,0.1); }
         .clock { background: #111; border: 2px solid #00f2ff; border-radius: 20px; padding: 20px; margin-bottom: 25px; box-shadow: 0 0 15px #00f2ff33; }
-        #time { font-family: 'Orbitron'; font-size: 3em; color: #00f2ff; text-shadow: 0 0 10px #00f2ff; }
+        #time { font-family: 'Orbitron'; font-size: 2.8em; color: #00f2ff; text-shadow: 0 0 10px #00f2ff; }
         #date { color: #888; font-size: 1.1em; margin-top: 5px; }
-        input { width: 100%; padding: 18px; border-radius: 15px; border: 1px solid #444; background: #000; color: white; font-size: 1.2em; text-align: center; margin-bottom: 15px; }
-        .btn { width: 100%; padding: 18px; border-radius: 15px; border: none; background: linear-gradient(45deg, #00f2ff, #0066ff); color: white; font-weight: bold; font-size: 1.1em; cursor: pointer; }
-        #code { font-size: 2.5em; font-family: 'Orbitron'; color: #ffd700; margin-top: 20px; text-shadow: 0 0 10px #ffd700; }
-        .social { display: block; padding: 18px; margin-top: 12px; border-radius: 15px; color: white; text-decoration: none; font-weight: bold; font-size: 0.9em; transition: 0.3s; text-align: center; }
+        input { width: 90%; padding: 18px; border-radius: 15px; border: 1px solid #444; background: #000; color: white; font-size: 1.2em; text-align: center; margin-bottom: 15px; outline: none; }
+        input:focus { border-color: #00f2ff; box-shadow: 0 0 10px #00f2ff55; }
+        .btn { width: 100%; padding: 18px; border-radius: 15px; border: none; background: linear-gradient(45deg, #00f2ff, #0066ff); color: white; font-weight: bold; font-size: 1.1em; cursor: pointer; transition: 0.3s; }
+        .btn:hover { transform: scale(1.02); filter: brightness(1.2); }
+        #code { font-size: 2.5em; font-family: 'Orbitron'; color: #ffd700; margin-top: 20px; letter-spacing: 5px; text-shadow: 0 0 10px #ffd700; min-height: 60px; }
+        .social-box { margin-top: 25px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .social { padding: 15px; border-radius: 12px; color: white; text-decoration: none; font-weight: bold; font-size: 0.8em; transition: 0.3s; display: flex; align-items: center; justify-content: center; }
         .wa { background: #25D366; } .yt { background: #FF0000; } .tk { background: #000; border: 1px solid #444; } .ch { background: #0072ff; }
     </style>
 </head>
 <body>
     <div class="card">
         <div class="clock"><div id="time">00:00:00</div><div id="date">LOADING...</div></div>
-        <h2 style="color:#00f2ff;">YOUSAF-PAIRING-V1</h2>
+        <h2 style="color:#00f2ff; margin-bottom:20px; font-family:'Orbitron';">YOUSAF-V1</h2>
         <input type="tel" id="num" placeholder="923170636110">
         <button class="btn" onclick="getCode()">⚡ GET PAIRING CODE</button>
         <div id="code"></div>
-        <div style="margin-top:25px;">
-            <a href="https://wa.me/923170636110" class="social wa">📱 WHATSAPP OWNER</a>
-            <a href="https://youtube.com/@Yousaf_Baloch_Tech" class="social yt">📺 YOUTUBE CHANNEL</a>
-            <a href="https://tiktok.com/@loser_boy.110" class="social tk">🎵 TIKTOK PROFILE</a>
-            <a href="https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j" class="social ch">📢 JOIN CHANNEL</a>
+        <div class="social-box">
+            <a href="https://wa.me/923170636110" class="social wa">WHATSAPP</a>
+            <a href="https://youtube.com/@Yousaf_Baloch_Tech" class="social yt">YOUTUBE</a>
+            <a href="https://tiktok.com/@loser_boy.110" class="social tk">TIKTOK</a>
+            <a href="https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j" class="social ch">CHANNEL</a>
         </div>
     </div>
     <script>
@@ -82,14 +87,23 @@ app.get('/', (req, res) => {
         } setInterval(update, 1000); update();
         async function getCode() {
             const p = document.getElementById('num').value.replace(/[^0-9]/g,'');
-            if(!p) return alert('Enter number!');
+            if(!p) return alert('Please enter your number!');
             const resDiv = document.getElementById('code');
-            resDiv.innerText = 'GENERATING...';
+            resDiv.innerText = 'WAIT...';
             try {
-                const r = await fetch('/pairing', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({phone:p}) });
+                const r = await fetch('/pairing', { 
+                    method:'POST', 
+                    headers:{'Content-Type':'application/json'}, 
+                    body:JSON.stringify({phone:p}) 
+                });
                 const d = await r.json();
-                resDiv.innerText = d.code || 'ERROR';
-            } catch { resDiv.innerText = 'SERVER ERROR'; }
+                if(d.code) {
+                    resDiv.innerText = d.code;
+                } else {
+                    resDiv.innerText = 'ERROR';
+                    alert(d.error || 'Check number format');
+                }
+            } catch { resDiv.innerText = 'SERVER ERR'; }
         }
     </script>
 </body>
@@ -97,8 +111,8 @@ app.get('/', (req, res) => {
     `);
 });
 
-// --- Pairing Logic ---
-async function start() {
+// --- Pairing Engine (Stable Version) ---
+async function startPairing() {
     const { state, saveCreds } = await useMultiFileAuthState(sessionDir);
     const { version } = await fetchLatestBaileysVersion();
     
@@ -108,22 +122,51 @@ async function start() {
             creds: state.creds,
             keys: makeCacheableSignalKeyStore(state.keys, Pino({ level: 'silent' })),
         },
+        printQRInTerminal: false,
         logger: Pino({ level: 'silent' }),
-        browser: ["YOUSAF-V1", "Chrome", "3.0.0"]
+        browser: ["YOUSAF-V1", "Chrome", "1.0.0"]
     });
 
     sock.ev.on('creds.update', saveCreds);
-    sock.ev.on('connection.update', (u) => {
-        if (u.connection === 'close') setTimeout(start, 5000);
-    });
 
     app.post('/pairing', async (req, res) => {
+        let phone = req.body.phone;
+        if (!phone) return res.json({ error: "No phone number" });
+        
         try {
-            let code = await sock.requestPairingCode(req.body.phone);
-            res.json({ code: code?.match(/.{1,4}/g)?.join('-') || code });
-        } catch { res.json({ error: true }); }
+            // Force clean connection for pairing
+            if (!sock.authState.creds.registered) {
+                let code = await sock.requestPairingCode(phone);
+                res.json({ code: code });
+            } else {
+                res.json({ error: "Already registered" });
+            }
+        } catch (err) {
+            console.error("Pairing Error:", err);
+            res.json({ error: "Server Busy. Try again." });
+        }
+    });
+
+    sock.ev.on('connection.update', async (s) => {
+        const { connection, lastDisconnect } = s;
+        if (connection === 'open') {
+            console.log(chalk.green('✅ Connected to WhatsApp!'));
+        }
+        if (connection === 'close') {
+            let reason = lastDisconnect?.error?.output?.statusCode;
+            if (reason !== DisconnectReason.loggedOut) {
+                startPairing();
+            }
+        }
     });
 }
 
-app.listen(PORT, () => console.log(chalk.green(`🚀 YOUSAF-V1 LIVE ON PORT: ${PORT}`)));
-start().catch(err => console.error("Startup Error:", err));
+// Start Server
+app.listen(PORT, () => {
+    console.log(chalk.green(`🚀 YOUSAF-V1 LIVE ON PORT: ${PORT}`));
+});
+
+// Error handling to prevent crash
+startPairing().catch(err => {
+    console.error("Global Startup Error:", err);
+});
