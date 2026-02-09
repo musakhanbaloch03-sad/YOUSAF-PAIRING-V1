@@ -8,28 +8,32 @@
  * 🎵 TikTok: https://tiktok.com/@loser_boy.110
  * 📢 WhatsApp Channel: https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j
  * 🔗 GitHub Main Bot: https://github.com/musakhanbaloch03-sad/YOUSAF-BALOCH-MD
- * 🔗 GitHub Pairing: https://github.com/musakhanbaloch03-sad/YOUSAF-PAIRING-V1
  * * ═══════════════════════════════════════════════════════════════════════════════
- * 💎 ULTRA PRO PREMIUM QUALITY - PROFESSIONAL EDITION 💎
- * ═══════════════════════════════════════════════════════════════════════════════
  */
 
 import express from 'express';
 import fs from 'fs';
 import path from 'path';
-import cors from 'cors'; // 🛠️ FIXED: Error [ERR_MODULE_NOT_FOUND]
 import { fileURLToPath } from 'url';
 import pkg from '@whiskeysockets/baileys';
 const {
     default: makeWASocket,
     useMultiFileAuthState,
-    DisconnectReason,
     fetchLatestBaileysVersion,
     Browsers,
     delay
 } = pkg;
 import pino from 'pino';
 import { Boom } from '@hapi/boom';
+
+// 🛠️ DYNAMIC IMPORT FOR CORS TO PREVENT CRASH
+let cors;
+try {
+    const corsModule = await import('cors');
+    cors = corsModule.default;
+} catch (e) {
+    console.log("⚠️ CORS package not found, using fallback.");
+}
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -38,11 +42,11 @@ const app = express();
 const PORT = process.env.PORT || 8000;
 
 // 🛡️ SECURITY & CONFIGURATION
-app.use(cors()); // 🛠️ FIXED: Allowing Cross-Origin requests for Pairing UI
+if (cors) app.use(cors()); 
 app.use(express.json());
 app.use(express.static('public'));
 
-// 🔒 YOUSAF BALOCH - HARDCODED OWNER INFORMATION (LOCKED)
+// 🔒 OWNER INFORMATION
 const YOUSAF_BALOCH = Object.freeze({
     NAME: "Yousuf Baloch",
     FULL_NAME: "Muhammad Yousaf Baloch",
@@ -50,15 +54,11 @@ const YOUSAF_BALOCH = Object.freeze({
     YOUTUBE: "https://www.youtube.com/@Yousaf_Baloch_Tech",
     TIKTOK: "https://tiktok.com/@loser_boy.110",
     WHATSAPP_CHANNEL: "https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j",
-    GITHUB_PROFILE: "https://github.com/musakhanbaloch03-sad",
-    MAIN_BOT_REPO: "https://github.com/musakhanbaloch03-sad/YOUSAF-BALOCH-MD",
-    PAIRING_REPO: "https://github.com/musakhanbaloch03-sad/YOUSAF-PAIRING-V1",
     BOT_NAME: "YOUSAF-BALOCH-MD",
-    VERSION: "2.0.0",
     LOGO: "https://i.ibb.co/YDx8tFb/yousaf-baloch-md-logo.png"
 });
 
-// 🎨 ULTRA PRO PREMIUM COLORS
+// 🎨 PREMIUM COLORS
 const COLORS = {
     CYAN: '\x1b[38;5;51m',
     GREEN: '\x1b[38;5;46m',
@@ -76,7 +76,7 @@ function ultraLog(msg, type = 'info') {
 }
 
 /**
- * 🚀 START PAIRING ENGINE (ULTRA PRO)
+ * 🚀 START PAIRING ENGINE
  */
 async function startPairing(phoneNumber, res) {
     const authId = `session_${Math.random().toString(36).substring(7)}`;
@@ -92,9 +92,8 @@ async function startPairing(phoneNumber, res) {
         auth: state,
         printQRInTerminal: false,
         logger: pino({ level: 'silent' }),
-        browser: ["Ubuntu", "Chrome", "20.0.04"], // 🛠️ FIXED: High success rate browser
+        browser: ["Ubuntu", "Chrome", "20.0.04"], 
         connectTimeoutMs: 60000,
-        keepAliveIntervalMs: 10000
     });
 
     sock.ev.on('creds.update', saveCreds);
@@ -122,35 +121,26 @@ async function startPairing(phoneNumber, res) {
             `;
             
             await sock.sendMessage(sock.user.id, { text: msg.trim() });
-            ultraLog("🔐 Session ID sent successfully!", "success");
-
+            
             setTimeout(() => {
                 try {
                     sock.logout();
-                    fs.rmSync(authDir, { recursive: true, force: true });
+                    if (fs.existsSync(authDir)) fs.rmSync(authDir, { recursive: true, force: true });
                 } catch (e) {}
             }, 5000);
-        }
-
-        if (connection === 'close') {
-            const code = (lastDisconnect?.error instanceof Boom) ? lastDisconnect.error.output.statusCode : 0;
-            ultraLog(`🔌 Connection Closed. Code: ${code}`, "error");
         }
     });
 
     if (!state.creds.registered) {
         const cleanNumber = phoneNumber.replace(/[^0-9]/g, '');
-        // 🛠️ FIXED: Crucial delay to stabilize socket before pairing request
-        await delay(5000); 
+        await delay(3500); // Stabilize connection
         try {
             const code = await sock.requestPairingCode(cleanNumber);
-            ultraLog(`🔑 Code Generated: ${code}`, "success");
             if (!res.headersSent) {
-                res.json({ success: true, code, owner: YOUSAF_BALOCH.NAME });
+                res.json({ success: true, code });
             }
         } catch (err) {
-            ultraLog(`❌ Pairing Error: ${err.message}`, "error");
-            if (!res.headersSent) res.status(500).json({ success: false, error: "Server busy, try again." });
+            if (!res.headersSent) res.status(500).json({ success: false, error: "Pairing failed" });
         }
     }
 }
@@ -158,33 +148,18 @@ async function startPairing(phoneNumber, res) {
 // 🌐 API ROUTES
 app.post('/get-code', async (req, res) => {
     const { phoneNumber } = req.body;
-    if (!phoneNumber) return res.status(400).json({ error: "Phone number is required" });
+    if (!phoneNumber) return res.status(400).json({ error: "Number required" });
     await startPairing(phoneNumber, res);
 });
 
 app.get('/', (req, res) => {
-    res.set('Content-Type', 'text/html');
-    res.send(`<body style="background:#000;color:#0ff;text-align:center;font-family:sans-serif;padding-top:100px;">
+    res.send(`<body style="background:#000;color:#0ff;text-align:center;padding-top:100px;font-family:sans-serif;">
         <h1>🌟 ${YOUSAF_BALOCH.BOT_NAME} 🌟</h1>
-        <p>Ultra Pro Pairing Service is Online and Stable.</p>
-        <p style="color:#ff00ff;">Owner: ${YOUSAF_BALOCH.FULL_NAME}</p>
-        <div style="margin-top:20px; color:#fff;">
-            <p>WhatsApp: ${YOUSAF_BALOCH.WHATSAPP_NUMBER}</p>
-            <a href="${YOUSAF_BALOCH.YOUTUBE}" style="color:#f00;">YouTube</a> | 
-            <a href="${YOUSAF_BALOCH.TIKTOK}" style="color:#ff0;">TikTok</a>
-        </div>
+        <p>Service is Live and Professional.</p>
+        <p style="color:#f0f;">Developer: ${YOUSAF_BALOCH.FULL_NAME}</p>
     </body>`);
 });
 
-// 🎬 INITIALIZE SERVER
 app.listen(PORT, '0.0.0.0', () => {
-    console.clear();
-    console.log(`${COLORS.MAGENTA}${COLORS.BOLD}╔══════════════════════════════════════════════════════════════════╗${COLORS.RESET}`);
-    console.log(`${COLORS.GOLD}${COLORS.BOLD}║        🌟 YOUSAF-BALOCH-MD PAIRING SERVICE V2.0 🌟              ║${COLORS.RESET}`);
-    console.log(`${COLORS.MAGENTA}${COLORS.BOLD}╚══════════════════════════════════════════════════════════════════╝${COLORS.RESET}`);
     ultraLog(`🚀 SERVER RUNNING ON PORT: ${PORT}`, "success");
-    ultraLog(`👨‍💻 Owner: ${YOUSAF_BALOCH.FULL_NAME}`, "success");
 });
-
-process.on('uncaughtException', (err) => ultraLog(`Fatal: ${err.message}`, "error"));
-        
