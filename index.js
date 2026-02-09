@@ -9,14 +9,15 @@ import Pino from 'pino';
 import express from 'express';
 import figlet from 'figlet';
 
-// --- Baileys Import (Failsafe Method) ---
 const baileys = require('@whiskeysockets/baileys');
 const { 
     default: makeWASocket, 
     useMultiFileAuthState, 
     fetchLatestBaileysVersion, 
     makeCacheableSignalKeyStore,
-    DisconnectReason 
+    DisconnectReason,
+    Browsers,   // <--- Ye zaroori hai
+    delay       // <--- Delay add kiya taake WhatsApp server reject na kare
 } = baileys;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -25,14 +26,12 @@ const PORT = process.env.PORT || 8000;
 
 app.use(express.json());
 
-// Session Setup
 const sessionDir = path.join(__dirname, 'sessions');
 if (!fs.existsSync(sessionDir)) fs.ensureDirSync(sessionDir);
 
 console.clear();
 console.log(chalk.cyan(figlet.textSync('YOUSAF V1', { font: 'Small' })));
 
-// --- Dashboard UI ---
 app.get('/', (req, res) => {
     res.send(`
 <!DOCTYPE html>
@@ -104,7 +103,7 @@ app.get('/', (req, res) => {
     `);
 });
 
-// --- Pairing Logic ---
+// --- Pairing Engine with FIXED BROWSER ---
 async function startYousafV1() {
     const { state, saveCreds } = await useMultiFileAuthState(sessionDir);
     const { version } = await fetchLatestBaileysVersion();
@@ -117,7 +116,8 @@ async function startYousafV1() {
         },
         printQRInTerminal: false,
         logger: Pino({ level: 'silent' }),
-        browser: ["YOUSAF-V1", "Chrome", "1.0.0"]
+        // --- YEH HAI ASAL FIX: Ubuntu Chrome Identity ---
+        browser: Browsers.ubuntu("Chrome"),
     });
 
     sock.ev.on('creds.update', saveCreds);
@@ -126,19 +126,31 @@ async function startYousafV1() {
         let phone = req.body.phone;
         try {
             if (!sock.authState.creds.registered) {
+                // Thora delay taake server reject na kare
+                await delay(1500); 
                 let code = await sock.requestPairingCode(phone);
                 res.json({ code: code });
             } else {
-                res.json({ error: "Session already active" });
+                res.json({ error: "Session Active. Clear Session first." });
             }
         } catch (err) {
-            res.json({ error: "Try again" });
+            console.error("Pairing Error:", err);
+            res.json({ error: "Try Again (Server Busy)" });
+        }
+    });
+
+    sock.ev.on('connection.update', (update) => {
+        const { connection, lastDisconnect } = update;
+        if (connection === 'close') {
+            const shouldReconnect = lastDisconnect.error?.output?.statusCode !== DisconnectReason.loggedOut;
+            if (shouldReconnect) startYousafV1();
+        } else if (connection === 'open') {
+            console.log(chalk.green('✅ YOUSAF-V1 Connected Successfully!'));
         }
     });
 }
 
-// Start Server
 app.listen(PORT, () => {
     console.log(chalk.green(`🚀 YOUSAF-V1 LIVE ON PORT: ${PORT}`));
-    startYousafV1().catch(e => console.log("Startup Error:", e));
+    startYousafV1().catch(e => console.log(e));
 });
