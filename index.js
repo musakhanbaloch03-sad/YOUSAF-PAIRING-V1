@@ -1,10 +1,5 @@
-/*
-╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮
-┃      YOUSAF-PAIRING-V1 SYSTEM         ┃
-┃   DEVELOPER: MUHAMMAD YOUSAF BALOCH    ┃
-┃   STATUS: FIXED FOR NODE V20 & KOYEB  ┃
-╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯
-*/
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -14,15 +9,15 @@ import Pino from 'pino';
 import express from 'express';
 import figlet from 'figlet';
 
-// --- Baileys Import Fix (Dynamic Extraction) ---
-import pkg from '@whiskeysockets/baileys';
+// --- Baileys Import (Failsafe Method) ---
+const baileys = require('@whiskeysockets/baileys');
 const { 
     default: makeWASocket, 
     useMultiFileAuthState, 
     fetchLatestBaileysVersion, 
     makeCacheableSignalKeyStore,
     DisconnectReason 
-} = pkg;
+} = baileys;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -30,7 +25,7 @@ const PORT = process.env.PORT || 8000;
 
 app.use(express.json());
 
-// Session and Tmp Directory Setup
+// Session Setup
 const sessionDir = path.join(__dirname, 'sessions');
 if (!fs.existsSync(sessionDir)) fs.ensureDirSync(sessionDir);
 
@@ -109,9 +104,8 @@ app.get('/', (req, res) => {
     `);
 });
 
-// --- Stable Pairing Engine ---
+// --- Pairing Logic ---
 async function startYousafV1() {
-    // Check if session exists to prevent Auth State error
     const { state, saveCreds } = await useMultiFileAuthState(sessionDir);
     const { version } = await fetchLatestBaileysVersion();
     
@@ -123,50 +117,28 @@ async function startYousafV1() {
         },
         printQRInTerminal: false,
         logger: Pino({ level: 'silent' }),
-        browser: ["YOUSAF-V1", "Safari", "1.0.0"]
+        browser: ["YOUSAF-V1", "Chrome", "1.0.0"]
     });
 
     sock.ev.on('creds.update', saveCreds);
 
     app.post('/pairing', async (req, res) => {
         let phone = req.body.phone;
-        if (!phone) return res.json({ error: "Number is required" });
-        
         try {
-            // Check if already registered to avoid double calls
             if (!sock.authState.creds.registered) {
                 let code = await sock.requestPairingCode(phone);
                 res.json({ code: code });
             } else {
-                res.json({ error: "Session already exists!" });
+                res.json({ error: "Session already active" });
             }
         } catch (err) {
-            console.error(chalk.red("Pairing Error:"), err);
-            res.json({ error: "Service Busy. Refresh page." });
-        }
-    });
-
-    sock.ev.on('connection.update', async (s) => {
-        const { connection, lastDisconnect } = s;
-        if (connection === 'open') {
-            console.log(chalk.green('✅ YOUSAF-V1 Connected!'));
-        }
-        if (connection === 'close') {
-            let reason = lastDisconnect?.error?.output?.statusCode;
-            if (reason !== DisconnectReason.loggedOut) {
-                startYousafV1();
-            }
+            res.json({ error: "Try again" });
         }
     });
 }
 
-// Ensure the server starts first so health checks pass
+// Start Server
 app.listen(PORT, () => {
     console.log(chalk.green(`🚀 YOUSAF-V1 LIVE ON PORT: ${PORT}`));
-    // Delay pairing start slightly to ensure environment is ready
-    setTimeout(() => {
-        startYousafV1().catch(err => {
-            console.error(chalk.red("Internal Startup Error:"), err);
-        });
-    }, 2000);
+    startYousafV1().catch(e => console.log("Startup Error:", e));
 });
