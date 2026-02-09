@@ -1,9 +1,9 @@
 /*
 ╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮
-┃     YOUSAF-BALOCH-MD WhatsApp Bot      ┃
+┃      YOUSAF-PAIRING-V1 SYSTEM         ┃
 ┃        Ultra Premium Edition           ┃
-┃      DESIGN: NEON CYBERPUNK UI         ┃
-┃      DEVELOPED BY: MR YOUSAF           ┃
+┃   DESIGN: NEON CYBERPUNK CLOCK UI      ┃
+┃   DEVELOPER: MUHAMMAD YOUSAF BALOCH    ┃
 ╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯
 */
 
@@ -11,235 +11,204 @@ import { createRequire } from 'module';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
-import yargs from 'yargs';
 import chalk from 'chalk';
 import Pino from 'pino';
-import figlet from 'figlet';
 import express from 'express';
+import figlet from 'figlet';
 
-const { DisconnectReason, useMultiFileAuthState, fetchLatestBaileysVersion, makeCacheableSignalKeyStore, makeWASocket } = await import('@whiskeysockets/baileys');
+const { 
+    default: makeWASocket,
+    useMultiFileAuthState, 
+    DisconnectReason, 
+    fetchLatestBaileysVersion, 
+    makeCacheableSignalKeyStore 
+} = (await import('@whiskeysockets/baileys')).default;
 
-const PORT = process.env.PORT || 8000;
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-global.opts = new Object(yargs(process.argv.slice(2)).exitProcess(false).parse());
-
 const app = express();
-let currentQR = null;
-let connectionStatus = 'waiting';
+const PORT = process.env.PORT || 8000;
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
-// 🎨 Ultra-Professional UI Logic (As per screenshots 194252 & 194253)
+// Session Folder Fix (Bad MAC Error fix)
+const sessionDir = './sessions';
+if (!fs.existsSync(sessionDir)) fs.mkdirSync(sessionDir);
+
+console.clear();
+console.log(chalk.cyan(figlet.textSync('YOUSAF V1', { font: 'Small' })));
+
+// --- UI Logic (Neon Digital Clock & Large Buttons) ---
 app.get('/', (req, res) => {
-  res.send(`
+    res.send(`
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YOUSAF-BALOCH-MD - Pairing System</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>YOUSAF-PAIRING-V1</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;600;800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #00f2ff;
-            --secondary: #ff0080;
-            --purple: #b06ab3;
-            --blue-grad: linear-gradient(135deg, #00f2ff, #0066ff);
-            --pink-grad: linear-gradient(135deg, #ff6b6b, #ff0080);
-        }
+        :root { --primary: #00f2ff; --secondary: #ff0080; --accent: #ffd700; --dark: #050505; }
+        
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
             font-family: 'Poppins', sans-serif;
-            background: #fdfdfd; 
-            background: linear-gradient(180deg, #ffffff 0%, #eef2f3 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            padding: 20px;
-            color: #333;
+            background: radial-gradient(circle at center, #1a0033 0%, #050505 100%);
+            color: white; min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 15px;
         }
-        .container { width: 100%; max-width: 450px; text-align: center; }
-        .bot-icon { font-size: 80px; margin-bottom: 10px; }
-        .bot-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 2.2em;
-            font-weight: 900;
-            background: linear-gradient(to right, #4568dc, #b06ab3);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 5px;
-        }
-        .bot-subtitle { font-size: 0.9em; color: #777; margin-bottom: 30px; }
 
-        /* ⏰ Digital Clock (Screenshot 194252 style) */
+        .container { width: 100%; max-width: 480px; text-align: center; }
+
+        /* ⏰ LARGE NEON CLOCK SECTION */
         .clock-box {
-            background: var(--blue-grad);
-            border-radius: 25px;
-            padding: 25px;
+            background: rgba(0, 242, 255, 0.05);
+            border: 2px solid var(--primary);
+            border-radius: 35px;
+            padding: 30px 15px;
             margin-bottom: 25px;
-            box-shadow: 0 10px 30px rgba(0, 242, 255, 0.3);
-            color: white;
+            box-shadow: 0 0 25px rgba(0, 242, 255, 0.2), inset 0 0 15px rgba(0, 242, 255, 0.1);
+            backdrop-filter: blur(10px);
         }
-        #time { font-family: 'Orbitron', sans-serif; font-size: 3em; font-weight: 800; }
-        #date { font-size: 1.1em; opacity: 0.9; margin-top: 5px; }
+        #time { font-family: 'Orbitron'; font-size: 3.5em; font-weight: 900; color: var(--primary); text-shadow: 0 0 20px var(--primary); }
+        #date-day { font-size: 1.2em; color: #fff; margin-top: 10px; font-weight: 600; letter-spacing: 1px; }
 
-        /* 📑 Tab Buttons */
-        .tabs { display: flex; gap: 10px; margin-bottom: 30px; }
-        .tab {
-            flex: 1; padding: 15px; border-radius: 15px; background: #f0f0f0;
-            font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+        /* 📱 INPUT & PAIRING BOX */
+        .main-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border-radius: 40px; padding: 40px 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            margin-bottom: 25px;
         }
-        .tab.active {
-            background: var(--purple); color: white;
-            box-shadow: 0 5px 15px rgba(176, 106, 179, 0.4);
+        .title { font-family: 'Orbitron'; font-size: 1.7em; font-weight: 900; background: linear-gradient(90deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 25px; }
+        
+        input {
+            width: 100%; padding: 22px; border-radius: 20px; border: 2px solid #333; background: #000; color: #fff;
+            font-family: 'Orbitron'; font-size: 1.3em; text-align: center; margin-bottom: 20px; transition: 0.3s;
         }
+        input:focus { border-color: var(--secondary); box-shadow: 0 0 20px rgba(255, 0, 128, 0.2); outline: none; }
 
-        /* ⌨️ Input Section */
-        .input-card { text-align: left; margin-bottom: 25px; }
-        .input-label { font-weight: 700; font-size: 1.1em; margin-bottom: 10px; display: block; }
-        .phone-input {
-            width: 100%; padding: 20px; border-radius: 18px; border: 1px solid #ddd;
-            background: #f9f9f9; font-size: 1.3em; font-family: 'Orbitron', sans-serif;
-            outline: none; transition: 0.3s;
-        }
-        .phone-input:focus { border-color: var(--primary); background: #fff; }
-
-        /* ⚡ 3D Skeuomorphic Button */
         .gen-btn {
             width: 100%; padding: 22px; border-radius: 20px; border: none;
-            background: linear-gradient(135deg, #b06ab3, #4568dc);
-            color: white; font-size: 1.2em; font-weight: 900; font-family: 'Orbitron', sans-serif;
-            cursor: pointer; box-shadow: 0 8px 0px #2d45a3, 0 15px 25px rgba(0,0,0,0.1);
-            transition: 0.1s; margin-bottom: 30px;
+            background: linear-gradient(45deg, #00f2ff, #0066ff); color: white;
+            font-family: 'Orbitron'; font-weight: 900; font-size: 1.2em; cursor: pointer;
+            box-shadow: 0 10px 20px rgba(0, 102, 255, 0.3); transition: 0.2s;
         }
-        .gen-btn:active { transform: translateY(4px); box-shadow: 0 4px 0px #2d45a3; }
+        .gen-btn:active { transform: scale(0.96); box-shadow: 0 5px 10px rgba(0, 102, 255, 0.2); }
 
-        /* 👤 Owner Details (Screenshot 194253 style) */
-        .owner-card {
-            background: var(--pink-grad); border-radius: 30px; padding: 30px;
-            margin-bottom: 20px; text-align: left; color: white;
-        }
-        .owner-title { font-family: 'Orbitron', sans-serif; font-size: 1.3em; font-weight: 800; margin-bottom: 20px; }
-        .info-row {
-            background: rgba(255,255,255,0.2); border-radius: 15px; padding: 15px;
-            margin-bottom: 10px; display: flex; justify-content: space-between; font-weight: 600;
-        }
+        #code-res { font-size: 2.8em; font-family: 'Orbitron'; color: var(--accent); margin-top: 25px; font-weight: 900; letter-spacing: 5px; text-shadow: 0 0 15px var(--accent); }
 
-        /* 🔗 Social Media Buttons */
+        /* 🔗 ULTRA COLORFUL ULTRA LARGE SOCIAL BUTTONS */
         .social-btn {
-            width: 100%; padding: 18px; border-radius: 15px; margin-bottom: 12px;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-            font-weight: 700; text-decoration: none; color: white; font-size: 1.1em;
+            width: 100%; padding: 22px; border-radius: 22px; margin-top: 15px;
+            display: flex; align-items: center; justify-content: center; gap: 15px;
+            font-weight: 800; color: white; text-decoration: none; font-family: 'Orbitron'; font-size: 1em;
+            transition: 0.4s; border: 2px solid rgba(255,255,255,0.1);
         }
-        .wa { background: #25D366; } .yt { background: #FF0000; } 
-        .tk { background: #000; } .call { background: #00a2ff; }
+        .wa { background: linear-gradient(45deg, #25D366, #128C7E); box-shadow: 0 8px 20px rgba(37, 211, 102, 0.3); }
+        .yt { background: linear-gradient(45deg, #FF0000, #990000); box-shadow: 0 8px 20px rgba(255, 0, 0, 0.3); }
+        .tk { background: linear-gradient(45deg, #000, #333); box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
+        .ch { background: linear-gradient(45deg, #00c6ff, #0072ff); box-shadow: 0 8px 20px rgba(0, 114, 255, 0.3); }
 
-        #code-display { font-size: 2.5em; font-family: 'Orbitron', sans-serif; color: #4568dc; margin-top: 20px; letter-spacing: 5px; font-weight: 900; }
+        .social-btn:hover { transform: translateY(-5px) scale(1.02); filter: brightness(1.2); border-color: #fff; }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="bot-icon">🤖</div>
-        <h1 class="bot-title">YOUSAF-BALOCH-MD</h1>
-        <p class="bot-subtitle">Premium WhatsApp Multi-Device Pairing System</p>
-
         <div class="clock-box">
             <div id="time">00:00:00</div>
-            <div id="date">Loading...</div>
+            <div id="date-day">LOADING...</div>
         </div>
 
-        <div class="tabs">
-            <div class="tab active">📱 Phone Number</div>
-            <div class="tab">📷 QR Code</div>
+        <div class="main-card">
+            <h1 class="title">YOUSAF-PAIRING-V1</h1>
+            <input type="tel" id="number" placeholder="923170636110">
+            <button class="gen-btn" onclick="getCode()">⚡ GENERATE CODE</button>
+            <div id="code-res"></div>
         </div>
 
-        <div class="input-card">
-            <label class="input-label">📞 Enter Your WhatsApp Number</label>
-            <input type="tel" id="phone" class="phone-input" placeholder="923XXXXXXXXX">
-            <p style="font-size: 0.8em; color: #888; margin-top: 10px;">ℹ️ Format: Country code + number (e.g., 923170636110)</p>
-        </div>
-
-        <button class="gen-btn" onclick="generateCode()">⚡ GENERATE PAIRING CODE</button>
-        <div id="code-display"></div>
-
-        <div class="owner-card">
-            <div class="owner-title">👨‍💻 CREATED BY MUHAMMAD YOUSAF</div>
-            <div class="info-row"><span>📞 Phone:</span> <span>923170636110</span></div>
-            <div class="info-row"><span>🌐 Country:</span> <span>Pakistan 🇵🇰</span></div>
-        </div>
-
-        <a href="https://wa.me/923170636110" class="social-btn wa">📱 WhatsApp</a>
-        <a href="#" class="social-btn yt">🎬 YouTube</a>
-        <a href="#" class="social-btn tk">🎵 TikTok</a>
-        <a href="tel:+923170636110" class="social-btn call">📞 Call</a>
+        <a href="https://wa.me/923170636110" class="social-btn wa">📱 WHATSAPP OWNER</a>
+        <a href="https://youtube.com/@Yousaf_Baloch_Tech" class="social-btn yt">🎬 YOUTUBE CHANNEL</a>
+        <a href="https://tiktok.com/@loser_boy.110" class="social-btn tk">🎵 TIKTOK PROFILE</a>
+        <a href="https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j" class="social-btn ch">📢 JOIN CHANNEL</a>
+        
+        <p style="margin-top: 30px; color: rgba(255,255,255,0.3); font-size: 0.8em; font-family: 'Orbitron'; letter-spacing: 2px;">BY MUHAMMAD YOUSAF BALOCH</p>
     </div>
 
     <script>
+        // Real-time Clock Logic
         function updateClock() {
             const now = new Date();
             document.getElementById('time').textContent = now.toLocaleTimeString('en-GB', { hour12: false });
-            document.getElementById('date').textContent = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+            const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+            document.getElementById('date-day').textContent = now.toLocaleDateString('en-US', options);
         }
         setInterval(updateClock, 1000); updateClock();
 
-        async function generateCode() {
-            const phone = document.getElementById('phone').value.replace(/[^0-9]/g, '');
-            const display = document.getElementById('code-display');
-            if(!phone || phone.length < 10) return alert('Enter valid number!');
-            
-            display.textContent = 'WAIT...';
+        // Pairing Code Logic
+        async function getCode() {
+            const num = document.getElementById('number').value.replace(/[^0-9]/g, '');
+            if(!num || num.length < 10) return alert('Please enter a valid phone number with country code!');
+            const resDiv = document.getElementById('code-res');
+            resDiv.innerHTML = '<span style="font-size: 0.4em; color: #fff; letter-spacing: 1px;">WAITING...</span>';
             try {
                 const res = await fetch('/pairing', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ phone })
+                    body: JSON.stringify({ phone: num })
                 });
                 const data = await res.json();
-                display.textContent = data.code || 'ERROR';
-            } catch { display.textContent = 'ERROR'; }
+                resDiv.textContent = data.code || 'ERROR';
+            } catch { resDiv.textContent = 'SERVER ERROR'; }
         }
     </script>
 </body>
 </html>
-  `);
+    `);
 });
 
-// --- Baileys Backend Logic ---
+// --- Backend Pairing Logic (Anti-Error Version) ---
+async function startPairing() {
+    const { state, saveCreds } = await useMultiFileAuthState(sessionDir);
+    const { version } = await fetchLatestBaileysVersion();
 
-app.post('/pairing', async (req, res) => {
-  try {
-    const { phone } = req.body;
-    if (!global.conn) return res.json({ error: 'Bot starting...' });
-    const code = await global.conn.requestPairingCode(phone);
-    res.json({ code: code?.match(/.{1,4}/g)?.join('-') || code });
-  } catch (error) { res.json({ error: 'Failed' }); }
-});
+    const sock = makeWASocket({
+        version,
+        logger: Pino({ level: 'silent' }),
+        auth: {
+            creds: state.creds,
+            keys: makeCacheableSignalKeyStore(state.keys, Pino({ level: 'silent' })),
+        },
+        browser: ["YOUSAF-V1-PAIRING", "Chrome", "3.0.0"],
+        connectTimeoutMs: 60000,
+        defaultQueryTimeoutMs: 0,
+    });
 
-async function startBot() {
-  const { state, saveCreds } = await useMultiFileAuthState('./sessions');
-  const { version } = await fetchLatestBaileysVersion();
+    sock.ev.on('creds.update', saveCreds);
 
-  const sock = makeWASocket({
-    version,
-    auth: { creds: state.creds, keys: makeCacheableSignalKeyStore(state.keys, Pino({ level: 'silent' })) },
-    printQRInTerminal: false,
-    logger: Pino({ level: 'silent' }),
-    browser: ['YOUSAF-BALOCH-MD', 'Chrome', '1.0.0']
-  });
+    sock.ev.on('connection.update', (update) => {
+        const { connection, lastDisconnect } = update;
+        if (connection === 'close') {
+            const reason = lastDisconnect?.error?.output?.statusCode;
+            if (reason !== DisconnectReason.loggedOut) {
+                setTimeout(startPairing, 5000); // FIX: Auto-reconnect on 515/500 errors
+            } else {
+                fs.rmSync(sessionDir, { recursive: true, force: true });
+                startPairing();
+            }
+        }
+    });
 
-  global.conn = sock;
-  sock.ev.on('creds.update', saveCreds);
-  sock.ev.on('connection.update', (update) => {
-    const { connection, lastDisconnect } = update;
-    if (connection === 'open') console.log(chalk.green('✅ Connected!'));
-    if (connection === 'close') {
-      const shouldReconnect = lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut;
-      if (shouldReconnect) startBot();
-    }
-  });
+    app.post('/pairing', async (req, res) => {
+        let phone = req.body.phone;
+        try {
+            let code = await sock.requestPairingCode(phone);
+            res.json({ code: code?.match(/.{1,4}/g)?.join('-') || code });
+        } catch { res.json({ error: 'Pairing Failed' }); }
+    });
 }
 
-app.listen(PORT, () => console.log(chalk.blue(`🚀 Server on port ${PORT}`)));
-startBot();
+app.listen(PORT, () => console.log(chalk.green(`🚀 YOUSAF-PAIRING-V1 LIVE ON PORT: ${PORT}`)));
+startPairing();
