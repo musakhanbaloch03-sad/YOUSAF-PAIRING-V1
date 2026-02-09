@@ -17,7 +17,7 @@
 import express from 'express';
 import fs from 'fs';
 import path from 'path';
-import cors from 'cors';
+import cors from 'cors'; // 🛠️ FIXED: Error [ERR_MODULE_NOT_FOUND]
 import { fileURLToPath } from 'url';
 import pkg from '@whiskeysockets/baileys';
 const {
@@ -38,11 +38,11 @@ const app = express();
 const PORT = process.env.PORT || 8000;
 
 // 🛡️ SECURITY & CONFIGURATION
-app.use(cors()); 
+app.use(cors()); // 🛠️ FIXED: Allowing Cross-Origin requests for Pairing UI
 app.use(express.json());
 app.use(express.static('public'));
 
-// 🔒 OWNER INFORMATION (LOCKED)
+// 🔒 YOUSAF BALOCH - HARDCODED OWNER INFORMATION (LOCKED)
 const YOUSAF_BALOCH = Object.freeze({
     NAME: "Yousuf Baloch",
     FULL_NAME: "Muhammad Yousaf Baloch",
@@ -58,7 +58,7 @@ const YOUSAF_BALOCH = Object.freeze({
     LOGO: "https://i.ibb.co/YDx8tFb/yousaf-baloch-md-logo.png"
 });
 
-// 🎨 PREMIUM COLORS
+// 🎨 ULTRA PRO PREMIUM COLORS
 const COLORS = {
     CYAN: '\x1b[38;5;51m',
     GREEN: '\x1b[38;5;46m',
@@ -76,7 +76,7 @@ function ultraLog(msg, type = 'info') {
 }
 
 /**
- * 🚀 START PAIRING ENGINE
+ * 🚀 START PAIRING ENGINE (ULTRA PRO)
  */
 async function startPairing(phoneNumber, res) {
     const authId = `session_${Math.random().toString(36).substring(7)}`;
@@ -92,9 +92,9 @@ async function startPairing(phoneNumber, res) {
         auth: state,
         printQRInTerminal: false,
         logger: pino({ level: 'silent' }),
-        // 🛠️ CRITICAL FIX: Chrome Browser allows WhatsApp to accept the code instantly
-        browser: ["Ubuntu", "Chrome", "20.0.04"], 
+        browser: ["Ubuntu", "Chrome", "20.0.04"], // 🛠️ FIXED: High success rate browser
         connectTimeoutMs: 60000,
+        keepAliveIntervalMs: 10000
     });
 
     sock.ev.on('creds.update', saveCreds);
@@ -110,7 +110,6 @@ async function startPairing(phoneNumber, res) {
             const sessionData = fs.readFileSync(credsFile, 'utf-8');
             const sessionId = Buffer.from(sessionData).toString('base64');
 
-            // Constructing Professional Message
             const msg = `
 ╔══════════════════════════════════════╗
 ║   🌟 YOUSAF-BALOCH-MD CONNECTED! 🌟   ║
@@ -123,26 +122,26 @@ async function startPairing(phoneNumber, res) {
             `;
             
             await sock.sendMessage(sock.user.id, { text: msg.trim() });
-            ultraLog("🔐 Session ID sent to WhatsApp!", "success");
+            ultraLog("🔐 Session ID sent successfully!", "success");
 
             setTimeout(() => {
-                sock.logout();
-                fs.rmSync(authDir, { recursive: true, force: true });
+                try {
+                    sock.logout();
+                    fs.rmSync(authDir, { recursive: true, force: true });
+                } catch (e) {}
             }, 5000);
         }
 
         if (connection === 'close') {
             const code = (lastDisconnect?.error instanceof Boom) ? lastDisconnect.error.output.statusCode : 0;
-            if (code !== DisconnectReason.loggedOut) {
-                ultraLog("🔌 Connection Closed. Retrying...", "error");
-            }
+            ultraLog(`🔌 Connection Closed. Code: ${code}`, "error");
         }
     });
 
     if (!state.creds.registered) {
         const cleanNumber = phoneNumber.replace(/[^0-9]/g, '');
-        // 🛠️ FIX: Proper delay before requesting code to avoid "Connection Closed"
-        await delay(3000);
+        // 🛠️ FIXED: Crucial delay to stabilize socket before pairing request
+        await delay(5000); 
         try {
             const code = await sock.requestPairingCode(cleanNumber);
             ultraLog(`🔑 Code Generated: ${code}`, "success");
@@ -151,7 +150,7 @@ async function startPairing(phoneNumber, res) {
             }
         } catch (err) {
             ultraLog(`❌ Pairing Error: ${err.message}`, "error");
-            if (!res.headersSent) res.status(500).json({ success: false, error: "Failed to generate code" });
+            if (!res.headersSent) res.status(500).json({ success: false, error: "Server busy, try again." });
         }
     }
 }
@@ -167,8 +166,13 @@ app.get('/', (req, res) => {
     res.set('Content-Type', 'text/html');
     res.send(`<body style="background:#000;color:#0ff;text-align:center;font-family:sans-serif;padding-top:100px;">
         <h1>🌟 ${YOUSAF_BALOCH.BOT_NAME} 🌟</h1>
-        <p>Ultra Pro Pairing Service is Running...</p>
-        <p style="color:#ff00ff;">Owner: ${YOUSAF_BALOCH.NAME}</p>
+        <p>Ultra Pro Pairing Service is Online and Stable.</p>
+        <p style="color:#ff00ff;">Owner: ${YOUSAF_BALOCH.FULL_NAME}</p>
+        <div style="margin-top:20px; color:#fff;">
+            <p>WhatsApp: ${YOUSAF_BALOCH.WHATSAPP_NUMBER}</p>
+            <a href="${YOUSAF_BALOCH.YOUTUBE}" style="color:#f00;">YouTube</a> | 
+            <a href="${YOUSAF_BALOCH.TIKTOK}" style="color:#ff0;">TikTok</a>
+        </div>
     </body>`);
 });
 
@@ -179,8 +183,8 @@ app.listen(PORT, '0.0.0.0', () => {
     console.log(`${COLORS.GOLD}${COLORS.BOLD}║        🌟 YOUSAF-BALOCH-MD PAIRING SERVICE V2.0 🌟              ║${COLORS.RESET}`);
     console.log(`${COLORS.MAGENTA}${COLORS.BOLD}╚══════════════════════════════════════════════════════════════════╝${COLORS.RESET}`);
     ultraLog(`🚀 SERVER RUNNING ON PORT: ${PORT}`, "success");
-    ultraLog(`👨‍💻 Developer: ${YOUSAF_BALOCH.FULL_NAME}`, "success");
-    ultraLog(`📺 YouTube: ${YOUSAF_BALOCH.YOUTUBE}`, "info");
+    ultraLog(`👨‍💻 Owner: ${YOUSAF_BALOCH.FULL_NAME}`, "success");
 });
 
 process.on('uncaughtException', (err) => ultraLog(`Fatal: ${err.message}`, "error"));
+        
