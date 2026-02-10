@@ -1,115 +1,173 @@
 // ╔══════════════════════════════════════════════════════════════╗
-// ║           YOUSAF-BALOCH-MD  •  SESSION HANDLER              ║
-// ║                 Created by Yousuf Baloch                    ║
-// ║     🔒 LOCKED — No part of this file may be modified        ║
+// ║        YOUSAF-BALOCH-MD  •  SESSION SUCCESS HANDLER         ║
+// ║               Created by Muhammad Yousaf Baloch             ║
+// ║  📍 Location: YOUSAF-PAIRING-V1/session_success.js (root)  ║
 // ╚══════════════════════════════════════════════════════════════╝
 
-import fs from 'fs';
+import fs   from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
-// ─────────────────────────────────────────────
-// 🔒  HARDCODED OWNER INFO
-// ─────────────────────────────────────────────
-export const OWNER = Object.freeze({
-    NAME            : 'Yousuf Baloch',
-    NUMBER          : '923170636110', 
-    WHATSAPP_JID    : '923170636110@s.whatsapp.net',
-    TIKTOK          : 'https://tiktok.com/@loser_boy.110',
-    YOUTUBE         : 'https://www.youtube.com/@Yousaf_Baloch_Tech',
-    WA_CHANNEL      : 'https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j',
-    GITHUB          : 'https://github.com/musakhanbaloch03-sad',
-    MAIN_REPO       : 'https://github.com/musakhanbaloch03-sad/YOUSAF-BALOCH-MD',
-    PAIRING_REPO    : 'https://github.com/musakhanbaloch03-sad/YOUSAF-PAIRING-V1',
-    LOGO_URL        : 'https://i.ibb.co/FbyCnmMX/shaban-md.jpg',
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// ─────────────────────────────────────────────────────────────
+// 🔒  HARDCODED OWNER INFO — FROZEN, CANNOT BE CHANGED BY USER
+// ─────────────────────────────────────────────────────────────
+const OWNER = Object.freeze({
+    NAME         : 'Muhammad Yousaf Baloch',
+    NUMBER       : '923710636110',
+    TIKTOK       : 'https://tiktok.com/@loser_boy.110',
+    YOUTUBE      : 'https://www.youtube.com/@Yousaf_Baloch_Tech',
+    WA_CHANNEL   : 'https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j',
+    GITHUB       : 'https://github.com/musakhanbaloch03-sad',
+    MAIN_REPO    : 'https://github.com/musakhanbaloch03-sad/YOUSAF-BALOCH-MD',
+    PAIRING_REPO : 'https://github.com/musakhanbaloch03-sad/YOUSAF-PAIRING-V1',
 });
 
-const C = {
-    reset   : '\x1b[0m', bold    : '\x1b[1m',
-    cyan    : '\x1b[96m', gold    : '\x1b[93m',
-    green   : '\x1b[92m', red     : '\x1b[91m',
-    magenta : '\x1b[95m', blue    : '\x1b[94m',
-    white   : '\x1b[97m',
-};
+// ─────────────────────────────────────────────────────────────
+// ⏱️  DELAY UTILITY
+// ─────────────────────────────────────────────────────────────
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-export function printBanner() {
-    console.log(`
-${C.cyan}${C.bold}
-╔══════════════════════════════════════════════════════╗
-║   ${C.gold}██╗   ██╗ ██████╗ ██╗   ██╗███████╗ █████╗ ███████╗${C.cyan}  ║
-║   ${C.gold}╚██╗ ██╔╝██╔═══██╗██║   ██║██╔════╝██╔══██╗██╔════╝${C.cyan}  ║
-║   ${C.gold} ╚████╔╝ ██║   ██║██║   ██║███████╗███████║█████╗  ${C.cyan}  ║
-║   ${C.gold}  ╚██╔╝  ██║   ██║██║   ██║╚════██║██╔══██║██╔══╝  ${C.cyan}  ║
-║   ${C.gold}   ██║   ╚██████╔╝╚██████╔╝███████║██║  ██║██║     ${C.cyan}  ║
-║   ${C.white}  PAIRING SERVICE  •  by ${C.gold}Yousuf Baloch${C.white}               ${C.cyan}  ║
-╚══════════════════════════════════════════════════════╝
-${C.reset}`);
-}
-
-export async function generateSessionId(sessionDir) {
+// ─────────────────────────────────────────────────────────────
+// 🔑  READ SESSION ID FROM CREDS FILE
+// ─────────────────────────────────────────────────────────────
+async function getSessionId(sessionPath) {
     try {
-        const credsPath = path.join(sessionDir, 'creds.json');
-        if (!fs.existsSync(credsPath)) return 'SESSION_NOT_SAVED_YET';
-        const raw  = fs.readFileSync(credsPath, 'utf-8');
-        const b64  = Buffer.from(raw).toString('base64');
-        return `YOUSAF;;;${b64}`; // Added triple semicolon for better parsing
+        const credsFile = path.join(sessionPath, 'creds.json');
+        if (!fs.existsSync(credsFile)) return 'SESSION_NOT_READY_YET';
+        const raw = fs.readFileSync(credsFile, 'utf-8');
+        const b64 = Buffer.from(raw).toString('base64');
+        return `YOUSAF;${b64}`;
     } catch (e) {
-        return 'ERROR_GENERATING_SESSION';
+        console.error('\x1b[31m❌ Session read error: %s\x1b[0m', e.message);
+        return 'SESSION_READ_ERROR';
     }
 }
 
-export function buildSuccessMessage(sessionId) {
-    return `╔══════════════════════════════════╗
-║  ✅  CONNECTION SUCCESSFUL  ✅   ║
-╚══════════════════════════════════╝
+// ─────────────────────────────────────────────────────────────
+// 📋  BUILD SUCCESS MESSAGE
+// ─────────────────────────────────────────────────────────────
+function buildMessage(sessionId) {
+    return `╔════════════════════════════════════╗
+║  ✅  BOT CONNECTED SUCCESSFULLY  ✅  ║
+╚════════════════════════════════════╝
 
-🎉 *YOUSAF BALOCH MD* Connected!
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎉 *YOUSAF BALOCH MD* is now live!
 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🔑 *YOUR SESSION ID*
+_Save this — required for deployment!_
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 \`\`\`${sessionId}\`\`\`
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🚀 *DEPLOY YOUR BOT NOW*
-1️⃣ Open: ${OWNER.MAIN_REPO}
-2️⃣ Paste your *Session ID*
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-👤 *Name:* ${OWNER.NAME}
-📞 *WhatsApp:* wa.me/${OWNER.NUMBER}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🚀 *DEPLOY YOUR BOT — ALL PLATFORMS*
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔗 ${OWNER.MAIN_REPO}
+
+▸ Heroku  ▸ Render  ▸ Railway
+▸ Koyeb   ▸ Replit  ▸ VPS
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+👨‍💻 *DEVELOPER*
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+👤 *Name:*    ${OWNER.NAME}
+📞 *Contact:* wa.me/${OWNER.NUMBER}
+🐙 *GitHub:*  ${OWNER.GITHUB}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🌐 *FOLLOW & SUPPORT*
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📺 *YouTube:*
+${OWNER.YOUTUBE}
+
+🎵 *TikTok:*
+${OWNER.TIKTOK}
+
+📢 *WhatsApp Channel:*
+${OWNER.WA_CHANNEL}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⭐ _Star the repo · Subscribe · Follow_
+_Made with ❤️ by ${OWNER.NAME}_`;
 }
 
-export function buildOwnerVCard() {
-    return `BEGIN:VCARD\nVERSION:3.0\nFN:${OWNER.NAME}\nORG:Bot Developer\nTEL;type=CELL;type=VOICE;waid=${OWNER.NUMBER}:+${OWNER.NUMBER}\nEND:VCARD`;
+// ─────────────────────────────────────────────────────────────
+// 👤  BUILD OWNER VCARD
+// ─────────────────────────────────────────────────────────────
+function buildVCard() {
+    return `BEGIN:VCARD
+VERSION:3.0
+FN:${OWNER.NAME}
+ORG:YOUSAF BALOCH MD - Bot Developer
+TEL;type=CELL;type=VOICE;waid=${OWNER.NUMBER}:+${OWNER.NUMBER}
+URL:${OWNER.GITHUB}
+NOTE:Creator of YOUSAF-BALOCH-MD WhatsApp Bot
+END:VCARD`;
 }
 
-export async function sendSuccessMessages(sock, sessionDir) {
+// ─────────────────────────────────────────────────────────────
+// 📤  MAIN EXPORT — sendSuccessMessages
+// ─────────────────────────────────────────────────────────────
+export async function sendSuccessMessages(sock, sessionPath) {
     try {
-        const userJid = sock.user.id.split(':')[0] + '@s.whatsapp.net';
-        const sessionId = await generateSessionId(sessionDir);
+        // ── Resolve user's own JID ────────────────────────────
+        const rawId   = sock.user?.id || sock.user?.jid || '';
+        const userJid = rawId.includes(':')
+            ? rawId.split(':')[0] + '@s.whatsapp.net'
+            : rawId;
 
-        // 1. Send Logo with Professional Caption
-        await sock.sendMessage(userJid, {
-            image : { url: OWNER.LOGO_URL },
-            caption: `🎉 *YOUSAF BALOCH MD*\n✅ Connection Successful!\n\n*Session ID* is generated. Please copy from the next message.`,
-        });
+        if (!userJid || !userJid.includes('@s.whatsapp.net')) {
+            console.error('\x1b[31m❌ Cannot resolve JID — message not sent\x1b[0m');
+            return;
+        }
 
-        await new Promise(r => setTimeout(r, 2000));
+        console.log('\x1b[36m📤 Sending to: %s\x1b[0m', userJid);
 
-        // 2. Send Session ID (With Auto-Read Support)
-        await sock.sendMessage(userJid, { text: buildSuccessMessage(sessionId) });
+        // ── Read Session ID ───────────────────────────────────
+        const sessionId = await getSessionId(sessionPath);
 
-        await new Promise(r => setTimeout(r, 1500));
+        // ── 1. Logo Image ─────────────────────────────────────
+        try {
+            await sock.sendMessage(userJid, {
+                image   : { url: 'https://i.ibb.co/FbyCnmMX/shaban-md.jpg', mimetype: 'image/jpeg' },
+                caption : `🎉 *YOUSAF BALOCH MD*\n✅ Connection Successful!\n👤 *By:* ${OWNER.NAME}`,
+            });
+            console.log('\x1b[36m📸 Logo sent\x1b[0m');
+        } catch (imgErr) {
+            console.warn('\x1b[33m⚠️ Logo skipped: %s\x1b[0m', imgErr.message);
+        }
 
-        // 3. Send Contact Card
+        await delay(1500);
+
+        // ── 2. Full Success Message ───────────────────────────
+        await sock.sendMessage(userJid, { text: buildMessage(sessionId) });
+        console.log('\x1b[32m✅ Success message sent!\x1b[0m');
+
+        await delay(1500);
+
+        // ── 3. Owner Contact Card ─────────────────────────────
         await sock.sendMessage(userJid, {
             contacts: {
-                displayName: OWNER.NAME,
-                contacts: [{ vcard: buildOwnerVCard() }],
+                displayName : OWNER.NAME,
+                contacts    : [{ vcard: buildVCard() }],
             },
         });
+        console.log('\x1b[32m✅ Owner contact sent!\x1b[0m');
 
-        console.log(`${C.green}✅ [YOUSAF-MD] Success Messages Sent to ${userJid}${C.reset}`);
+        // ── 4. Console Summary ────────────────────────────────
+        console.log('\x1b[35m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\x1b[0m');
+        console.log('\x1b[93m🔑 SESSION ID READY\x1b[0m');
+        console.log('\x1b[97m%s...\x1b[0m', sessionId.substring(0, 55));
+        console.log('\x1b[35m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\x1b[0m');
+
     } catch (err) {
-        console.error(`${C.red}❌ Error sending success messages: ${err.message}${C.reset}`);
+        // Safe catch — server does NOT crash
+        console.error('\x1b[31m❌ sendSuccessMessages failed: %s\x1b[0m', err.message);
     }
 }
