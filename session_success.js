@@ -12,7 +12,7 @@ import path from 'path';
 // ─────────────────────────────────────────────
 export const OWNER = Object.freeze({
     NAME            : 'Yousuf Baloch',
-    NUMBER          : '923170636110', // Fixed to your main number
+    NUMBER          : '923170636110', 
     WHATSAPP_JID    : '923170636110@s.whatsapp.net',
     TIKTOK          : 'https://tiktok.com/@loser_boy.110',
     YOUTUBE         : 'https://www.youtube.com/@Yousaf_Baloch_Tech',
@@ -24,14 +24,10 @@ export const OWNER = Object.freeze({
 });
 
 const C = {
-    reset   : '\x1b[0m',
-    bold    : '\x1b[1m',
-    cyan    : '\x1b[96m',
-    gold    : '\x1b[93m',
-    green   : '\x1b[92m',
-    red     : '\x1b[91m',
-    magenta : '\x1b[95m',
-    blue    : '\x1b[94m',
+    reset   : '\x1b[0m', bold    : '\x1b[1m',
+    cyan    : '\x1b[96m', gold    : '\x1b[93m',
+    green   : '\x1b[92m', red     : '\x1b[91m',
+    magenta : '\x1b[95m', blue    : '\x1b[94m',
     white   : '\x1b[97m',
 };
 
@@ -55,7 +51,7 @@ export async function generateSessionId(sessionDir) {
         if (!fs.existsSync(credsPath)) return 'SESSION_NOT_SAVED_YET';
         const raw  = fs.readFileSync(credsPath, 'utf-8');
         const b64  = Buffer.from(raw).toString('base64');
-        return `YOUSAF;${b64}`;
+        return `YOUSAF;;;${b64}`; // Added triple semicolon for better parsing
     } catch (e) {
         return 'ERROR_GENERATING_SESSION';
     }
@@ -91,20 +87,20 @@ export async function sendSuccessMessages(sock, sessionDir) {
         const userJid = sock.user.id.split(':')[0] + '@s.whatsapp.net';
         const sessionId = await generateSessionId(sessionDir);
 
-        // 1. Send Logo
+        // 1. Send Logo with Professional Caption
         await sock.sendMessage(userJid, {
             image : { url: OWNER.LOGO_URL },
-            caption: `🎉 *YOUSAF BALOCH MD*\n✅ Connection Successful!`,
+            caption: `🎉 *YOUSAF BALOCH MD*\n✅ Connection Successful!\n\n*Session ID* is generated. Please copy from the next message.`,
         });
 
-        await new Promise(r => setTimeout(r, 1500));
+        await new Promise(r => setTimeout(r, 2000));
 
-        // 2. Send Session ID
+        // 2. Send Session ID (With Auto-Read Support)
         await sock.sendMessage(userJid, { text: buildSuccessMessage(sessionId) });
 
         await new Promise(r => setTimeout(r, 1500));
 
-        // 3. Send Contact
+        // 3. Send Contact Card
         await sock.sendMessage(userJid, {
             contacts: {
                 displayName: OWNER.NAME,
@@ -112,8 +108,8 @@ export async function sendSuccessMessages(sock, sessionDir) {
             },
         });
 
-        console.log(`${C.green}✅ [YOUSAF-MD] Success Messages Sent!${C.reset}`);
+        console.log(`${C.green}✅ [YOUSAF-MD] Success Messages Sent to ${userJid}${C.reset}`);
     } catch (err) {
-        console.error(`${C.red}❌ Error: ${err.message}${C.reset}`);
+        console.error(`${C.red}❌ Error sending success messages: ${err.message}${C.reset}`);
     }
-          }
+}
