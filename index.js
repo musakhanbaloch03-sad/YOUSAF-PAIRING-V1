@@ -1,149 +1,182 @@
-/**
- * ═══════════════════════════════════════════════════════════════════════════════
- * 🌟 YOUSAF-PAIRING-V1 - OFFICIAL STABLE ENGINE 🌟
- * ═══════════════════════════════════════════════════════════════════════════════
- * 👨‍💻 DEVELOPER: MUHAMMAD YOUSAF BALOCH
- * 📱 WHATSAPP: +923710636110
- * 📺 YOUTUBE: https://www.youtube.com/@Yousaf_Baloch_Tech
- * 🎵 TIKTOK: https://tiktok.com/@loser_boy.110
- * 📢 WHATSAPP CHANNEL: https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j
- * 🔗 MAIN REPO: https://github.com/musakhanbaloch03-sad/YOUSAF-BALOCH-MD
- * ═══════════════════════════════════════════════════════════════════════════════
- */
-
-import express from 'express';
-import fs from 'fs';
-import path from 'path';
-import cors from 'cors';
-import { fileURLToPath } from 'url';
-import pino from 'pino';
-import { Boom } from '@hapi/boom';
-import pkgBaileys from '@whiskeysockets/baileys';
-
-const { 
-    default: makeWASocket, 
-    useMultiFileAuthState, 
-    fetchLatestBaileysVersion, 
-    Browsers, 
-    delay 
-} = pkgBaileys;
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const express = require('express');
+const path = require('path');
+const { makeWASocket, useMultiFileAuthState, fetchLatestBaileysVersion, delay } = require('@whiskeysockets/baileys');
+const { Boom } = require('@hapi/boom');
+const pino = require('pino');
+const config = require('./config');
+const { handleConnection, OWNER } = require('./lib/connection-handler');
 
 const app = express();
-const PORT = process.env.PORT || 8000;
-
-app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
-// 🔒 OFFICIAL OWNER & BRANDING DATA
-const YOUSAF_BRAND = Object.freeze({
-    NAME: "Muhammad Yousaf Baloch",
-    BANNER: "https://raw.githubusercontent.com/musakhanbaloch03-sad/YOUSAF-PAIRING-V1/main/assets/yousaf_banner.png", // Direct Link to your Banner
-    MAIN_REPO: "https://github.com/musakhanbaloch03-sad/YOUSAF-BALOCH-MD",
-    YOUTUBE: "https://www.youtube.com/@Yousaf_Baloch_Tech",
-    TIKTOK: "https://tiktok.com/@loser_boy.110",
-    WA_CHANNEL: "https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j",
-    WA_NUMBER: "+923710636110"
-});
+// Ultra Pro Console Banner
+console.clear();
+console.log('\x1b[35m╔═══════════════════════════════════════════════════════════╗\x1b[0m');
+console.log('\x1b[36m║                                                           ║\x1b[0m');
+console.log('\x1b[36m║   🤖 YOUSAF-BALOCH-MD PAIRING SERVICE                    ║\x1b[0m');
+console.log('\x1b[36m║   Ultra Pro Premium WhatsApp Multi-Device System         ║\x1b[0m');
+console.log('\x1b[36m║   Version 2.0 - Professional Edition                     ║\x1b[0m');
+console.log('\x1b[36m║                                                           ║\x1b[0m');
+console.log('\x1b[35m╚═══════════════════════════════════════════════════════════╝\x1b[0m');
+console.log('');
+console.log('\x1b[33m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\x1b[0m');
+console.log('\x1b[33m👨‍💻 Created by: %s\x1b[0m', OWNER.name);
+console.log('\x1b[32m🇵🇰 Country: %s\x1b[0m', OWNER.country);
+console.log('\x1b[33m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\x1b[0m');
+console.log('\x1b[35m📱 WhatsApp Channel: %s\x1b[0m', OWNER.channel);
+console.log('\x1b[31m🎥 YouTube: %s\x1b[0m', OWNER.youtube);
+console.log('\x1b[30m🎵 TikTok: %s\x1b[0m', OWNER.tiktok);
+console.log('\x1b[34m📞 Phone: %s\x1b[0m', OWNER.phone);
+console.log('\x1b[36m🐙 GitHub: %s\x1b[0m', OWNER.github);
+console.log('\x1b[33m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\x1b[0m');
+console.log('');
 
-async function startPairing(phoneNumber, res) {
-    const authId = `session_${Math.random().toString(36).substring(7)}`;
-    const authDir = path.join(__dirname, 'sessions', authId);
+// Store active sessions
+const activeSessions = new Map();
+
+/**
+ * 🔐 Pairing Code Generation Endpoint
+ */
+app.post('/code', async (req, res) => {
+    const { number } = req.body;
     
-    if (!fs.existsSync(authDir)) fs.mkdirSync(authDir, { recursive: true });
-
-    const { state, saveCreds } = await useMultiFileAuthState(authDir);
-    const { version } = await fetchLatestBaileysVersion();
-
-    const sock = makeWASocket({
-        version,
-        auth: state,
-        printQRInTerminal: false,
-        logger: pino({ level: 'silent' }),
-        browser: Browsers.ubuntu("Chrome"),
-        connectTimeoutMs: 100000,
-        keepAliveIntervalMs: 30000
-    });
-
-    sock.ev.on('creds.update', saveCreds);
-
-    sock.ev.on('connection.update', async (update) => {
-        const { connection } = update;
-
-        if (connection === 'open') {
-            await delay(5000);
-            const credsFile = path.join(authDir, 'creds.json');
-            const sessionData = fs.readFileSync(credsFile, 'utf-8');
-            const sessionId = Buffer.from(sessionData).toString('base64');
-
-            // 📩 THE ULTIMATE BRANDED MESSAGE
-            const caption = `
-╔══════════════════════════════════╗
-║  🌟 YOUSAF-BALOCH-MD CONNECTED 🌟  ║
-╚══════════════════════════════════╝
-
-👤 *Owner:* ${YOUSAF_BRAND.NAME}
-🔐 *Session ID:* \`\`\`${sessionId}\`\`\`
-
-⚠️ *Don't share your Session ID with anyone!*
-
-🚀 *Main Bot Repository:*
-${YOUSAF_BRAND.MAIN_REPO}
-
-🔗 *Connect with Us:*
-📺 *YouTube:* ${YOUSAF_BRAND.YOUTUBE}
-📢 *WA Channel:* ${YOUSAF_BRAND.WA_CHANNEL}
-🎵 *TikTok:* ${YOUSAF_BRAND.TIKTOK}
-
-📱 *Dev WhatsApp:* ${YOUSAF_BRAND.WA_NUMBER}
-
-*Powered by Muhammad Yousaf Baloch Tech*
-            `;
+    if (!number) {
+        return res.json({ 
+            error: 'Phone number is required',
+            success: false 
+        });
+    }
+    
+    try {
+        console.log('\x1b[33m📱 New pairing request for: %s\x1b[0m', number);
+        console.log('\x1b[36m⏰ Time: %s\x1b[0m', new Date().toLocaleString());
+        
+        const sessionId = `session_${number}_${Date.now()}`;
+        const sessionPath = path.join(__dirname, config.sessionPath);
+        
+        const { state, saveCreds } = await useMultiFileAuthState(sessionPath);
+        const { version } = await fetchLatestBaileysVersion();
+        
+        const sock = makeWASocket({
+            version,
+            logger: pino({ level: 'silent' }),
+            printQRInTerminal: false,
+            auth: state,
+            browser: [config.botName, 'Chrome', config.version]
+        });
+        
+        activeSessions.set(sessionId, { 
+            sock, 
+            userNumber: number,
+            createdAt: new Date()
+        });
+        
+        if (!sock.authState.creds.registered) {
+            let phoneNumber = number.replace(/[^0-9]/g, '');
             
-            // Send Image + Caption to the user
-            await sock.sendMessage(sock.user.id, { 
-                image: { url: "https://i.ibb.co/YDxBtFb/yousaf-baloch-md-logo.png" }, // Using a secure host for your image
-                caption: caption.trim() 
+            // Auto-add Pakistan code if not present
+            if (!phoneNumber.startsWith('92')) {
+                phoneNumber = '92' + phoneNumber.replace(/^0/, '');
+            }
+            
+            await delay(3000);
+            
+            const code = await sock.requestPairingCode(phoneNumber);
+            const formattedCode = code?.match(/.{1,4}/g)?.join('-') || code;
+            
+            console.log('\x1b[32m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\x1b[0m');
+            console.log('\x1b[35m✅ Pairing Code Generated: %s\x1b[0m', formattedCode);
+            console.log('\x1b[33m📱 For Number: %s\x1b[0m', phoneNumber);
+            console.log('\x1b[36m👨‍💻 Owner: %s\x1b[0m', OWNER.name);
+            console.log('\x1b[32m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\x1b[0m');
+            
+            // Handle connection and auto-send session
+            handleConnection(sock, saveCreds, phoneNumber);
+            
+            res.json({ 
+                code: formattedCode,
+                success: true,
+                message: 'Pairing code generated successfully!',
+                owner: OWNER.name,
+                version: config.version
             });
             
-            setTimeout(() => {
-                try {
-                    sock.logout();
-                    if (fs.existsSync(authDir)) fs.rmSync(authDir, { recursive: true, force: true });
-                } catch (e) { }
-            }, 8000);
+        } else {
+            res.json({ 
+                error: 'This number is already registered',
+                success: false 
+            });
+        }
+        
+    } catch (error) {
+        console.log('\x1b[31m❌ Error: %s\x1b[0m', error.message);
+        res.json({ 
+            error: error.message,
+            success: false 
+        });
+    }
+});
+
+/**
+ * 🏥 Health Check Endpoint
+ */
+app.get('/health', (req, res) => {
+    res.json({ 
+        status: 'active',
+        service: 'YOUSAF-BALOCH-MD Pairing Service',
+        version: config.version,
+        owner: OWNER.name,
+        country: OWNER.country,
+        activeSessions: activeSessions.size,
+        uptime: process.uptime(),
+        platforms: config.platforms,
+        social: {
+            github: OWNER.github,
+            whatsapp: OWNER.whatsapp,
+            channel: OWNER.channel,
+            youtube: OWNER.youtube,
+            tiktok: OWNER.tiktok,
+            phone: OWNER.phone
         }
     });
+});
 
-    if (!state.creds.registered) {
-        const cleanNumber = phoneNumber.replace(/[^0-9]/g, '');
-        await delay(5000); 
-        try {
-            const code = await sock.requestPairingCode(cleanNumber);
-            if (!res.headersSent) res.json({ success: true, code });
-        } catch (err) {
-            if (!res.headersSent) res.status(500).json({ error: "Pairing Limit Reached. Try again." });
+/**
+ * 🏠 Home Endpoint
+ */
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+/**
+ * 🧹 Session Cleanup (Every 30 minutes)
+ */
+setInterval(() => {
+    console.log('\x1b[33m🧹 Running session cleanup...\x1b[0m');
+    const now = Date.now();
+    
+    for (const [sessionId, data] of activeSessions.entries()) {
+        const age = now - data.createdAt.getTime();
+        if (age > 30 * 60 * 1000) {
+            activeSessions.delete(sessionId);
+            console.log('\x1b[36m🗑️ Cleaned old session: %s\x1b[0m', sessionId);
         }
     }
-}
+}, 30 * 60 * 1000);
 
-app.post('/get-code', async (req, res) => {
-    const { phoneNumber } = req.body;
-    if (!phoneNumber) return res.status(400).json({ error: "Number required" });
-    await startPairing(phoneNumber, res);
-});
-
-app.get('/', (req, res) => {
-    res.send(`<body style="background:#000;color:#0ff;text-align:center;padding-top:100px;font-family:sans-serif;">
-        <h1>🌟 ${YOUSAF_BRAND.NAME} 🌟</h1>
-        <p>YOUSAF-PAIRING-V1 Engine is Online.</p>
-        <p>Official Repo: <a href="${YOUSAF_BRAND.MAIN_REPO}" style="color:#f0f;">YOUSAF-BALOCH-MD</a></p>
-    </body>`);
-});
-
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`🚀 ENGINE RUNNING ON PORT: ${PORT}`);
+/**
+ * 🚀 Start Server
+ */
+const PORT = config.port;
+app.listen(PORT, () => {
+    console.log('\x1b[32m🚀 Server started successfully!\x1b[0m');
+    console.log('\x1b[36m🌐 Port: %d\x1b[0m', PORT);
+    console.log('\x1b[35m🔗 URL: http://localhost:%d\x1b[0m', PORT);
+    console.log('');
+    console.log('\x1b[33m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\x1b[0m');
+    console.log('\x1b[35m💻 YOUSAF-BALOCH-MD Pairing Service is ACTIVE! ✅\x1b[0m');
+    console.log('\x1b[36m👨‍💻 Created by %s from %s\x1b[0m', OWNER.name, OWNER.country);
+    console.log('\x1b[33m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\x1b[0m');
+    console.log('');
 });
