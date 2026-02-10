@@ -1,0 +1,24 @@
+name: yousaf-pairing-v1
+services:
+  - name: pairing-server
+    type: web
+    git:
+      repository: https://github.com/musakhanbaloch03-sad/YOUSAF-PAIRING-V1
+      branch: main
+    build:
+      buildpackName: nodejs
+    run:
+      command: node index.js
+    ports:
+      - port: 8000
+        protocol: http
+    health_checks:
+      - http:
+          path: /
+          port: 8000
+    env:
+      - key: NODE_ENV
+        value: production
+    instance_type: free
+    auto_deploy: true
+    
