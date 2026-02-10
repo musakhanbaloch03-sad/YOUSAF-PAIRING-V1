@@ -3,12 +3,17 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { existsSync, mkdirSync } from 'fs';
 import Pino from 'pino';
-
-// 🔗 LINKING YOUR SESSION SUCCESS HANDLER
 import { sendSuccessMessages } from './session_success.js'; 
+import pkg from '@whiskeysockets/baileys';
 
-const baileys = await import('@whiskeysockets/baileys');
-const { makeWASocket, useMultiFileAuthState, fetchLatestBaileysVersion, DisconnectReason, delay, makeCacheableSignalKeyStore } = baileys.default || baileys;
+const { 
+    makeWASocket, 
+    useMultiFileAuthState, 
+    fetchLatestBaileysVersion, 
+    DisconnectReason, 
+    delay, 
+    makeCacheableSignalKeyStore 
+} = pkg;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -50,17 +55,6 @@ console.log('\x1b[36m║   Version 2.0 - Professional Edition                   
 console.log('\x1b[36m║                                                           ║\x1b[0m');
 console.log('\x1b[35m╚═══════════════════════════════════════════════════════════╝\x1b[0m');
 console.log('');
-console.log('\x1b[33m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\x1b[0m');
-console.log('\x1b[33m👨‍💻 Created by: %s\x1b[0m', OWNER.name);
-console.log('\x1b[32m🇵🇰 Country: %s\x1b[0m', OWNER.country);
-console.log('\x1b[33m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\x1b[0m');
-console.log('\x1b[35m📱 WhatsApp Channel: %s\x1b[0m', OWNER.channel);
-console.log('\x1b[31m🎥 YouTube: %s\x1b[0m', OWNER.youtube);
-console.log('\x1b[30m🎵 TikTok: %s\x1b[0m', OWNER.tiktok);
-console.log('\x1b[34m📞 Phone: %s\x1b[0m', OWNER.phone);
-console.log('\x1b[36m🐙 GitHub: %s\x1b[0m', OWNER.github);
-console.log('\x1b[33m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\x1b[0m');
-console.log('');
 
 // Store active sessions
 const activeSessions = new Map();
@@ -76,23 +70,19 @@ async function handleConnection(sock, saveCreds, phoneNumber, sessionPath) {
             console.log('\x1b[32m✅ Connected successfully for: %s\x1b[0m', phoneNumber);
             
             try {
-                // Using your Professional Session Success Handler
+                // Professional Session Success Handler
                 await sendSuccessMessages(sock, sessionPath);
-                
-                console.log('\x1b[35m📤 Professional Session Info sent to: %s\x1b[0m', phoneNumber);
-                console.log('\x1b[33m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\x1b[0m');
-                
+                console.log('\x1b[35m📤 Session Success Message Sent! ✅\x1b[0m');
             } catch (err) {
                 console.log('\x1b[31m❌ Failed to send session: %s\x1b[0m', err.message);
             }
         }
         
         if (connection === 'close') {
-            const shouldReconnect = lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut;
-            console.log('\x1b[31m❌ Connection closed for: %s\x1b[0m', phoneNumber);
-            
+            const reason = lastDisconnect?.error?.output?.statusCode;
+            const shouldReconnect = reason !== DisconnectReason.loggedOut;
             if (shouldReconnect) {
-                console.log('\x1b[33m⚠️ Reconnecting...\x1b[0m');
+                console.log('\x1b[33m⚠️ Connection closed, reconnecting for: %s\x1b[0m', phoneNumber);
             }
         }
     });
@@ -105,18 +95,13 @@ async function handleConnection(sock, saveCreds, phoneNumber, sessionPath) {
  */
 async function generatePairingCode(req, res) {
     const { number, phone } = req.body;
-    const userNumber = number || phone;
+    const userNumber = (number || phone)?.replace(/[^0-9]/g, '');
     
     if (!userNumber) {
-        return res.json({ 
-            error: 'Phone number is required',
-            success: false 
-        });
+        return res.json({ error: 'Valid phone number is required', success: false });
     }
     
     try {
-        console.log('\x1b[33m📱 New pairing request for: %s\x1b[0m', userNumber);
-        
         const uniqueSessionName = `session_${userNumber}`;
         const sessionPath = path.join(__dirname, config.sessionPath, uniqueSessionName);
         
@@ -131,13 +116,11 @@ async function generatePairingCode(req, res) {
             version,
             logger: Pino({ level: 'silent' }),
             printQRInTerminal: false,
-            mobile: false,
             browser: ["Ubuntu", "Chrome", "20.0.04"],
             auth: {
                 creds: state.creds,
                 keys: makeCacheableSignalKeyStore(state.keys, Pino({ level: 'silent' }))
-            },
-            getMessage: async () => ({ conversation: 'Hi' })
+            }
         });
         
         activeSessions.set(uniqueSessionName, { 
@@ -147,144 +130,31 @@ async function generatePairingCode(req, res) {
         });
         
         if (!sock.authState.creds.registered) {
-            let phoneNumber = userNumber.replace(/[^0-9]/g, '');
-            
-            if (!phoneNumber.startsWith('92')) {
-                phoneNumber = '92' + phoneNumber.replace(/^0/, '');
-            }
-            
-            await delay(3000);
-            
-            const code = await sock.requestPairingCode(phoneNumber);
+            await delay(1500);
+            const code = await sock.requestPairingCode(userNumber);
             const formattedCode = code?.match(/.{1,4}/g)?.join('-') || code;
             
-            console.log('\x1b[32m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\x1b[0m');
-            console.log('\x1b[35m✅ Pairing Code Generated: %s\x1b[0m', formattedCode);
-            console.log('\x1b[32m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\x1b[0m');
-            
-            // Link connection handler with the correct session path
-            handleConnection(sock, saveCreds, phoneNumber, sessionPath);
+            handleConnection(sock, saveCreds, userNumber, sessionPath);
             
             res.json({ 
                 code: formattedCode,
                 success: true,
-                message: 'Pairing code generated successfully!',
-                owner: OWNER.name,
-                version: config.version
-            });
-            
-        } else {
-            res.json({ 
-                error: 'This number is already registered',
-                success: false 
+                owner: OWNER.name
             });
         }
-        
     } catch (error) {
-        console.log('\x1b[31m❌ Error: %s\x1b[0m', error.message);
-        res.json({ 
-            error: error.message,
-            success: false 
-        });
+        res.json({ error: 'Pairing failed. Try again.', success: false });
     }
 }
 
 app.post('/code', generatePairingCode);
 app.post('/pairing', generatePairingCode);
 
-/**
- * 🏥 Health Check Endpoint
- */
-app.get('/health', (req, res) => {
-    res.json({ 
-        status: 'active',
-        service: 'YOUSAF-BALOCH-MD Pairing Service',
-        version: config.version,
-        owner: OWNER.name,
-        country: OWNER.country,
-        activeSessions: activeSessions.size,
-        uptime: process.uptime(),
-        platforms: config.platforms,
-        social: {
-            github: OWNER.github,
-            whatsapp: OWNER.whatsapp,
-            channel: OWNER.channel,
-            youtube: OWNER.youtube,
-            tiktok: OWNER.tiktok,
-            phone: OWNER.phone
-        }
-    });
-});
-
-/**
- * 🏠 Home Endpoint
- */
 app.get('/', (req, res) => {
-    const publicPath = path.join(__dirname, 'public', 'index.html');
-    if (existsSync(publicPath)) {
-        res.sendFile(publicPath);
-    } else {
-        res.send(`
-<!DOCTYPE html>
-<html>
-<head>
-    <title>YOUSAF-BALOCH-MD Pairing</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body { font-family: Arial; background: #000; color: #fff; text-align: center; padding: 50px; }
-        h1 { color: #00bfff; }
-        a { color: #00bfff; text-decoration: none; }
-    </style>
-</head>
-<body>
-    <h1>⚡ YOUSAF-BALOCH-MD Pairing Service ⚡</h1>
-    <p>Version ${config.version}</p>
-    <p>Created by ${OWNER.name}</p>
-    <p><a href="/health">Health Check</a></p>
-</body>
-</html>
-        `);
-    }
+    res.send(`<h1>YOUSAF-BALOCH-MD Pairing Service Active ✅</h1><p>Created by ${OWNER.name}</p>`);
 });
 
-/**
- * 🧹 Session Cleanup (Every 30 minutes)
- */
-setInterval(() => {
-    console.log('\x1b[33m🧹 Running session cleanup...\x1b[0m');
-    const now = Date.now();
-    
-    for (const [sessionId, data] of activeSessions.entries()) {
-        const age = now - data.createdAt.getTime();
-        if (age > 30 * 60 * 1000) {
-            activeSessions.delete(sessionId);
-            console.log('\x1b[36m🗑️ Cleaned old session: %s\x1b[0m', sessionId);
-        }
-    }
-}, 30 * 60 * 1000);
-
-/**
- * 🚀 Start Server
- */
 const PORT = config.port;
 app.listen(PORT, () => {
-    console.log('\x1b[32m🚀 Server started successfully!\x1b[0m');
-    console.log('\x1b[36m🌐 Port: %d\x1b[0m', PORT);
-    console.log('\x1b[35m🔗 URL: http://localhost:%d\x1b[0m', PORT);
-    console.log('');
-    console.log('\x1b[33m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\x1b[0m');
-    console.log('\x1b[35m💻 YOUSAF-BALOCH-MD Pairing Service is ACTIVE! ✅\x1b[0m');
-    console.log('\x1b[36m👨‍💻 Created by %s from %s\x1b[0m', OWNER.name, OWNER.country);
-    console.log('\x1b[33m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\x1b[0m');
-    console.log('');
-});
-
-// Error handlers
-process.on('unhandledRejection', (err) => {
-    console.log('\x1b[31m❌ Unhandled Rejection: %s\x1b[0m', err.message);
-});
-
-process.on('uncaughtException', (err) => {
-    console.log('\x1b[31m❌ Uncaught Exception: %s\x1b[0m', err.message);
+    console.log('\x1b[32m🚀 Server is live on Port: %d\x1b[0m', PORT);
 });
