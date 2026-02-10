@@ -4,8 +4,8 @@
 // ║    🔒 LOCKED — Owner info cannot be changed by any user     ║
 // ╚══════════════════════════════════════════════════════════════╝
 
-import dotenv from 'dotenv';
-dotenv.config();
+// ℹ️  Cloud platforms (Heroku, Koyeb, Render, Railway) inject env vars directly.
+//    For local dev, create a .env file. dotenv is loaded by index.js if present.
 
 // ═══════════════════════════════════════════════════════════════
 // 🔒  HARDCODED — CANNOT BE OVERRIDDEN BY ENV VARS OR CONFIG
