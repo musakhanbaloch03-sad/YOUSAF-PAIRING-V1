@@ -1,8 +1,9 @@
 {
-  "name": "yousaf-baloch-pairing-service",
+  "name": "yousaf-pairing-v1",
   "version": "2.0.0",
-  "description": "Ultra Pro Premium WhatsApp Pairing Service by Muhammad Yousaf Baloch",
+  "description": "Ultra Premium WhatsApp Pairing Service by MUHAMMAD YOUSAF",
   "main": "index.js",
+  "type": "commonjs",
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js"
@@ -10,37 +11,26 @@
   "keywords": [
     "whatsapp",
     "pairing",
-    "session",
-    "yousaf-baloch",
     "baileys",
-    "ultra-pro",
-    "premium"
+    "yousaf-baloch"
   ],
   "author": {
-    "name": "Muhammad Yousaf Baloch",
-    "whatsapp": "+923710636110",
-    "youtube": "https://www.youtube.com/@Yousaf_Baloch_Tech",
-    "tiktok": "https://tiktok.com/@loser_boy.110",
-    "channel": "https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j",
-    "github": "https://github.com/musakhanbaloch03-sad"
+    "name": "MUHAMMAD YOUSAF",
+    "url": "https://github.com/musakhanbaloch03-sad"
   },
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/musakhanbaloch03-sad/YOUSAF-PAIRING-V1"
+  "engines": {
+    "node": "18.x",
+    "npm": "9.x"
   },
   "dependencies": {
-    "@whiskeysockets/baileys": "^6.7.8",
-    "express": "^4.18.2",
-    "pino": "^8.16.0",
-    "@hapi/boom": "^10.0.1",
-    "qrcode-terminal": "^0.12.0"
+    "@whiskeysockets/baileys": "6.7.8",
+    "express": "4.18.2",
+    "pino": "8.19.0",
+    "pino-pretty": "10.3.1",
+    "@hapi/boom": "10.0.1"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1"
-  },
-  "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=9.0.0"
+    "nodemon": "3.0.2"
   }
 }
