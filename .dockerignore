@@ -1,77 +1,8 @@
-/**
- * ═══════════════════════════════════════════════════════════════════════════════
- * SESSION HANDLER - MANAGES WHATSAPP SESSIONS
- * ═══════════════════════════════════════════════════════════════════════════════
- * 
- * 👨‍💻 Developer: Muhammad Yousaf Baloch
- * 📱 WhatsApp: +923710636110
- * 📺 YouTube: https://www.youtube.com/@Yousaf_Baloch_Tech
- * 🎵 TikTok: https://tiktok.com/@loser_boy.110
- * 📢 Channel: https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j
- * 
- * ═══════════════════════════════════════════════════════════════════════════════
- */
-
-const fs = require('fs');
-const path = require('path');
-
-class SessionHandler {
-    constructor() {
-        this.sessionsDir = './sessions';
-        this.initializeSessionsDir();
-    }
-
-    initializeSessionsDir() {
-        if (!fs.existsSync(this.sessionsDir)) {
-            fs.mkdirSync(this.sessionsDir, { recursive: true });
-        }
-    }
-
-    saveSession(sessionId, data) {
-        try {
-            const filename = `session_${Date.now()}.json`;
-            const filepath = path.join(this.sessionsDir, filename);
-            
-            const sessionData = {
-                sessionId,
-                timestamp: new Date().toISOString(),
-                data,
-                owner: {
-                    name: "Yousuf Baloch",
-                    whatsapp: "923710636110",
-                    youtube: "https://www.youtube.com/@Yousaf_Baloch_Tech",
-                    tiktok: "https://tiktok.com/@loser_boy.110",
-                    channel: "https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j"
-                }
-            };
-            
-            fs.writeFileSync(filepath, JSON.stringify(sessionData, null, 2));
-            return filepath;
-        } catch (error) {
-            console.error('Error saving session:', error);
-            return null;
-        }
-    }
-
-    cleanOldSessions(maxAgeHours = 24) {
-        try {
-            const files = fs.readdirSync(this.sessionsDir);
-            const now = Date.now();
-            const maxAge = maxAgeHours * 60 * 60 * 1000;
-
-            files.forEach(file => {
-                const filepath = path.join(this.sessionsDir, file);
-                const stats = fs.statSync(filepath);
-                const age = now - stats.mtimeMs;
-
-                if (age > maxAge) {
-                    fs.unlinkSync(filepath);
-                }
-            });
-        } catch (error) {
-            console.error('Error cleaning sessions:', error);
-        }
-    }
-}
-
-module.exports = SessionHandler;
+node_modules
+npm-debug.log
+auth_*
+sessions
+.env
+.git
+.gitignore
+README.md
