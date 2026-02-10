@@ -1,3 +1,36 @@
+const {
+  default: makeWASocket,
+  useMultiFileAuthState,
+  DisconnectReason,
+  fetchLatestBaileysVersion,
+  makeCacheableSignalKeyStore,
+  Browsers,
+  delay
+} = require('@whiskeysockets/baileys');
+const pino = require('pino');
+const express = require('express');
+const fs = require('fs');
+const path = require('path');
+
+const app = express();
+const PORT = process.env.PORT || 8000;
+
+// Middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// CORS
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') return res.sendStatus(200);
+  next();
+});
+
+// Serve HTML page
+app.get('/', (req, res) => {
+  res.send(`
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -63,6 +96,7 @@
             justify-content: center;
             gap: 15px;
             margin-bottom: 30px;
+            flex-wrap: wrap;
         }
 
         .social-link {
@@ -293,6 +327,7 @@
             result.style.display = 'none';
 
             try {
+                // ✅ FIXED: Changed endpoint to /get-code
                 const response = await fetch('/get-code', {
                     method: 'POST',
                     headers: {
@@ -304,27 +339,27 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    showResult('success', `
+                    showResult('success', \`
                         <h3>✅ Pairing Code Generated!</h3>
-                        <div class="code-display">${data.code}</div>
+                        <div class="code-display">\${data.code}</div>
                         <p><strong>Instructions:</strong></p>
                         <ol style="text-align: left; margin-top: 10px;">
                             <li>Open WhatsApp on your phone</li>
                             <li>Go to Settings → Linked Devices</li>
                             <li>Tap "Link a Device"</li>
                             <li>Select "Link with phone number"</li>
-                            <li>Enter the code above: <strong>${data.code}</strong></li>
+                            <li>Enter the code above: <strong>\${data.code}</strong></li>
                             <li>Wait for Session ID to be sent to your WhatsApp</li>
                         </ol>
                         <p style="margin-top: 15px; color: #28a745;">
                             <strong>✨ Your Session ID will be sent to your WhatsApp automatically!</strong>
                         </p>
-                    `);
+                    \`);
                 } else {
-                    showResult('error', `Error: ${data.error || 'Failed to generate code'}`);
+                    showResult('error', \`Error: \${data.error || 'Failed to generate code'}\`);
                 }
             } catch (error) {
-                showResult('error', `Network error: ${error.message}`);
+                showResult('error', \`Network error: \${error.message}\`);
             } finally {
                 submitBtn.disabled = false;
                 loading.style.display = 'none';
@@ -332,10 +367,174 @@
         });
 
         function showResult(type, message) {
-            result.className = `result ${type}`;
+            result.className = \`result \${type}\`;
             result.innerHTML = message;
             result.style.display = 'block';
         }
     </script>
 </body>
 </html>
+  `);
+});
+
+// ✅ BACKEND API: /get-code endpoint
+app.post('/get-code', async (req, res) => {
+  try {
+    const { phoneNumber } = req.body;
+
+    if (!phoneNumber) {
+      return res.json({ success: false, error: 'Phone number is required' });
+    }
+
+    const cleanNumber = phoneNumber.replace(/[^0-9]/g, '');
+
+    if (cleanNumber.length < 10 || cleanNumber.length > 15) {
+      return res.json({ success: false, error: 'Invalid phone number length' });
+    }
+
+    console.log(\`📱 Generating pairing code for: \${cleanNumber}\`);
+
+    // Create temp session directory
+    const sessionDir = path.join(__dirname, 'sessions', \`temp-\${Date.now()}\`);
+    fs.mkdirSync(sessionDir, { recursive: true });
+
+    try {
+      const { state, saveCreds } = await useMultiFileAuthState(sessionDir);
+      const { version } = await fetchLatestBaileysVersion();
+
+      const sock = makeWASocket({
+        version,
+        logger: pino({ level: 'silent' }),
+        printQRInTerminal: false,
+        auth: {
+          creds: state.creds,
+          keys: makeCacheableSignalKeyStore(state.keys, pino({ level: 'silent' }))
+        },
+        browser: Browsers.ubuntu('Chrome'),
+        connectTimeoutMs: 60000,
+        defaultQueryTimeoutMs: 0,
+        keepAliveIntervalMs: 10000,
+        generateHighQualityLinkPreview: true,
+        getMessage: async () => undefined
+      });
+
+      sock.ev.on('creds.update', saveCreds);
+
+      if (!sock.authState.creds.registered) {
+        await delay(2000);
+
+        const code = await sock.requestPairingCode(cleanNumber);
+        console.log(\`✅ Pairing Code Generated: \${code}\`);
+
+        // Return code to frontend
+        res.json({
+          success: true,
+          code: code,
+          number: cleanNumber
+        });
+
+        // Handle connection
+        sock.ev.on('connection.update', async (update) => {
+          const { connection, lastDisconnect } = update;
+
+          if (connection === 'open') {
+            console.log('✅ WhatsApp Connected!');
+
+            try {
+              const credsPath = path.join(sessionDir, 'creds.json');
+              const credsData = fs.readFileSync(credsPath, 'utf-8');
+              const sessionId = Buffer.from(credsData).toString('base64');
+
+              console.log('\\n' + '='.repeat(60));
+              console.log('SESSION ID:');
+              console.log(sessionId);
+              console.log('='.repeat(60) + '\\n');
+
+              // Send session to user's WhatsApp
+              await sock.sendMessage(\`\${cleanNumber}@s.whatsapp.net\`, {
+                text: \`✅ *YOUSAF-BALOCH-MD SESSION*\\n\\n🔐 Your Session ID:\\n\\\`\\\`\\\`\${sessionId}\\\`\\\`\\\`\\n\\n✨ Save this session ID safely!\\n\\n👨‍💻 Developer: Muhammad Yousaf Baloch\\n📱 Contact: +923710636110\`
+              });
+
+              console.log('✅ Session ID sent to WhatsApp!');
+
+              // Cleanup
+              setTimeout(async () => {
+                await sock.logout();
+                fs.rmSync(sessionDir, { recursive: true, force: true });
+              }, 5000);
+
+            } catch (err) {
+              console.error('Session save error:', err);
+            }
+          }
+
+          if (connection === 'close') {
+            const shouldReconnect = lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut;
+            console.log('Connection closed:', lastDisconnect?.error?.message);
+
+            if (!shouldReconnect) {
+              fs.rmSync(sessionDir, { recursive: true, force: true });
+            }
+          }
+        });
+
+      } else {
+        res.json({ success: false, error: 'Number already registered' });
+      }
+
+    } catch (error) {
+      console.error('Socket Error:', error);
+      fs.rmSync(sessionDir, { recursive: true, force: true });
+      res.json({ success: false, error: error.message });
+    }
+
+  } catch (error) {
+    console.error('API Error:', error);
+    res.json({ success: false, error: error.message });
+  }
+});
+
+// Health check
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: Date.now() });
+});
+
+// Start server
+app.listen(PORT, () => {
+  console.log('╔═══════════════════════════════════════════════════════════╗');
+  console.log('║                                                           ║');
+  console.log('║   🤖 YOUSAF-BALOCH-MD PAIRING SERVICE                    ║');
+  console.log('║   Ultra Pro Premium WhatsApp Multi-Device System         ║');
+  console.log('║   Version 2.0 - Professional Edition                     ║');
+  console.log('║                                                           ║');
+  console.log('╚═══════════════════════════════════════════════════════════╝');
+  console.log('');
+  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  console.log('👨‍💻 Created by: MUHAMMAD YOUSAF');
+  console.log('🇵🇰 Country: Pakistan 🇵🇰');
+  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  console.log('📱 WhatsApp Channel: https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j');
+  console.log('🎥 YouTube: https://www.youtube.com/@Yousaf_Baloch_Tech');
+  console.log('🎵 TikTok: https://tiktok.com/@loser_boy.110');
+  console.log('📞 Phone: 923710636110');
+  console.log('🐙 GitHub: https://github.com/musakhanbaloch03-sad');
+  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  console.log('');
+  console.log(\`🚀 Server started successfully!\`);
+  console.log(\`🌐 Port: \${PORT}\`);
+  console.log(\`🔗 URL: http://localhost:\${PORT}\`);
+  console.log('');
+  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  console.log('💻 YOUSAF-BALOCH-MD Pairing Service is ACTIVE! ✅');
+  console.log('👨‍💻 Created by MUHAMMAD YOUSAF from Pakistan 🇵🇰');
+  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+});
+
+// Error handlers
+process.on('unhandledRejection', (err) => {
+  console.error('❌ Unhandled Rejection:', err);
+});
+
+process.on('uncaughtException', (err) => {
+  console.error('❌ Uncaught Exception:', err);
+});
