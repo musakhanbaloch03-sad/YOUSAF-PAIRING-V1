@@ -1,35 +1,30 @@
-/**
- * ═══════════════════════════════════════════════════════════════════════════════
- * CONFIG.JS - PAIRING SERVICE CONFIGURATION
- * ═══════════════════════════════════════════════════════════════════════════════
- * 
- * 👨‍💻 Developer: Muhammad Yousaf Baloch
- * 📱 WhatsApp: +923710636110
- * 📺 YouTube: https://www.youtube.com/@Yousaf_Baloch_Tech
- * 🎵 TikTok: https://tiktok.com/@loser_boy.110
- * 📢 Channel: https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j
- * 🔗 GitHub: https://github.com/musakhanbaloch03-sad
- * 
- * ═══════════════════════════════════════════════════════════════════════════════
- */
-
-// Port configuration
-const PORT = process.env.PORT || 3000;
-
-// Owner information (LOCKED - HARDCODED)
+// 🔒 HARDCODED CONFIGURATION - Cannot be edited
 const OWNER = Object.freeze({
-    NAME: "Yousuf Baloch",
-    FULL_NAME: "Muhammad Yousaf Baloch",
-    WHATSAPP: "923710636110",
-    YOUTUBE: "https://www.youtube.com/@Yousaf_Baloch_Tech",
-    TIKTOK: "https://tiktok.com/@loser_boy.110",
-    CHANNEL: "https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j",
-    GITHUB: "https://github.com/musakhanbaloch03-sad",
-    MAIN_REPO: "https://github.com/musakhanbaloch03-sad/YOUSAF-BALOCH-MD",
-    PAIRING_REPO: "https://github.com/musakhanbaloch03-sad/YOUSAF-PAIRING-V1"
+    name: 'MUHAMMAD YOUSAF',
+    phone: '923710636110',
+    whatsapp: 'https://wa.me/923710636110',
+    channel: 'https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j',
+    youtube: 'https://www.youtube.com/@Yousaf_Baloch_Tech',
+    tiktok: 'https://tiktok.com/@loser_boy.110',
+    github: 'https://github.com/musakhanbaloch03-sad',
+    country: 'Pakistan 🇵🇰'
 });
 
 module.exports = {
-    PORT,
-    OWNER
+    // Server Configuration
+    port: process.env.PORT || 3000,
+    
+    // Owner Info (Locked)
+    owner: OWNER,
+    
+    // Session Settings
+    sessionPath: './session',
+    outputPath: './sessions-output',
+    
+    // Bot Branding
+    botName: 'YOUSAF-BALOCH-MD',
+    version: '2.0.0',
+    
+    // Platform Support
+    platforms: ['Heroku', 'Koyeb', 'Railway', 'Render', 'VPS', 'Replit']
 };
