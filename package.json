@@ -3,7 +3,7 @@
   "version": "2.0.0",
   "description": "Ultra Premium WhatsApp Pairing Service by MUHAMMAD YOUSAF",
   "main": "index.js",
-  "type": "commonjs",
+  "type": "module",
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js"
@@ -20,15 +20,16 @@
   },
   "license": "MIT",
   "engines": {
-    "node": "18.x",
-    "npm": "9.x"
+    "node": ">=18.x",
+    "npm": ">=9.x"
   },
   "dependencies": {
     "@whiskeysockets/baileys": "6.7.8",
     "express": "4.18.2",
     "pino": "8.19.0",
     "pino-pretty": "10.3.1",
-    "@hapi/boom": "10.0.1"
+    "@hapi/boom": "10.0.1",
+    "qrcode-terminal": "^0.12.0"
   },
   "devDependencies": {
     "nodemon": "3.0.2"
