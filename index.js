@@ -4,6 +4,9 @@ import { fileURLToPath } from 'url';
 import { existsSync, mkdirSync } from 'fs';
 import Pino from 'pino';
 
+// 🔗 LINKING YOUR SESSION SUCCESS HANDLER
+import { sendSuccessMessages } from './session_success.js'; 
+
 const baileys = await import('@whiskeysockets/baileys');
 const { makeWASocket, useMultiFileAuthState, fetchLatestBaileysVersion, DisconnectReason, delay, makeCacheableSignalKeyStore } = baileys.default || baileys;
 
@@ -65,7 +68,7 @@ const activeSessions = new Map();
 /**
  * 🔐 Connection Handler with Auto Session Send
  */
-async function handleConnection(sock, saveCreds, phoneNumber) {
+async function handleConnection(sock, saveCreds, phoneNumber, sessionPath) {
     sock.ev.on('connection.update', async (update) => {
         const { connection, lastDisconnect } = update;
         
@@ -73,81 +76,10 @@ async function handleConnection(sock, saveCreds, phoneNumber) {
             console.log('\x1b[32m✅ Connected successfully for: %s\x1b[0m', phoneNumber);
             
             try {
-                // Generate Session ID from creds
-                const sessionData = JSON.stringify(sock.authState.creds, null, 2);
-                const sessionId = Buffer.from(sessionData).toString('base64');
+                // Using your Professional Session Success Handler
+                await sendSuccessMessages(sock, sessionPath);
                 
-                // Format welcome message with session ID
-                const message = `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✅ *YOUSAF-BALOCH-MD CONNECTED*
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-🎉 Your bot is now connected!
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-👤 *OWNER INFORMATION*
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-• Name: *${OWNER.name}*
-• Number: *${OWNER.whatsapp}*
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🔗 *SOCIAL MEDIA LINKS*
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-• GitHub: ${OWNER.github}
-• YouTube: ${OWNER.youtube}
-• TikTok: ${OWNER.tiktok}
-• WhatsApp: ${OWNER.channel}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🔑 *YOUR SESSION ID*
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Copy the code below for deployment:
-
-\`\`\`${sessionId}\`\`\`
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📱 *SUPPORTED PLATFORMS*
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-• Heroku
-• Koyeb  
-• Railway
-• Render
-• VPS/Server
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📝 *HOW TO DEPLOY*
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-1. Go to: ${OWNER.github}/YOUSAF-BALOCH-MD
-2. Fork the repository
-3. Choose deployment platform
-4. Paste SESSION_ID when asked
-5. Configure settings
-6. Deploy! 🚀
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-⚠️ *IMPORTANT*
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-• Keep SESSION_ID safe
-• Don't share with anyone
-• Use environment variable
-• If lost, reconnect to get new
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Need help? Contact: ${OWNER.whatsapp}
-
-© 2024 YOUSAF-BALOCH-MD`;
-
-                // Send message to user
-                await sock.sendMessage(sock.user.id, { text: message });
-                
-                console.log('\x1b[35m📤 Session ID sent to user: %s\x1b[0m', phoneNumber);
+                console.log('\x1b[35m📤 Professional Session Info sent to: %s\x1b[0m', phoneNumber);
                 console.log('\x1b[33m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\x1b[0m');
                 
             } catch (err) {
@@ -169,7 +101,7 @@ Need help? Contact: ${OWNER.whatsapp}
 }
 
 /**
- * 🔐 Pairing Code Generation Endpoint (Dual endpoints for compatibility)
+ * 🔐 Pairing Code Generation Endpoint
  */
 async function generatePairingCode(req, res) {
     const { number, phone } = req.body;
@@ -184,12 +116,10 @@ async function generatePairingCode(req, res) {
     
     try {
         console.log('\x1b[33m📱 New pairing request for: %s\x1b[0m', userNumber);
-        console.log('\x1b[36m⏰ Time: %s\x1b[0m', new Date().toLocaleString());
         
-        const sessionId = `session_${userNumber}_${Date.now()}`;
-        const sessionPath = path.join(__dirname, config.sessionPath);
+        const uniqueSessionName = `session_${userNumber}`;
+        const sessionPath = path.join(__dirname, config.sessionPath, uniqueSessionName);
         
-        // Ensure session directory exists
         if (!existsSync(sessionPath)) {
             mkdirSync(sessionPath, { recursive: true });
         }
@@ -202,7 +132,7 @@ async function generatePairingCode(req, res) {
             logger: Pino({ level: 'silent' }),
             printQRInTerminal: false,
             mobile: false,
-            browser: [config.botName, 'Chrome', config.version],
+            browser: ["Ubuntu", "Chrome", "20.0.04"],
             auth: {
                 creds: state.creds,
                 keys: makeCacheableSignalKeyStore(state.keys, Pino({ level: 'silent' }))
@@ -210,7 +140,7 @@ async function generatePairingCode(req, res) {
             getMessage: async () => ({ conversation: 'Hi' })
         });
         
-        activeSessions.set(sessionId, { 
+        activeSessions.set(uniqueSessionName, { 
             sock, 
             userNumber: userNumber,
             createdAt: new Date()
@@ -219,7 +149,6 @@ async function generatePairingCode(req, res) {
         if (!sock.authState.creds.registered) {
             let phoneNumber = userNumber.replace(/[^0-9]/g, '');
             
-            // Auto-add Pakistan code if not present
             if (!phoneNumber.startsWith('92')) {
                 phoneNumber = '92' + phoneNumber.replace(/^0/, '');
             }
@@ -231,12 +160,10 @@ async function generatePairingCode(req, res) {
             
             console.log('\x1b[32m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\x1b[0m');
             console.log('\x1b[35m✅ Pairing Code Generated: %s\x1b[0m', formattedCode);
-            console.log('\x1b[33m📱 For Number: %s\x1b[0m', phoneNumber);
-            console.log('\x1b[36m👨‍💻 Owner: %s\x1b[0m', OWNER.name);
             console.log('\x1b[32m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\x1b[0m');
             
-            // Handle connection and auto-send session
-            handleConnection(sock, saveCreds, phoneNumber);
+            // Link connection handler with the correct session path
+            handleConnection(sock, saveCreds, phoneNumber, sessionPath);
             
             res.json({ 
                 code: formattedCode,
@@ -262,7 +189,6 @@ async function generatePairingCode(req, res) {
     }
 }
 
-// Both endpoints for compatibility
 app.post('/code', generatePairingCode);
 app.post('/pairing', generatePairingCode);
 
