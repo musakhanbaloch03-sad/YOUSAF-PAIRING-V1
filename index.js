@@ -3,7 +3,8 @@ import makeWASocket, {
   DisconnectReason,
   Browsers,
   delay,
-  makeCacheableSignalKeyStore
+  makeCacheableSignalKeyStore,
+  fetchLatestBaileysVersion
 } from 'baileys';
 import pino from 'pino';
 import express from 'express';
@@ -13,141 +14,110 @@ import { fileURLToPath } from 'url';
 
 /**
  * 👨‍💻 OWNER: MUHAMMAD YOUSAF BALOCH
- * 🤖 BOT: YOUSAF-BALOCH-MD (ULTRA PRO)
- * 📱 WHATSAPP: +923710636110
  */
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
 const app = express();
 const PORT = process.env.PORT || 8000;
+const activeSessions = new Set();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static('public')); 
+app.use(express.static('public'));
 
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type');
-  if (req.method === 'OPTIONS') return res.sendStatus(200);
-  next();
-});
-
-// Main Dashboard Route
 app.get('/', (req, res) => {
-    const indexPath = path.join(__dirname, 'public', 'index.html');
-    if (fs.existsSync(indexPath)) {
-        res.sendFile(indexPath);
-    } else {
-        res.status(404).send("Error: public/index.html not found! Please ensure the public folder exists.");
-    }
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 app.post('/get-code', async (req, res) => {
+  let sock;
+  let timeout;
+  const { phoneNumber } = req.body;
+  
+  if (!phoneNumber) return res.json({ success: false, error: 'Phone number is required' });
+  const cleanNumber = phoneNumber.replace(/[^0-9]/g, '');
+  
+  if (activeSessions.has(cleanNumber)) {
+    return res.json({ success: false, error: 'Request in progress. Please wait...' });
+  }
+
+  activeSessions.add(cleanNumber);
+  const sessionDir = path.join(__dirname, 'temp_sessions', `${cleanNumber}_${Date.now()}`);
+  if (!fs.existsSync(sessionDir)) fs.mkdirSync(sessionDir, { recursive: true });
+
   try {
-    const { phoneNumber } = req.body;
-    if (!phoneNumber) return res.json({ success: false, error: 'Number required' });
-    
-    const cleanNumber = phoneNumber.replace(/[^0-9]/g, '');
-    console.log(`📱 Requesting Code for: ${cleanNumber}`);
-    
-    const sessionDir = path.join(__dirname, 'temp_sessions', `${cleanNumber}_${Date.now()}`);
-    fs.mkdirSync(sessionDir, { recursive: true });
-    
     const { state, saveCreds } = await useMultiFileAuthState(sessionDir);
-    
-    const sock = makeWASocket({
-        auth: {
-            creds: state.creds,
-            keys: makeCacheableSignalKeyStore(state.keys, pino({ level: 'silent' }))
-        },
-        logger: pino({ level: 'silent' }),
-        printQRInTerminal: false,
-        // CRITICAL FIX: Setting mobile-like browser identity
-        browser: ["Ubuntu", "Chrome", "20.0.04"],
-        syncFullHistory: false,
-        markOnlineOnConnect: false
+    const { version } = await fetchLatestBaileysVersion();
+
+    sock = makeWASocket({
+      auth: { 
+        creds: state.creds, 
+        keys: makeCacheableSignalKeyStore(state.keys, pino({ level: 'silent' })) 
+      },
+      logger: pino({ level: 'silent' }),
+      browser: Browsers.ubuntu('Chrome'),
+      version,
+      syncFullHistory: false,
+      markOnlineOnConnect: true
     });
-    
+
     sock.ev.on('creds.update', saveCreds);
-    
-    if (!sock.authState.creds.registered) {
-        await delay(5000); // 5 sec delay for stability
-        const code = await sock.requestPairingCode(cleanNumber);
-        res.json({ success: true, code: code });
+
+    if (!state.creds.registered) {
+      await delay(5000); // 👈 Important delay before requesting code
+      const code = await sock.requestPairingCode(cleanNumber);
+      if (!res.headersSent) res.json({ success: true, code });
+
+      timeout = setTimeout(() => {
+        if (activeSessions.has(cleanNumber)) {
+            sock.end(); // 👈 Use end() instead of logout()
+            activeSessions.delete(cleanNumber);
+            if (fs.existsSync(sessionDir)) fs.rmSync(sessionDir, { recursive: true, force: true });
+        }
+      }, 180000);
+    }
+
+    sock.ev.on('connection.update', async (update) => {
+      const { connection } = update;
+      
+      if (connection === 'open') {
+        clearTimeout(timeout);
+        console.log(`✅ [SUCCESS] ${cleanNumber} Linked!`);
         
-        // Timeout set to 2 minutes for user ease
-        const timeout = setTimeout(() => {
-            if (sock) {
-                console.log('⏱️ Session Timeout');
-                sock.end();
-                if (fs.existsSync(sessionDir)) fs.rmSync(sessionDir, { recursive: true, force: true });
-            }
-        }, 120000);
+        await delay(3000); // Wait for creds.json stability
+        const credsFile = path.join(sessionDir, 'creds.json');
         
-        sock.ev.on('connection.update', async (update) => {
-            const { connection, lastDisconnect } = update;
-            
-            if (connection === 'open') {
-                clearTimeout(timeout);
-                console.log('✅ Connected Successfully!');
-                
-                try {
-                    const credsFile = path.join(sessionDir, 'creds.json');
-                    const creds = fs.readFileSync(credsFile, 'utf-8');
-                    const sessionId = Buffer.from(creds).toString('base64');
-                    
-                    const successMsg = `━━━━━━━━━━━━━━━━━━━━━━━━
+        if (fs.existsSync(credsFile)) {
+          const sessionId = Buffer.from(fs.readFileSync(credsFile, 'utf-8')).toString('base64');
+          
+          const successMsg = `━━━━━━━━━━━━━━━━━━━━━━━━
 ✨ *YOUSAF-BALOCH-MD SESSION* ✨
 ━━━━━━━━━━━━━━━━━━━━━━━━
-
 👤 *OWNER:* Muhammad Yousaf Baloch
-📱 *NUMBER:* +923710636110
+🔐 *SESSION ID:* \`${sessionId}\`
 
-🔐 *YOUR SESSION ID:*
-\`\`\`${sessionId}\`\`\`
-
-🔗 *SOCIAL ACCOUNTS:*
+🔗 *SOCIAL LINKS:*
 📺 YouTube: youtube.com/@Yousaf_Baloch_Tech
 🎵 TikTok: tiktok.com/@loser_boy.110
 📢 Channel: whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j
-💻 Repo: github.com/musakhanbaloch03-sad/YOUSAF-BALOCH-MD
-
-━━━━━━━━━━━━━━━━━━━━━━━━
-*Note:* Do not share this ID with anyone!
 ━━━━━━━━━━━━━━━━━━━━━━━━`;
 
-                    await sock.sendMessage(`${cleanNumber}@s.whatsapp.net`, { text: successMsg });
-                    
-                    setTimeout(() => {
-                        sock.end();
-                        if (fs.existsSync(sessionDir)) fs.rmSync(sessionDir, { recursive: true, force: true });
-                    }, 5000);
-                } catch (e) { console.error('Processing Error:', e); }
-            }
-            
-            if (connection === 'close') {
-                const reason = lastDisconnect?.error?.output?.statusCode;
-                if (reason !== DisconnectReason.loggedOut) {
-                    clearTimeout(timeout);
-                    if (fs.existsSync(sessionDir)) fs.rmSync(sessionDir, { recursive: true, force: true });
-                }
-            }
-        });
-    }
+          await sock.sendMessage(`${cleanNumber}@s.whatsapp.net`, { text: successMsg });
+        }
+        
+        setTimeout(() => {
+          sock.end(); // 👈 end() is much safer than logout() here
+          activeSessions.delete(cleanNumber);
+          if (fs.existsSync(sessionDir)) fs.rmSync(sessionDir, { recursive: true, force: true });
+        }, 5000);
+      }
+    });
+
   } catch (error) {
-    console.error('API error:', error);
-    res.json({ success: false, error: error.message });
+    activeSessions.delete(cleanNumber);
+    if (!res.headersSent) res.json({ success: false, error: 'Connection Error.' });
   }
 });
 
-app.listen(PORT, () => {
-  console.log('╔═══════════════════════════════════════╗');
-  console.log('║   🤖 YOUSAF-BALOCH-MD PAIRING        ║');
-  console.log('║   Professional Session System        ║');
-  console.log('║   Developer: Muhammad Yousaf Baloch  ║');
-  console.log('╚═══════════════════════════════════════╝');
-  console.log(`🚀 Server running on port: ${PORT}`);
-});
+app.listen(PORT, () => console.log(`🚀 Server on Port: ${PORT}`));
