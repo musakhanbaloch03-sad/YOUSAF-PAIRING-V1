@@ -1,16 +1,17 @@
 {
   "name": "yousaf-pairing-v1",
   "version": "3.0.0",
-  "description": "YOUSAF-BALOCH-MD WhatsApp Pairing Service",
+  "description": "YOUSAF-BALOCH-MD Pairing Server - Official Pairing Code Generator",
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "dev": "nodemon index.js"
   },
   "keywords": [
     "whatsapp",
+    "pairing-code",
     "baileys",
-    "pairing",
     "yousaf-baloch"
   ],
   "author": {
@@ -20,13 +21,15 @@
   },
   "license": "MIT",
   "engines": {
-    "node": ">=20.0.0",
-    "npm": ">=10.0.0"
+    "node": ">=20.0.0"
   },
   "dependencies": {
-    "baileys": "github:WhiskeySockets/Baileys",
+    "@whiskeysockets/baileys": "^6.7.9",
     "express": "^4.19.2",
     "pino": "^9.0.0",
-    "qrcode-terminal": "^0.12.0"
+    "qrcode": "^1.5.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
   }
 }
