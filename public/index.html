@@ -1,540 +1,288 @@
-const {
-  default: makeWASocket,
-  useMultiFileAuthState,
-  DisconnectReason,
-  fetchLatestBaileysVersion,
-  makeCacheableSignalKeyStore,
-  Browsers,
-  delay
-} = require('@whiskeysockets/baileys');
-const pino = require('pino');
-const express = require('express');
-const fs = require('fs');
-const path = require('path');
-
-const app = express();
-const PORT = process.env.PORT || 8000;
-
-// Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-// CORS
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type');
-  if (req.method === 'OPTIONS') return res.sendStatus(200);
-  next();
-});
-
-// Serve HTML page
-app.get('/', (req, res) => {
-  res.send(`
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YOUSAF-BALOCH-MD Pairing Service - Ultra Pro Premium</title>
+    <title>YOUSAF-BALOCH-MD | Ultra Pro Pairing</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@300;400;600&display=swap');
+
+        :root {
+            --primary-glow: #00d2ff;
+            --secondary-glow: #9d00ff;
+            --bg-dark: #050505;
+            --glass: rgba(255, 255, 255, 0.05);
         }
 
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--bg-dark);
+            color: white;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* Neon Background Effect */
+        .bg-animate {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(45deg, #050505, #1a1a2e);
+            z-index: -1;
         }
 
         .container {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            padding: 40px;
-            max-width: 600px;
             width: 100%;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
-        }
-
-        .header {
+            max-width: 600px;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            padding: 40px;
             text-align: center;
-            margin-bottom: 30px;
+            box-shadow: 0 0 50px rgba(0, 210, 255, 0.2);
+            position: relative;
         }
 
-        .logo {
-            font-size: 48px;
+        /* Welcome & Header Section */
+        .welcome-msg {
+            color: var(--primary-glow);
+            font-size: 14px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
             margin-bottom: 10px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            font-weight: bold;
+        }
+
+        .bot-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 38px;
+            font-weight: 900;
+            background: linear-gradient(to right, #00d2ff, #9d00ff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            font-weight: bold;
-        }
-
-        .title {
-            font-size: 28px;
-            color: #333;
-            margin-bottom: 10px;
-            font-weight: bold;
-        }
-
-        .subtitle {
-            color: #666;
-            font-size: 14px;
             margin-bottom: 20px;
+            filter: drop-shadow(0 0 10px rgba(0, 210, 255, 0.5));
         }
 
-        .social-links {
+        /* Live Date & Time */
+        .live-info {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 12px;
+            font-size: 13px;
+            margin-bottom: 30px;
             display: flex;
             justify-content: center;
-            gap: 15px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
+            gap: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        .social-link {
-            display: inline-flex;
-            align-items: center;
-            padding: 8px 16px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+        .live-info span i { color: var(--primary-glow); margin-right: 5px; }
+
+        /* Input Section */
+        .input-group { margin-bottom: 25px; text-align: left; }
+        label { display: block; margin-bottom: 10px; font-size: 14px; color: #ccc; }
+        
+        input {
+            width: 100%;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
             color: white;
-            text-decoration: none;
-            border-radius: 25px;
-            font-size: 12px;
-            transition: transform 0.3s;
+            font-size: 18px;
+            outline: none;
+            transition: 0.3s;
         }
 
-        .social-link:hover {
+        input:focus { border-color: var(--primary-glow); box-shadow: 0 0 15px rgba(0, 210, 255, 0.3); }
+
+        .example { font-size: 11px; color: #888; margin-top: 8px; }
+
+        .btn-generate {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(45deg, #00d2ff, #9d00ff);
+            border: none;
+            border-radius: 15px;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+            text-transform: uppercase;
+        }
+
+        .btn-generate:hover { transform: scale(1.02); box-shadow: 0 0 20px rgba(157, 0, 255, 0.6); }
+
+        /* Result Area */
+        .result-box {
+            margin-top: 30px;
+            background: rgba(0, 255, 0, 0.05);
+            border: 1px solid #00ff00;
+            border-radius: 15px;
+            padding: 20px;
+            display: none;
+            animation: slideIn 0.5s ease;
+        }
+
+        .pairing-code {
+            font-size: 32px;
+            font-family: 'Orbitron', sans-serif;
+            color: #00ff00;
+            margin: 15px 0;
+            letter-spacing: 5px;
+        }
+
+        .copy-btn {
+            background: #00ff00;
+            color: black;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        /* Social Media Grid */
+        .social-grid {
+            margin-top: 40px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .social-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 15px;
+            text-decoration: none;
+            color: white;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: 0.3s;
+            border: 1px solid transparent;
+        }
+
+        .social-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--primary-glow);
             transform: translateY(-3px);
         }
 
-        .input-group {
-            margin-bottom: 20px;
-        }
+        .social-item i { font-size: 18px; width: 25px; }
+        .fa-youtube { color: #ff0000; }
+        .fa-tiktok { color: #ffffff; }
+        .fa-whatsapp { color: #25d366; }
+        .fa-github { color: #f0f6fc; }
 
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: #333;
-            font-weight: 600;
-        }
-
-        input {
-            width: 100%;
-            padding: 15px;
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            font-size: 16px;
-            transition: border-color 0.3s;
-        }
-
-        input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .btn {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: transform 0.3s;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-        }
-
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .result {
-            margin-top: 30px;
-            padding: 20px;
-            border-radius: 10px;
-            display: none;
-        }
-
-        .result.success {
-            background: #d4edda;
-            border: 2px solid #28a745;
-            color: #155724;
-        }
-
-        .result.error {
-            background: #f8d7da;
-            border: 2px solid #dc3545;
-            color: #721c24;
-        }
-
-        .code-display {
-            font-size: 32px;
-            font-weight: bold;
-            text-align: center;
-            margin: 20px 0;
-            letter-spacing: 5px;
-            color: #667eea;
-        }
-
-        .footer {
-            text-align: center;
-            margin-top: 30px;
-            color: #666;
-            font-size: 12px;
-        }
-
-        .footer a {
-            color: #667eea;
-            text-decoration: none;
-        }
-
-        .loading {
-            display: none;
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .premium-badge {
-            background: linear-gradient(135deg, #FFD700, #FFA500);
-            color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            display: inline-block;
-            margin-bottom: 20px;
-        }
+        @keyframes slideIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="logo">🌟</div>
-            <h1 class="title">YOUSAF-BALOCH-MD</h1>
-            <span class="premium-badge">💎 ULTRA PRO PREMIUM</span>
-            <p class="subtitle">WhatsApp Session Generator V2.0</p>
-        </div>
 
-        <div class="social-links">
-            <a href="https://www.youtube.com/@Yousaf_Baloch_Tech" target="_blank" class="social-link">
-                📺 YouTube
-            </a>
-            <a href="https://tiktok.com/@loser_boy.110" target="_blank" class="social-link">
-                🎵 TikTok
-            </a>
-            <a href="https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j" target="_blank" class="social-link">
-                📢 Channel
-            </a>
-            <a href="https://github.com/musakhanbaloch03-sad" target="_blank" class="social-link">
-                🔗 GitHub
-            </a>
-        </div>
+<div class="bg-animate"></div>
 
-        <form id="pairingForm">
-            <div class="input-group">
-                <label for="phoneNumber">📱 Enter Your WhatsApp Number</label>
-                <input 
-                    type="tel" 
-                    id="phoneNumber" 
-                    placeholder="923710636110" 
-                    required
-                    pattern="[0-9]+"
-                >
-                <small style="color: #666; font-size: 12px;">Enter with country code (without + or spaces)</small>
-            </div>
-
-            <button type="submit" class="btn" id="submitBtn">
-                🔑 Generate Pairing Code
-            </button>
-        </form>
-
-        <div class="loading" id="loading">
-            <div class="spinner"></div>
-            <p style="margin-top: 10px; color: #667eea;">Generating code...</p>
-        </div>
-
-        <div class="result" id="result"></div>
-
-        <div class="footer">
-            <p>Made with ❤️ by <strong>Muhammad Yousaf Baloch</strong></p>
-            <p style="margin-top: 10px;">
-                📱 WhatsApp: <a href="https://wa.me/923710636110" target="_blank">+923710636110</a>
-            </p>
-            <p style="margin-top: 5px;">
-                🔗 Main Bot: <a href="https://github.com/musakhanbaloch03-sad/YOUSAF-BALOCH-MD" target="_blank">YOUSAF-BALOCH-MD</a>
-            </p>
-            <p style="margin-top: 5px; font-size: 10px; color: #999;">
-                © 2024 YOUSAF-BALOCH-MD - All Rights Reserved
-            </p>
-        </div>
+<div class="container">
+    <div class="welcome-msg">--- Welcome To ---</div>
+    <div class="bot-name">YOUSAF-BALOCH-MD</div>
+    
+    <div class="live-info">
+        <span id="date"><i class="fas fa-calendar-alt"></i> --/--/----</span>
+        <span id="time"><i class="fas fa-clock"></i> --:--:--</span>
     </div>
 
-    <script>
-        const form = document.getElementById('pairingForm');
-        const phoneInput = document.getElementById('phoneNumber');
-        const submitBtn = document.getElementById('submitBtn');
-        const loading = document.getElementById('loading');
-        const result = document.getElementById('result');
+    <form id="pairingForm">
+        <div class="input-group">
+            <label>📱 Enter Phone Number</label>
+            <input type="tel" id="phoneNumber" placeholder="923710636110" required>
+            <div class="example">Example: 923710636110 (Country Code + Number)</div>
+        </div>
+        <button type="submit" class="btn-generate" id="submitBtn">Generate Pairing Code</button>
+    </form>
 
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
+    <div class="result-box" id="resultBox">
+        <p style="font-size: 13px;">Your Code Is Ready:</p>
+        <div class="pairing-code" id="pairingCode">------</div>
+        <button class="copy-btn" onclick="copyCode()"><i class="fas fa-copy"></i> COPY CODE</button>
+    </div>
 
-            const phoneNumber = phoneInput.value.trim();
+    <div class="social-grid">
+        <a href="https://www.youtube.com/@Yousaf_Baloch_Tech" class="social-item">
+            <i class="fab fa-youtube"></i> YouTube
+        </a>
+        <a href="https://tiktok.com/@loser_boy.110" class="social-item">
+            <i class="fab fa-tiktok"></i> TikTok
+        </a>
+        <a href="https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j" class="social-item">
+            <i class="fas fa-bullhorn"></i> Channel
+        </a>
+        <a href="https://wa.me/923710636110" class="social-item">
+            <i class="fab fa-whatsapp"></i> WhatsApp
+        </a>
+        <a href="https://github.com/musakhanbaloch03-sad/YOUSAF-BALOCH-MD" class="social-item">
+            <i class="fab fa-github"></i> MD Repo
+        </a>
+        <a href="https://github.com/musakhanbaloch03-sad" class="social-item">
+            <i class="fas fa-user"></i> Owner Profile
+        </a>
+    </div>
 
-            if (!phoneNumber) {
-                showResult('error', 'Please enter your phone number');
-                return;
-            }
+    <div style="margin-top: 30px; font-size: 10px; opacity: 0.5;">
+        MADE WITH ❤️ BY MUHAMMAD YOUSAF BALOCH | © 2026
+    </div>
+</div>
 
-            // Validate phone number
-            if (!/^[0-9]{10,15}$/.test(phoneNumber)) {
-                showResult('error', 'Invalid phone number format. Enter digits only (10-15 digits)');
-                return;
-            }
+<script>
+    // Live Clock & Date
+    function updateClock() {
+        const now = new Date();
+        document.getElementById('date').innerHTML = `<i class="fas fa-calendar-alt"></i> ${now.toLocaleDateString()}`;
+        document.getElementById('time').innerHTML = `<i class="fas fa-clock"></i> ${now.toLocaleTimeString()}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
 
-            // Show loading
-            submitBtn.disabled = true;
-            loading.style.display = 'block';
-            result.style.display = 'none';
+    // Form Handle
+    const form = document.getElementById('pairingForm');
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const num = document.getElementById('phoneNumber').value.replace(/[^0-9]/g, '');
+        const btn = document.getElementById('submitBtn');
+        btn.innerText = "GENERATING...";
+        btn.disabled = true;
 
-            try {
-                // ✅ FIXED: Changed endpoint to /get-code
-                const response = await fetch('/get-code', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ phoneNumber })
-                });
+        try {
+            const res = await fetch('/get-code', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phoneNumber: num })
+            });
+            const data = await res.json();
+            if (data.success) {
+                document.getElementById('pairingCode').innerText = data.code;
+                document.getElementById('resultBox').style.display = 'block';
+                btn.innerText = "GENERATE AGAIN";
+            } else { alert("Error: " + data.error); btn.innerText = "TRY AGAIN"; }
+        } catch (err) { alert("Network Error!"); btn.innerText = "TRY AGAIN"; }
+        btn.disabled = false;
+    });
 
-                const data = await response.json();
+    // Copy Code Function
+    function copyCode() {
+        const code = document.getElementById('pairingCode').innerText;
+        navigator.clipboard.writeText(code);
+        alert("Pairing Code Copied: " + code);
+    }
+</script>
 
-                if (data.success) {
-                    showResult('success', \`
-                        <h3>✅ Pairing Code Generated!</h3>
-                        <div class="code-display">\${data.code}</div>
-                        <p><strong>Instructions:</strong></p>
-                        <ol style="text-align: left; margin-top: 10px;">
-                            <li>Open WhatsApp on your phone</li>
-                            <li>Go to Settings → Linked Devices</li>
-                            <li>Tap "Link a Device"</li>
-                            <li>Select "Link with phone number"</li>
-                            <li>Enter the code above: <strong>\${data.code}</strong></li>
-                            <li>Wait for Session ID to be sent to your WhatsApp</li>
-                        </ol>
-                        <p style="margin-top: 15px; color: #28a745;">
-                            <strong>✨ Your Session ID will be sent to your WhatsApp automatically!</strong>
-                        </p>
-                    \`);
-                } else {
-                    showResult('error', \`Error: \${data.error || 'Failed to generate code'}\`);
-                }
-            } catch (error) {
-                showResult('error', \`Network error: \${error.message}\`);
-            } finally {
-                submitBtn.disabled = false;
-                loading.style.display = 'none';
-            }
-        });
-
-        function showResult(type, message) {
-            result.className = \`result \${type}\`;
-            result.innerHTML = message;
-            result.style.display = 'block';
-        }
-    </script>
 </body>
 </html>
-  `);
-});
-
-// ✅ BACKEND API: /get-code endpoint
-app.post('/get-code', async (req, res) => {
-  try {
-    const { phoneNumber } = req.body;
-
-    if (!phoneNumber) {
-      return res.json({ success: false, error: 'Phone number is required' });
-    }
-
-    const cleanNumber = phoneNumber.replace(/[^0-9]/g, '');
-
-    if (cleanNumber.length < 10 || cleanNumber.length > 15) {
-      return res.json({ success: false, error: 'Invalid phone number length' });
-    }
-
-    console.log(\`📱 Generating pairing code for: \${cleanNumber}\`);
-
-    // Create temp session directory
-    const sessionDir = path.join(__dirname, 'sessions', \`temp-\${Date.now()}\`);
-    fs.mkdirSync(sessionDir, { recursive: true });
-
-    try {
-      const { state, saveCreds } = await useMultiFileAuthState(sessionDir);
-      const { version } = await fetchLatestBaileysVersion();
-
-      const sock = makeWASocket({
-        version,
-        logger: pino({ level: 'silent' }),
-        printQRInTerminal: false,
-        auth: {
-          creds: state.creds,
-          keys: makeCacheableSignalKeyStore(state.keys, pino({ level: 'silent' }))
-        },
-        browser: Browsers.ubuntu('Chrome'),
-        connectTimeoutMs: 60000,
-        defaultQueryTimeoutMs: 0,
-        keepAliveIntervalMs: 10000,
-        generateHighQualityLinkPreview: true,
-        getMessage: async () => undefined
-      });
-
-      sock.ev.on('creds.update', saveCreds);
-
-      if (!sock.authState.creds.registered) {
-        await delay(2000);
-
-        const code = await sock.requestPairingCode(cleanNumber);
-        console.log(\`✅ Pairing Code Generated: \${code}\`);
-
-        // Return code to frontend
-        res.json({
-          success: true,
-          code: code,
-          number: cleanNumber
-        });
-
-        // Handle connection
-        sock.ev.on('connection.update', async (update) => {
-          const { connection, lastDisconnect } = update;
-
-          if (connection === 'open') {
-            console.log('✅ WhatsApp Connected!');
-
-            try {
-              const credsPath = path.join(sessionDir, 'creds.json');
-              const credsData = fs.readFileSync(credsPath, 'utf-8');
-              const sessionId = Buffer.from(credsData).toString('base64');
-
-              console.log('\\n' + '='.repeat(60));
-              console.log('SESSION ID:');
-              console.log(sessionId);
-              console.log('='.repeat(60) + '\\n');
-
-              // Send session to user's WhatsApp
-              await sock.sendMessage(\`\${cleanNumber}@s.whatsapp.net\`, {
-                text: \`✅ *YOUSAF-BALOCH-MD SESSION*\\n\\n🔐 Your Session ID:\\n\\\`\\\`\\\`\${sessionId}\\\`\\\`\\\`\\n\\n✨ Save this session ID safely!\\n\\n👨‍💻 Developer: Muhammad Yousaf Baloch\\n📱 Contact: +923710636110\`
-              });
-
-              console.log('✅ Session ID sent to WhatsApp!');
-
-              // Cleanup
-              setTimeout(async () => {
-                await sock.logout();
-                fs.rmSync(sessionDir, { recursive: true, force: true });
-              }, 5000);
-
-            } catch (err) {
-              console.error('Session save error:', err);
-            }
-          }
-
-          if (connection === 'close') {
-            const shouldReconnect = lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut;
-            console.log('Connection closed:', lastDisconnect?.error?.message);
-
-            if (!shouldReconnect) {
-              fs.rmSync(sessionDir, { recursive: true, force: true });
-            }
-          }
-        });
-
-      } else {
-        res.json({ success: false, error: 'Number already registered' });
-      }
-
-    } catch (error) {
-      console.error('Socket Error:', error);
-      fs.rmSync(sessionDir, { recursive: true, force: true });
-      res.json({ success: false, error: error.message });
-    }
-
-  } catch (error) {
-    console.error('API Error:', error);
-    res.json({ success: false, error: error.message });
-  }
-});
-
-// Health check
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: Date.now() });
-});
-
-// Start server
-app.listen(PORT, () => {
-  console.log('╔═══════════════════════════════════════════════════════════╗');
-  console.log('║                                                           ║');
-  console.log('║   🤖 YOUSAF-BALOCH-MD PAIRING SERVICE                    ║');
-  console.log('║   Ultra Pro Premium WhatsApp Multi-Device System         ║');
-  console.log('║   Version 2.0 - Professional Edition                     ║');
-  console.log('║                                                           ║');
-  console.log('╚═══════════════════════════════════════════════════════════╝');
-  console.log('');
-  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  console.log('👨‍💻 Created by: MUHAMMAD YOUSAF');
-  console.log('🇵🇰 Country: Pakistan 🇵🇰');
-  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  console.log('📱 WhatsApp Channel: https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j');
-  console.log('🎥 YouTube: https://www.youtube.com/@Yousaf_Baloch_Tech');
-  console.log('🎵 TikTok: https://tiktok.com/@loser_boy.110');
-  console.log('📞 Phone: 923710636110');
-  console.log('🐙 GitHub: https://github.com/musakhanbaloch03-sad');
-  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  console.log('');
-  console.log(\`🚀 Server started successfully!\`);
-  console.log(\`🌐 Port: \${PORT}\`);
-  console.log(\`🔗 URL: http://localhost:\${PORT}\`);
-  console.log('');
-  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  console.log('💻 YOUSAF-BALOCH-MD Pairing Service is ACTIVE! ✅');
-  console.log('👨‍💻 Created by MUHAMMAD YOUSAF from Pakistan 🇵🇰');
-  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-});
-
-// Error handlers
-process.on('unhandledRejection', (err) => {
-  console.error('❌ Unhandled Rejection:', err);
-});
-
-process.on('uncaughtException', (err) => {
-  console.error('❌ Uncaught Exception:', err);
-});
