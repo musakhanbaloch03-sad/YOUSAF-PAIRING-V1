@@ -1,8 +1,9 @@
 {
-  "name": "yousaf-baloch-md",
-  "version": "3.0.0",
-  "type": "module",
+  "name": "yousaf-baloch-md-pairing",
+  "version": "1.0.0",
+  "description": "Pairing server for Yousaf Baloch MD",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "start": "node index.js"
   },
