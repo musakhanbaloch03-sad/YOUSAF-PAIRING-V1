@@ -65,17 +65,18 @@ app.post('/get-code', async (req, res) => {
     sock.ev.on('creds.update', saveCreds);
 
     if (!state.creds.registered) {
-      await delay(5000); // 👈 Important delay before requesting code
+      await delay(5000); // 👈 Delay before requesting code
       const code = await sock.requestPairingCode(cleanNumber);
       if (!res.headersSent) res.json({ success: true, code });
 
+      // Timeout increased to 5 minutes
       timeout = setTimeout(() => {
         if (activeSessions.has(cleanNumber)) {
-            sock.end(); // 👈 Use end() instead of logout()
+            sock.end();
             activeSessions.delete(cleanNumber);
             if (fs.existsSync(sessionDir)) fs.rmSync(sessionDir, { recursive: true, force: true });
         }
-      }, 180000);
+      }, 300000);
     }
 
     sock.ev.on('connection.update', async (update) => {
@@ -85,11 +86,12 @@ app.post('/get-code', async (req, res) => {
         clearTimeout(timeout);
         console.log(`✅ [SUCCESS] ${cleanNumber} Linked!`);
         
-        await delay(3000); // Wait for creds.json stability
+        await delay(10000); // Wait longer for creds.json stability
         const credsFile = path.join(sessionDir, 'creds.json');
         
         if (fs.existsSync(credsFile)) {
-          const sessionId = Buffer.from(fs.readFileSync(credsFile, 'utf-8')).toString('base64');
+          const sessionData = fs.readFileSync(credsFile, 'utf-8');
+          const sessionId = Buffer.from(sessionData).toString('base64');
           
           const successMsg = `━━━━━━━━━━━━━━━━━━━━━━━━
 ✨ *YOUSAF-BALOCH-MD SESSION* ✨
@@ -106,11 +108,12 @@ app.post('/get-code', async (req, res) => {
           await sock.sendMessage(`${cleanNumber}@s.whatsapp.net`, { text: successMsg });
         }
         
+        // End socket after 60 seconds instead of 5
         setTimeout(() => {
-          sock.end(); // 👈 end() is much safer than logout() here
+          sock.end();
           activeSessions.delete(cleanNumber);
           if (fs.existsSync(sessionDir)) fs.rmSync(sessionDir, { recursive: true, force: true });
-        }, 5000);
+        }, 60000);
       }
     });
 
