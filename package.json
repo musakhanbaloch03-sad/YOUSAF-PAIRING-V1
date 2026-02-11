@@ -1,21 +1,31 @@
 {
-  "name": "yousaf-baloch-md-pairing",
-  "version": "1.0.0",
-  "description": "Pairing server for Yousaf Baloch MD",
-  "main": "index.js",
+  "name": "yousaf-pairing-v1",
+  "version": "2.0.0",
+  "description": "Official Pairing Gateway for YOUSAF-BALOCH-MD | Created by Muhammad Yousaf Baloch",
   "type": "module",
+  "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   },
   "dependencies": {
     "@whiskeysockets/baileys": "6.7.9",
-    "express": "^4.19.2",
-    "pino": "^9.0.0",
-    "dotenv": "^16.4.5",
-    "axios": "^1.6.0",
-    "qrcode-terminal": "^0.12.0"
+    "express": "^4.18.2",
+    "pino": "^8.15.0",
+    "pino-pretty": "^10.2.0",
+    "chalk": "^5.3.0",
+    "figlet": "^1.7.0",
+    "gradient-string": "^2.0.2",
+    "node-cache": "^5.1.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "express-rate-limit": "^7.1.5",
+    "@hapi/boom": "^10.0.1"
   },
-  "engines": {
-    "node": "20.x"
-  }
+  "keywords": ["whatsapp", "bot", "baileys", "pairing", "yousaf-baloch"],
+  "author": "Muhammad Yousaf Baloch",
+  "license": "MIT"
 }
