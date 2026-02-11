@@ -1,10 +1,9 @@
 import makeWASocket, {
   useMultiFileAuthState,
   DisconnectReason,
-  fetchLatestBaileysVersion,
-  makeCacheableSignalKeyStore,
   Browsers,
-  delay
+  delay,
+  makeCacheableSignalKeyStore
 } from 'baileys';
 import pino from 'pino';
 import express from 'express';
@@ -175,7 +174,7 @@ app.get('/', (req, res) => {
     <div class="container">
         <h1>🤖 YOUSAF-BALOCH-MD</h1>
         <span class="badge">💎 ULTRA PRO PREMIUM</span>
-        <p style="text-align: center; color: #666; margin-bottom: 20px;">WhatsApp Session Generator V2.0</p>
+        <p style="text-align: center; color: #666; margin-bottom: 20px;">WhatsApp Session Generator V3.0</p>
         
         <div class="social-links">
             <a href="https://www.youtube.com/@Yousaf_Baloch_Tech" class="social-link">📺 YouTube</a>
@@ -198,6 +197,7 @@ app.get('/', (req, res) => {
         <div class="footer">
             <p>Made with ❤️ by <strong>Muhammad Yousaf Baloch</strong></p>
             <p style="margin-top: 10px;">📱 WhatsApp: <a href="https://wa.me/923710636110">+923710636110</a></p>
+            <p style="margin-top: 5px;">🔗 Main Bot: <a href="https://github.com/musakhanbaloch03-sad/YOUSAF-BALOCH-MD">YOUSAF-BALOCH-MD</a></p>
         </div>
     </div>
     
@@ -271,47 +271,22 @@ app.post('/get-code', async (req, res) => {
     
     console.log(`📱 Generating for: ${cleanNumber}`);
     
-    const sessionDir = path.join(__dirname, 'sessions', `temp-${Date.now()}`);
-    
-    // Remove old temp sessions
-    const sessionsRoot = path.join(__dirname, 'sessions');
-    if (fs.existsSync(sessionsRoot)) {
-      const allSessions = fs.readdirSync(sessionsRoot);
-      allSessions.forEach(folder => {
-        if (folder.startsWith('temp-')) {
-          const folderPath = path.join(sessionsRoot, folder);
-          const stats = fs.statSync(folderPath);
-          const ageMinutes = (Date.now() - stats.mtimeMs) / 1000 / 60;
-          if (ageMinutes > 5) {
-            fs.rmSync(folderPath, { recursive: true, force: true });
-          }
-        }
-      });
-    }
-    
+    const sessionDir = path.join(__dirname, 'temp_sessions', `${cleanNumber}_${Date.now()}`);
     fs.mkdirSync(sessionDir, { recursive: true });
     
     try {
       const { state, saveCreds } = await useMultiFileAuthState(sessionDir);
-      const { version } = await fetchLatestBaileysVersion();
-      
-      console.log(`📦 Baileys version: ${version.join('.')}`);
       
       const sock = makeWASocket({
-        version,
-        logger: pino({ level: 'silent' }),
-        printQRInTerminal: false,
-        mobile: false,
         auth: {
           creds: state.creds,
           keys: makeCacheableSignalKeyStore(state.keys, pino({ level: 'silent' }))
         },
-        browser: Browsers.windows('Desktop'),
-        markOnlineOnConnect: false,
-        generateHighQualityLinkPreview: true,
+        logger: pino({ level: 'silent' }),
+        printQRInTerminal: false,
+        browser: Browsers.macOS('Desktop'),
         syncFullHistory: false,
-        fireInitQueries: false,
-        getMessage: async () => undefined
+        markOnlineOnConnect: false
       });
       
       sock.ev.on('creds.update', saveCreds);
@@ -324,17 +299,17 @@ app.post('/get-code', async (req, res) => {
         
         res.json({ success: true, code: code });
         
-        let connectionTimeout = setTimeout(() => {
-          console.log('⏱️ Connection timeout');
+        const timeout = setTimeout(() => {
+          console.log('⏱️ Timeout');
           sock.end();
           fs.rmSync(sessionDir, { recursive: true, force: true });
-        }, 60000); // 60 second timeout
+        }, 60000);
         
         sock.ev.on('connection.update', async (update) => {
-          const { connection, lastDisconnect } = update;
+          const { connection } = update;
           
           if (connection === 'open') {
-            clearTimeout(connectionTimeout);
+            clearTimeout(timeout);
             console.log('✅ Connected!');
             
             try {
@@ -347,13 +322,13 @@ app.post('/get-code', async (req, res) => {
               console.log('='.repeat(50) + '\n');
               
               await sock.sendMessage(`${cleanNumber}@s.whatsapp.net`, {
-                text: `✅ *YOUSAF-BALOCH-MD SESSION*\n\n🔐 Session ID:\n\`\`\`${sessionId}\`\`\`\n\n✨ Save this!\n\n👨‍💻 Developer: Muhammad Yousaf Baloch\n📱 +923710636110`
+                text: `✅ *YOUSAF-BALOCH-MD SESSION*\n\n🔐 Your Session ID:\n\`\`\`${sessionId}\`\`\`\n\n✨ Save this!\n\n👨‍💻 Developer: Muhammad Yousaf Baloch\n📱 +923710636110`
               });
               
               console.log('✅ Session sent!');
               
-              setTimeout(async () => {
-                await sock.logout();
+              setTimeout(() => {
+                sock.end();
                 fs.rmSync(sessionDir, { recursive: true, force: true });
               }, 3000);
             } catch (e) {
@@ -362,10 +337,8 @@ app.post('/get-code', async (req, res) => {
           }
           
           if (connection === 'close') {
-            clearTimeout(connectionTimeout);
-            const statusCode = lastDisconnect?.error?.output?.statusCode;
-            console.log('❌ Closed:', DisconnectReason[statusCode] || statusCode);
-            
+            clearTimeout(timeout);
+            console.log('❌ Connection closed');
             fs.rmSync(sessionDir, { recursive: true, force: true });
           }
         });
@@ -385,20 +358,21 @@ app.post('/get-code', async (req, res) => {
 });
 
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok' });
+  res.json({ status: 'ok', timestamp: Date.now() });
 });
 
-const server = app.listen(PORT, () => {
+app.listen(PORT, () => {
   console.log('╔═══════════════════════════════════════╗');
   console.log('║   🤖 YOUSAF-BALOCH-MD PAIRING        ║');
+  console.log('║   Version 3.0.0                      ║');
   console.log('╚═══════════════════════════════════════╝');
-  console.log(`🚀 Server: http://localhost:${PORT}`);
-});
-
-process.on('SIGTERM', () => {
-  server.close(() => process.exit(0));
+  console.log('');
+  console.log(`🚀 Server running on port: ${PORT}`);
+  console.log('👨‍💻 Developer: Muhammad Yousaf Baloch');
+  console.log('📱 Contact: +923710636110');
+  console.log('');
 });
 
 process.on('unhandledRejection', (err) => {
-  console.error('Error:', err);
+  console.error('❌ Error:', err);
 });
