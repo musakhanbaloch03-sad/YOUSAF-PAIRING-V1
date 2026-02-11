@@ -3,16 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YOUSAF-BALOCH-MD | Ultra Pro Pairing</title>
+    <title>YOUSAF-BALOCH-MD | Ultra Pro Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@300;400;600&display=swap');
 
         :root {
-            --primary-glow: #00d2ff;
-            --secondary-glow: #9d00ff;
+            --primary: #00d2ff;
+            --secondary: #9d00ff;
             --bg-dark: #050505;
             --glass: rgba(255, 255, 255, 0.05);
+            --neon-green: #00ff00;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
@@ -25,14 +26,7 @@
             align-items: center;
             justify-content: center;
             overflow-x: hidden;
-        }
-
-        /* Neon Background Effect */
-        .bg-animate {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(45deg, #050505, #1a1a2e);
-            z-index: -1;
+            background: radial-gradient(circle at center, #1a1a2e 0%, #050505 100%);
         }
 
         .container {
@@ -41,72 +35,71 @@
             background: var(--glass);
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 25px;
+            border-radius: 30px;
             padding: 40px;
             text-align: center;
             box-shadow: 0 0 50px rgba(0, 210, 255, 0.2);
-            position: relative;
+            animation: fadeIn 0.8s ease-out;
         }
 
-        /* Welcome & Header Section */
-        .welcome-msg {
-            color: var(--primary-glow);
-            font-size: 14px;
-            letter-spacing: 3px;
+        .welcome-badge {
+            color: var(--primary);
+            font-size: 12px;
+            letter-spacing: 4px;
             text-transform: uppercase;
-            margin-bottom: 10px;
             font-weight: bold;
+            margin-bottom: 10px;
+            display: block;
         }
 
         .bot-name {
             font-family: 'Orbitron', sans-serif;
-            font-size: 38px;
+            font-size: 35px;
             font-weight: 900;
             background: linear-gradient(to right, #00d2ff, #9d00ff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 20px;
-            filter: drop-shadow(0 0 10px rgba(0, 210, 255, 0.5));
+            filter: drop-shadow(0 0 15px rgba(0, 210, 255, 0.4));
         }
 
-        /* Live Date & Time */
-        .live-info {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 10px;
-            border-radius: 12px;
+        .live-panel {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 12px;
+            border-radius: 15px;
             font-size: 13px;
             margin-bottom: 30px;
             display: flex;
-            justify-content: center;
-            gap: 20px;
+            justify-content: space-around;
             border: 1px solid rgba(255, 255, 255, 0.05);
+            font-family: 'Orbitron', sans-serif;
         }
 
-        .live-info span i { color: var(--primary-glow); margin-right: 5px; }
+        .live-panel span i { color: var(--primary); margin-right: 5px; }
 
-        /* Input Section */
-        .input-group { margin-bottom: 25px; text-align: left; }
-        label { display: block; margin-bottom: 10px; font-size: 14px; color: #ccc; }
+        .input-area { text-align: left; margin-bottom: 25px; }
+        label { font-size: 14px; color: #aaa; margin-left: 5px; }
         
         input {
             width: 100%;
-            padding: 16px;
-            background: rgba(255, 255, 255, 0.05);
+            padding: 18px;
+            background: rgba(0, 0, 0, 0.3);
             border: 2px solid rgba(255, 255, 255, 0.1);
             border-radius: 15px;
             color: white;
             font-size: 18px;
+            margin-top: 10px;
             outline: none;
             transition: 0.3s;
         }
 
-        input:focus { border-color: var(--primary-glow); box-shadow: 0 0 15px rgba(0, 210, 255, 0.3); }
+        input:focus { border-color: var(--primary); box-shadow: 0 0 15px rgba(0, 210, 255, 0.3); }
 
-        .example { font-size: 11px; color: #888; margin-top: 8px; }
+        .example-text { font-size: 11px; color: #666; margin-top: 8px; font-style: italic; }
 
-        .btn-generate {
+        .btn-main {
             width: 100%;
-            padding: 16px;
+            padding: 18px;
             background: linear-gradient(45deg, #00d2ff, #9d00ff);
             border: none;
             border-radius: 15px;
@@ -114,40 +107,40 @@
             font-weight: bold;
             font-size: 16px;
             cursor: pointer;
-            transition: 0.3s;
+            transition: 0.4s;
             text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
-        .btn-generate:hover { transform: scale(1.02); box-shadow: 0 0 20px rgba(157, 0, 255, 0.6); }
+        .btn-main:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(157, 0, 255, 0.4); }
 
-        /* Result Area */
-        .result-box {
+        .result-panel {
             margin-top: 30px;
-            background: rgba(0, 255, 0, 0.05);
-            border: 1px solid #00ff00;
-            border-radius: 15px;
-            padding: 20px;
+            background: rgba(0, 255, 0, 0.03);
+            border: 1px solid var(--neon-green);
+            border-radius: 20px;
+            padding: 25px;
             display: none;
-            animation: slideIn 0.5s ease;
         }
 
-        .pairing-code {
-            font-size: 32px;
+        .code-text {
+            font-size: 35px;
             font-family: 'Orbitron', sans-serif;
-            color: #00ff00;
+            color: var(--neon-green);
             margin: 15px 0;
-            letter-spacing: 5px;
+            letter-spacing: 8px;
+            text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
         }
 
         .copy-btn {
-            background: #00ff00;
+            background: var(--neon-green);
             color: black;
             border: none;
-            padding: 8px 15px;
-            border-radius: 8px;
+            padding: 10px 20px;
+            border-radius: 10px;
             cursor: pointer;
-            font-weight: bold;
-            font-size: 12px;
+            font-weight: 800;
+            font-size: 13px;
         }
 
         /* Social Media Grid */
@@ -158,8 +151,8 @@
             gap: 15px;
         }
 
-        .social-item {
-            background: rgba(255, 255, 255, 0.05);
+        .social-box {
+            background: rgba(255, 255, 255, 0.03);
             padding: 15px;
             border-radius: 15px;
             text-decoration: none;
@@ -167,96 +160,95 @@
             font-size: 12px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             transition: 0.3s;
-            border: 1px solid transparent;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        .social-item:hover {
+        .social-box:hover {
             background: rgba(255, 255, 255, 0.1);
-            border-color: var(--primary-glow);
+            border-color: var(--primary);
             transform: translateY(-3px);
         }
 
-        .social-item i { font-size: 18px; width: 25px; }
+        .social-box i { font-size: 20px; }
         .fa-youtube { color: #ff0000; }
         .fa-tiktok { color: #ffffff; }
         .fa-whatsapp { color: #25d366; }
         .fa-github { color: #f0f6fc; }
 
-        @keyframes slideIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-<div class="bg-animate"></div>
-
 <div class="container">
-    <div class="welcome-msg">--- Welcome To ---</div>
-    <div class="bot-name">YOUSAF-BALOCH-MD</div>
+    <span class="welcome-badge">--- WELCOME TO SYSTEM ---</span>
+    <h1 class="bot-name">YOUSAF-BALOCH-MD</h1>
     
-    <div class="live-info">
-        <span id="date"><i class="fas fa-calendar-alt"></i> --/--/----</span>
-        <span id="time"><i class="fas fa-clock"></i> --:--:--</span>
+    <div class="live-panel">
+        <span id="liveDate"><i class="fas fa-calendar-alt"></i> --/--/----</span>
+        <span id="liveTime"><i class="fas fa-clock"></i> --:--:--</span>
     </div>
 
     <form id="pairingForm">
-        <div class="input-group">
-            <label>📱 Enter Phone Number</label>
+        <div class="input-area">
+            <label>📱 WhatsApp Number</label>
             <input type="tel" id="phoneNumber" placeholder="923710636110" required>
-            <div class="example">Example: 923710636110 (Country Code + Number)</div>
+            <p class="example-text">Example: Enter with country code (923xxxxxxxxx)</p>
         </div>
-        <button type="submit" class="btn-generate" id="submitBtn">Generate Pairing Code</button>
+        <button type="submit" class="btn-main" id="submitBtn">Get Pairing Code</button>
     </form>
 
-    <div class="result-box" id="resultBox">
-        <p style="font-size: 13px;">Your Code Is Ready:</p>
-        <div class="pairing-code" id="pairingCode">------</div>
-        <button class="copy-btn" onclick="copyCode()"><i class="fas fa-copy"></i> COPY CODE</button>
+    <div class="result-panel" id="resultPanel">
+        <p style="font-size: 12px; opacity: 0.8;">YOUR PAIRING CODE:</p>
+        <div class="code-text" id="codeOutput">------</div>
+        <button class="copy-btn" onclick="copyToClipboard()"><i class="fas fa-copy"></i> COPY CODE</button>
     </div>
 
     <div class="social-grid">
-        <a href="https://www.youtube.com/@Yousaf_Baloch_Tech" class="social-item">
+        <a href="https://www.youtube.com/@Yousaf_Baloch_Tech" target="_blank" class="social-box">
             <i class="fab fa-youtube"></i> YouTube
         </a>
-        <a href="https://tiktok.com/@loser_boy.110" class="social-item">
+        <a href="https://tiktok.com/@loser_boy.110" target="_blank" class="social-box">
             <i class="fab fa-tiktok"></i> TikTok
         </a>
-        <a href="https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j" class="social-item">
+        <a href="https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j" target="_blank" class="social-box">
             <i class="fas fa-bullhorn"></i> Channel
         </a>
-        <a href="https://wa.me/923710636110" class="social-item">
+        <a href="https://wa.me/923710636110" target="_blank" class="social-box">
             <i class="fab fa-whatsapp"></i> WhatsApp
         </a>
-        <a href="https://github.com/musakhanbaloch03-sad/YOUSAF-BALOCH-MD" class="social-item">
+        <a href="https://github.com/musakhanbaloch03-sad/YOUSAF-BALOCH-MD" target="_blank" class="social-box">
             <i class="fab fa-github"></i> MD Repo
         </a>
-        <a href="https://github.com/musakhanbaloch03-sad" class="social-item">
-            <i class="fas fa-user"></i> Owner Profile
+        <a href="https://github.com/musakhanbaloch03-sad" target="_blank" class="social-box">
+            <i class="fas fa-user-circle"></i> Owner Profile
         </a>
     </div>
 
-    <div style="margin-top: 30px; font-size: 10px; opacity: 0.5;">
-        MADE WITH ❤️ BY MUHAMMAD YOUSAF BALOCH | © 2026
+    <div style="margin-top: 35px; font-size: 10px; opacity: 0.4; letter-spacing: 1px;">
+        DESIGNED BY MUHAMMAD YOUSAF BALOCH | © 2026
     </div>
 </div>
 
 <script>
-    // Live Clock & Date
+    // Real-time Clock
     function updateClock() {
         const now = new Date();
-        document.getElementById('date').innerHTML = `<i class="fas fa-calendar-alt"></i> ${now.toLocaleDateString()}`;
-        document.getElementById('time').innerHTML = `<i class="fas fa-clock"></i> ${now.toLocaleTimeString()}`;
+        document.getElementById('liveDate').innerHTML = `<i class="fas fa-calendar-alt"></i> ${now.toLocaleDateString()}`;
+        document.getElementById('liveTime').innerHTML = `<i class="fas fa-clock"></i> ${now.toLocaleTimeString()}`;
     }
     setInterval(updateClock, 1000);
     updateClock();
 
-    // Form Handle
+    // Handling Pairing Logic
     const form = document.getElementById('pairingForm');
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const num = document.getElementById('phoneNumber').value.replace(/[^0-9]/g, '');
+        const number = document.getElementById('phoneNumber').value.replace(/[^0-9]/g, '');
         const btn = document.getElementById('submitBtn');
+        
         btn.innerText = "GENERATING...";
         btn.disabled = true;
 
@@ -264,23 +256,28 @@
             const res = await fetch('/get-code', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ phoneNumber: num })
+                body: JSON.stringify({ phoneNumber: number })
             });
             const data = await res.json();
             if (data.success) {
-                document.getElementById('pairingCode').innerText = data.code;
-                document.getElementById('resultBox').style.display = 'block';
-                btn.innerText = "GENERATE AGAIN";
-            } else { alert("Error: " + data.error); btn.innerText = "TRY AGAIN"; }
-        } catch (err) { alert("Network Error!"); btn.innerText = "TRY AGAIN"; }
+                document.getElementById('codeOutput').innerText = data.code;
+                document.getElementById('resultPanel').style.display = 'block';
+                btn.innerText = "GET NEW CODE";
+            } else { 
+                alert("Error: " + data.error); 
+                btn.innerText = "TRY AGAIN"; 
+            }
+        } catch (err) { 
+            alert("Connection Error!"); 
+            btn.innerText = "TRY AGAIN"; 
+        }
         btn.disabled = false;
     });
 
-    // Copy Code Function
-    function copyCode() {
-        const code = document.getElementById('pairingCode').innerText;
+    function copyToClipboard() {
+        const code = document.getElementById('codeOutput').innerText;
         navigator.clipboard.writeText(code);
-        alert("Pairing Code Copied: " + code);
+        alert("Copied to clipboard: " + code);
     }
 </script>
 
