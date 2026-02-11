@@ -13,12 +13,16 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 /**
- * 👨‍💻 OWNER: MUHAMMAD YOUSAF BALOCH
- * 🤖 BOT: YOUSAF-BALOCH-MD (PAIRING SERVER)
+ * ╔══════════════════════════════════════════════════════════════╗
+ * ║                YOUSAF-BALOCH-MD  •  PAIRING SERVER           ║
+ * ║                Created by Muhammad Yousaf Baloch             ║
+ * ╚══════════════════════════════════════════════════════════════╝
+ * * 👤 OWNER: Muhammad Yousaf Baloch
  * 📱 WHATSAPP: +923710636110
- * 📺 YOUTUBE: @Yousaf_Baloch_Tech
- * 🎵 TIKTOK: @loser_boy.110
+ * 📺 YOUTUBE: https://www.youtube.com/@Yousaf_Baloch_Tech
+ * 🎵 TIKTOK: https://tiktok.com/@loser_boy.110
  * 📢 CHANNEL: https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j
+ * 🐙 GITHUB: https://github.com/musakhanbaloch03-sad
  */
 
 const __filename = fileURLToPath(import.meta.url);
@@ -30,9 +34,13 @@ const activeSessions = new Set();
 app.use(express.json());
 app.use(express.static('public'));
 
-// ✅ Health Check Route (Koyeb Fix)
+// ✅ Health Check Route for Koyeb Stability
 app.get('/health', (req, res) => {
-  res.status(200).json({ status: "OK", message: "Yousaf Pairing Server Running" });
+  res.status(200).json({ 
+    status: "Healthy", 
+    bot: "YOUSAF-BALOCH-MD",
+    developer: "Yousaf Baloch" 
+  });
 });
 
 app.get('/', (req, res) => {
@@ -41,18 +49,18 @@ app.get('/', (req, res) => {
 
 app.post('/get-code', async (req, res) => {
   let sock;
+  let timeout;
   const { phoneNumber } = req.body;
   
   if (!phoneNumber) return res.json({ success: false, error: 'Phone number is required' });
   const cleanNumber = phoneNumber.replace(/[^0-9]/g, '');
   
   if (activeSessions.has(cleanNumber)) {
-    return res.json({ success: false, error: 'Please wait, request in progress...' });
+    return res.json({ success: false, error: 'Request in progress. Please wait...' });
   }
 
   activeSessions.add(cleanNumber);
   const sessionDir = path.join(__dirname, 'temp_sessions', `${cleanNumber}_${Date.now()}`);
-  
   if (!fs.existsSync(sessionDir)) fs.mkdirSync(sessionDir, { recursive: true });
 
   try {
@@ -65,77 +73,84 @@ app.post('/get-code', async (req, res) => {
         keys: makeCacheableSignalKeyStore(state.keys, pino({ level: 'silent' })) 
       },
       logger: pino({ level: 'silent' }),
-      browser: Browsers.ubuntu('Chrome'),
       version,
+      // 🚀 WINDOWS SPOOFING: Fixes the Infinite Loading Issue
+      browser: ["Windows", "Chrome", "20.0.04"], 
       printQRInTerminal: false,
-      connectTimeoutMs: 60000,   // ⏳ Increased for slow networks
-      defaultQueryTimeoutMs: 0,  // ⚡ Fix for "Loading" issue
-      retryRequestDelayMs: 5000, 
+      connectTimeoutMs: 60000,
+      defaultQueryTimeoutMs: 0,
       keepAliveIntervalMs: 10000
     });
 
     sock.ev.on('creds.update', saveCreds);
 
     if (!sock.authState.creds.registered) {
-      await delay(3000);
+      await delay(5000); 
       const code = await sock.requestPairingCode(cleanNumber);
       if (!res.headersSent) res.json({ success: true, code });
+
+      // ⏳ Increase timeout to 300s (5 minutes)
+      timeout = setTimeout(() => {
+        if (activeSessions.has(cleanNumber)) {
+            sock.end();
+            activeSessions.delete(cleanNumber);
+            if (fs.existsSync(sessionDir)) fs.rmSync(sessionDir, { recursive: true, force: true });
+        }
+      }, 300000); 
     }
 
     sock.ev.on('connection.update', async (update) => {
-      const { connection, lastDisconnect } = update;
+      const { connection } = update;
       
       if (connection === 'open') {
+        clearTimeout(timeout);
         console.log(`✅ [SUCCESS] ${cleanNumber} Linked!`);
         
-        // ⏳ Wait 10 seconds to ensure session is fully written
-        await delay(10000); 
-        
+        await delay(10000); // Stable delay
         const credsFile = path.join(sessionDir, 'creds.json');
+        
         if (fs.existsSync(credsFile)) {
           const sessionId = Buffer.from(fs.readFileSync(credsFile, 'utf-8')).toString('base64');
           
-          const successMsg = `━━━━━━━━━━━━━━━━━━━━━━━━
-✨ *YOUSAF-BALOCH-MD SESSION* ✨
-━━━━━━━━━━━━━━━━━━━━━━━━
-👤 *OWNER:* Muhammad Yousaf Baloch
-🔐 *SESSION ID:* \`${sessionId}\`
+          const successMsg = `╔═══════════════════════════════════╗
+║   ✅  BOT CONNECTED SUCCESSFULLY  ║
+╚═══════════════════════════════════╝
 
-🔗 *SOCIAL LINKS:*
-📺 YouTube: youtube.com/@Yousaf_Baloch_Tech
-🎵 TikTok: tiktok.com/@loser_boy.110
-📢 Channel: whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j
-━━━━━━━━━━━━━━━━━━━━━━━━`;
+✨ *YOUSAF-BALOCH-MD SESSION*
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔐 *SESSION ID*:
+\`\`\`${sessionId}\`\`\`
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+👨‍💻 *DEVELOPER INFO*
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+👤 *Name:* Muhammad Yousaf Baloch
+📞 *WhatsApp:* wa.me/923710636110
+📺 *YouTube:* youtube.com/@Yousaf_Baloch_Tech
+🎵 *TikTok:* tiktok.com/@loser_boy.110
+📢 *Channel:* https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j
+🐙 *GitHub:* https://github.com/musakhanbaloch03-sad
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⭐ _Made with ❤️ by Yousaf Baloch_`;
 
           await sock.sendMessage(`${cleanNumber}@s.whatsapp.net`, { text: successMsg });
         }
         
-        // 🛑 End connection cleanly after 60 seconds
+        // ⏳ Keep socket open for 60s as requested
         setTimeout(() => {
           sock.end();
           activeSessions.delete(cleanNumber);
           if (fs.existsSync(sessionDir)) fs.rmSync(sessionDir, { recursive: true, force: true });
         }, 60000);
       }
-
-      if (connection === 'close') {
-        const reason = lastDisconnect?.error?.output?.statusCode;
-        if (reason !== DisconnectReason.loggedOut) {
-           // Do nothing, let it reconnect if needed temporarily
-        } else {
-           activeSessions.delete(cleanNumber);
-           if (fs.existsSync(sessionDir)) fs.rmSync(sessionDir, { recursive: true, force: true });
-        }
-      }
     });
 
   } catch (error) {
-    console.error(error);
     activeSessions.delete(cleanNumber);
-    if (!res.headersSent) res.json({ success: false, error: 'Connection Error' });
+    if (!res.headersSent) res.json({ success: false, error: 'Connection Error.' });
   }
 });
 
-app.listen(PORT, () => {
-    console.log(`🚀 YOUSAF PAIRING SERVER RUNNING ON PORT: ${PORT}`);
-});
+app.listen(PORT, () => console.log(`🚀 Yousaf Pairing Server running on Port: ${PORT}`));
