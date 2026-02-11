@@ -54,7 +54,17 @@ const silentLogger = pino({ level: 'silent' });
 
 // ── Middleware ───────────────────────────────────────────────────────
 app.use(cors({ origin: '*', methods: ['GET', 'POST'] }));
-app.use(helmet({ contentSecurityPolicy: false }));
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      imgSrc: ["'self'", "data:", "https:"],
+    }
+  }
+}));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
@@ -256,8 +266,469 @@ async function createPairingSession(phoneNumber) {
 //  API ROUTES
 // ═══════════════════════════════════════════════════════════════════
 
-// ── Health Check ─────────────────────────────────────────────────────
+// ── Web Frontend (Live Pairing Interface) ───────────────────────────
 app.get('/', (req, res) => {
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YOUSAF-BALOCH-MD | Pairing Service</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f1728 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        radial-gradient(circle at 20% 50%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 20%, rgba(255, 0, 255, 0.05) 0%, transparent 50%);
+      pointer-events: none;
+      animation: pulse 8s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
+
+    .container {
+      max-width: 580px;
+      width: 100%;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card {
+      background: rgba(15, 20, 40, 0.9);
+      border-radius: 24px;
+      padding: 48px 40px;
+      box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.5),
+        0 0 0 1px rgba(255, 255, 255, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(0, 255, 255, 0.1);
+      animation: slideUp 0.6s ease-out;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .logo {
+      font-family: 'Orbitron', monospace;
+      font-size: 32px;
+      font-weight: 900;
+      background: linear-gradient(135deg, #00ffff 0%, #00d4ff 50%, #ffd700 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 12px;
+      letter-spacing: 2px;
+      text-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+      animation: glow 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes glow {
+      from { filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.5)); }
+      to { filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8)); }
+    }
+
+    .subtitle {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 15px;
+      font-weight: 400;
+    }
+
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.5), transparent);
+      margin: 32px 0;
+    }
+
+    .form-group {
+      margin-bottom: 24px;
+    }
+
+    label {
+      display: block;
+      color: #00ffff;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .input-wrapper {
+      position: relative;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 16px 20px;
+      font-size: 16px;
+      background: rgba(0, 20, 40, 0.6);
+      border: 2px solid rgba(0, 255, 255, 0.2);
+      border-radius: 12px;
+      color: #ffffff;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.3s ease;
+      outline: none;
+    }
+
+    input[type="text"]:focus {
+      border-color: #00ffff;
+      box-shadow: 0 0 0 4px rgba(0, 255, 255, 0.1), 0 0 20px rgba(0, 255, 255, 0.3);
+      background: rgba(0, 30, 60, 0.8);
+    }
+
+    input[type="text"]::placeholder {
+      color: rgba(255, 255, 255, 0.3);
+    }
+
+    .hint {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.5);
+      margin-top: 8px;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 18px;
+      font-size: 16px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      background: linear-gradient(135deg, #00ffff 0%, #00a8ff 100%);
+      color: #0a0e27;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 24px rgba(0, 255, 255, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transition: left 0.5s;
+    }
+
+    .btn:hover::before {
+      left: 100%;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(0, 255, 255, 0.5);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn:disabled {
+      background: rgba(100, 100, 100, 0.3);
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .result {
+      margin-top: 32px;
+      padding: 24px;
+      border-radius: 12px;
+      text-align: center;
+      display: none;
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .result.success {
+      background: rgba(0, 255, 127, 0.1);
+      border: 2px solid rgba(0, 255, 127, 0.3);
+    }
+
+    .result.error {
+      background: rgba(255, 0, 80, 0.1);
+      border: 2px solid rgba(255, 0, 80, 0.3);
+    }
+
+    .result.loading {
+      background: rgba(255, 215, 0, 0.1);
+      border: 2px solid rgba(255, 215, 0, 0.3);
+    }
+
+    .pairing-code {
+      font-family: 'Orbitron', monospace;
+      font-size: 48px;
+      font-weight: 900;
+      letter-spacing: 8px;
+      color: #00ff7f;
+      margin: 20px 0;
+      text-shadow: 0 0 20px rgba(0, 255, 127, 0.5);
+    }
+
+    .result-text {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 15px;
+      line-height: 1.6;
+      margin-top: 12px;
+    }
+
+    .footer {
+      margin-top: 40px;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      text-align: center;
+    }
+
+    .owner-info {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 13px;
+      margin-bottom: 16px;
+    }
+
+    .owner-name {
+      color: #ffd700;
+      font-weight: 700;
+    }
+
+    .social-links {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .social-link {
+      color: #00ffff;
+      text-decoration: none;
+      font-size: 13px;
+      padding: 8px 16px;
+      border-radius: 20px;
+      background: rgba(0, 255, 255, 0.05);
+      border: 1px solid rgba(0, 255, 255, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .social-link:hover {
+      background: rgba(0, 255, 255, 0.15);
+      border-color: #00ffff;
+      transform: translateY(-2px);
+    }
+
+    .spinner {
+      border: 3px solid rgba(255, 255, 255, 0.1);
+      border-top: 3px solid #ffd700;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 16px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 640px) {
+      .card {
+        padding: 32px 24px;
+      }
+      .logo {
+        font-size: 26px;
+      }
+      .pairing-code {
+        font-size: 36px;
+        letter-spacing: 4px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="header">
+        <h1 class="logo">⚡ YOUSAF-MD ⚡</h1>
+        <p class="subtitle">Official Pairing Gateway</p>
+      </div>
+
+      <div class="divider"></div>
+
+      <form id="pairingForm">
+        <div class="form-group">
+          <label for="phoneNumber">📱 WhatsApp Number</label>
+          <div class="input-wrapper">
+            <input 
+              type="text" 
+              id="phoneNumber" 
+              name="phone"
+              placeholder="923XXXXXXXXX" 
+              required
+              pattern="[0-9]{10,15}"
+              autocomplete="off"
+            >
+          </div>
+          <p class="hint">Enter your number with country code (no + or spaces)</p>
+        </div>
+
+        <button type="submit" class="btn" id="generateBtn">
+          🔑 Generate Pairing Code
+        </button>
+      </form>
+
+      <div class="result" id="result"></div>
+
+      <div class="footer">
+        <p class="owner-info">
+          Created by <span class="owner-name">${OWNER_IDENTITY.FULL_NAME}</span>
+        </p>
+        <div class="social-links">
+          <a href="${OWNER_IDENTITY.TIKTOK}" target="_blank" class="social-link">🎵 TikTok</a>
+          <a href="${OWNER_IDENTITY.YOUTUBE}" target="_blank" class="social-link">🎬 YouTube</a>
+          <a href="${OWNER_IDENTITY.CHANNEL}" target="_blank" class="social-link">📢 Channel</a>
+          <a href="${OWNER_IDENTITY.GITHUB}" target="_blank" class="social-link">💻 GitHub</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('pairingForm');
+    const phoneInput = document.getElementById('phoneNumber');
+    const generateBtn = document.getElementById('generateBtn');
+    const resultDiv = document.getElementById('result');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const phone = phoneInput.value.trim().replace(/[^0-9]/g, '');
+      
+      if (phone.length < 10 || phone.length > 15) {
+        showError('Please enter a valid phone number (10-15 digits)');
+        return;
+      }
+
+      showLoading();
+      generateBtn.disabled = true;
+
+      try {
+        const response = await fetch(\`/api/pair?phone=\${phone}\`);
+        const data = await response.json();
+
+        if (data.success && data.code) {
+          showSuccess(data.code);
+        } else {
+          showError(data.error || 'Failed to generate pairing code. Please try again.');
+        }
+      } catch (error) {
+        showError('Network error. Please check your connection and try again.');
+      } finally {
+        generateBtn.disabled = false;
+      }
+    });
+
+    function showLoading() {
+      resultDiv.className = 'result loading';
+      resultDiv.style.display = 'block';
+      resultDiv.innerHTML = \`
+        <div class="spinner"></div>
+        <p class="result-text">⏳ Generating your pairing code...<br>Please wait a moment.</p>
+      \`;
+    }
+
+    function showSuccess(code) {
+      resultDiv.className = 'result success';
+      resultDiv.style.display = 'block';
+      resultDiv.innerHTML = \`
+        <p class="result-text" style="color: #00ff7f; font-weight: 600; font-size: 16px;">
+          ✅ Pairing Code Generated Successfully!
+        </p>
+        <div class="pairing-code">\${code}</div>
+        <p class="result-text">
+          1️⃣ Open WhatsApp on your phone<br>
+          2️⃣ Go to <strong>Linked Devices</strong><br>
+          3️⃣ Tap <strong>Link a Device</strong><br>
+          4️⃣ Enter this code when prompted<br>
+          5️⃣ Your <strong>SESSION ID</strong> will be sent to your WhatsApp!
+        </p>
+      \`;
+    }
+
+    function showError(message) {
+      resultDiv.className = 'result error';
+      resultDiv.style.display = 'block';
+      resultDiv.innerHTML = \`
+        <p class="result-text" style="color: #ff5080; font-weight: 600; font-size: 16px;">
+          ❌ Error
+        </p>
+        <p class="result-text">\${message}</p>
+      \`;
+    }
+
+    // Auto-format phone number
+    phoneInput.addEventListener('input', (e) => {
+      e.target.value = e.target.value.replace(/[^0-9]/g, '');
+    });
+  </script>
+</body>
+</html>`;
+  
+  res.send(html);
+});
+
+// ── API Health Check ─────────────────────────────────────────────────
+app.get('/health', (req, res) => {
   res.json({
     status: '✅ Online',
     service: 'YOUSAF-PAIRING-V1',
