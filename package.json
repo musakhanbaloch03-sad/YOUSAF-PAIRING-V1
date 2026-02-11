@@ -1,40 +1,27 @@
 {
   "name": "yousaf-pairing-v1",
   "version": "2.0.0",
-  "description": "YOUSAF-BALOCH-MD WhatsApp Pairing Service - Ultra Pro Premium",
+  "description": "YOUSAF-BALOCH-MD WhatsApp Pairing Service",
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js"
+    "start": "node index.js"
   },
   "keywords": [
     "whatsapp",
-    "bot",
     "baileys",
-    "pairing",
-    "yousaf-baloch",
-    "session-generator",
-    "esm"
+    "pairing"
   ],
-  "author": {
-    "name": "Muhammad Yousaf Baloch",
-    "email": "musakhanbaloch03@gmail.com",
-    "url": "https://github.com/musakhanbaloch03-sad"
-  },
+  "author": "Muhammad Yousaf Baloch",
   "license": "MIT",
   "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=9.0.0"
+    "node": ">=18.0.0"
   },
   "dependencies": {
-    "@whiskeysockets/baileys": "^6.7.8",
+    "baileys": "github:WhiskeySockets/Baileys",
     "express": "^4.19.2",
     "pino": "^8.19.0",
     "qrcode": "^1.5.3",
     "qrcode-terminal": "^0.12.0"
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.0"
   }
 }
