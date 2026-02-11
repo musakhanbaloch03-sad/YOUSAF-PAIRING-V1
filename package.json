@@ -1,6 +1,6 @@
 {
   "name": "yousaf-pairing-v1",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "YOUSAF-BALOCH-MD WhatsApp Pairing Service",
   "main": "index.js",
   "type": "module",
@@ -10,18 +10,23 @@
   "keywords": [
     "whatsapp",
     "baileys",
-    "pairing"
+    "pairing",
+    "yousaf-baloch"
   ],
-  "author": "Muhammad Yousaf Baloch",
+  "author": {
+    "name": "Muhammad Yousaf Baloch",
+    "email": "musakhanbaloch03@gmail.com",
+    "url": "https://github.com/musakhanbaloch03-sad"
+  },
   "license": "MIT",
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
   },
   "dependencies": {
     "baileys": "github:WhiskeySockets/Baileys",
     "express": "^4.19.2",
-    "pino": "^8.19.0",
-    "qrcode": "^1.5.3",
+    "pino": "^9.0.0",
     "qrcode-terminal": "^0.12.0"
   }
 }
