@@ -17,7 +17,7 @@ import { fileURLToPath } from 'url';
  * ║                YOUSAF-BALOCH-MD  •  PAIRING SERVER           ║
  * ║                Created by Muhammad Yousaf Baloch             ║
  * ╚══════════════════════════════════════════════════════════════╝
- * * 👤 OWNER: Muhammad Yousaf Baloch
+ * 👤 OWNER: Muhammad Yousaf Baloch
  * 📱 WHATSAPP: +923710636110
  * 📺 YOUTUBE: https://www.youtube.com/@Yousaf_Baloch_Tech
  * 🎵 TIKTOK: https://tiktok.com/@loser_boy.110
@@ -34,34 +34,27 @@ const activeSessions = new Set();
 app.use(express.json());
 app.use(express.static('public'));
 
-// ✅ Health Check Route for Koyeb Stability
 app.get('/health', (req, res) => {
-  res.status(200).json({ 
-    status: "Healthy", 
-    bot: "YOUSAF-BALOCH-MD",
-    developer: "Yousaf Baloch" 
-  });
-});
-
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.status(200).json({ status: "Pro", developer: "Yousaf Baloch" });
 });
 
 app.post('/get-code', async (req, res) => {
   let sock;
-  let timeout;
   const { phoneNumber } = req.body;
   
   if (!phoneNumber) return res.json({ success: false, error: 'Phone number is required' });
   const cleanNumber = phoneNumber.replace(/[^0-9]/g, '');
   
   if (activeSessions.has(cleanNumber)) {
-    return res.json({ success: false, error: 'Request in progress. Please wait...' });
+    return res.json({ success: false, error: 'Already processing. Please wait.' });
   }
 
   activeSessions.add(cleanNumber);
-  const sessionDir = path.join(__dirname, 'temp_sessions', `${cleanNumber}_${Date.now()}`);
-  if (!fs.existsSync(sessionDir)) fs.mkdirSync(sessionDir, { recursive: true });
+  
+  // 🧹 Hard clean for session directory
+  const sessionDir = path.join(__dirname, 'sessions', `${cleanNumber}`);
+  if (fs.existsSync(sessionDir)) fs.rmSync(sessionDir, { recursive: true, force: true });
+  fs.mkdirSync(sessionDir, { recursive: true });
 
   try {
     const { state, saveCreds } = await useMultiFileAuthState(sessionDir);
@@ -74,12 +67,13 @@ app.post('/get-code', async (req, res) => {
       },
       logger: pino({ level: 'silent' }),
       version,
-      // 🚀 WINDOWS SPOOFING: Fixes the Infinite Loading Issue
-      browser: ["Windows", "Chrome", "20.0.04"], 
+      // 📱 Spoofing as official WhatsApp Desktop to avoid "Couldn't Link" error
+      browser: Browsers.macOS('Desktop'), 
+      syncFullHistory: false,
       printQRInTerminal: false,
       connectTimeoutMs: 60000,
       defaultQueryTimeoutMs: 0,
-      keepAliveIntervalMs: 10000
+      keepAliveIntervalMs: 30000
     });
 
     sock.ev.on('creds.update', saveCreds);
@@ -88,27 +82,16 @@ app.post('/get-code', async (req, res) => {
       await delay(5000); 
       const code = await sock.requestPairingCode(cleanNumber);
       if (!res.headersSent) res.json({ success: true, code });
-
-      // ⏳ Increase timeout to 300s (5 minutes)
-      timeout = setTimeout(() => {
-        if (activeSessions.has(cleanNumber)) {
-            sock.end();
-            activeSessions.delete(cleanNumber);
-            if (fs.existsSync(sessionDir)) fs.rmSync(sessionDir, { recursive: true, force: true });
-        }
-      }, 300000); 
     }
 
     sock.ev.on('connection.update', async (update) => {
-      const { connection } = update;
+      const { connection, lastDisconnect } = update;
       
       if (connection === 'open') {
-        clearTimeout(timeout);
-        console.log(`✅ [SUCCESS] ${cleanNumber} Linked!`);
+        console.log(`✅ [CONNECTED] ${cleanNumber}`);
+        await delay(10000); 
         
-        await delay(10000); // Stable delay
         const credsFile = path.join(sessionDir, 'creds.json');
-        
         if (fs.existsSync(credsFile)) {
           const sessionId = Buffer.from(fs.readFileSync(credsFile, 'utf-8')).toString('base64');
           
@@ -116,7 +99,7 @@ app.post('/get-code', async (req, res) => {
 ║   ✅  BOT CONNECTED SUCCESSFULLY  ║
 ╚═══════════════════════════════════╝
 
-✨ *YOUSAF-BALOCH-MD SESSION*
+✨ *YOUSAF-BALOCH-MD SESSION ID*
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 🔐 *SESSION ID*:
@@ -132,24 +115,30 @@ app.post('/get-code', async (req, res) => {
 📢 *Channel:* https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j
 🐙 *GitHub:* https://github.com/musakhanbaloch03-sad
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-⭐ _Made with ❤️ by Yousaf Baloch_`;
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
 
           await sock.sendMessage(`${cleanNumber}@s.whatsapp.net`, { text: successMsg });
         }
         
-        // ⏳ Keep socket open for 60s as requested
         setTimeout(() => {
           sock.end();
           activeSessions.delete(cleanNumber);
           if (fs.existsSync(sessionDir)) fs.rmSync(sessionDir, { recursive: true, force: true });
-        }, 60000);
+        }, 15000);
+      }
+
+      if (connection === 'close') {
+        const reason = lastDisconnect?.error?.output?.statusCode;
+        if (reason === DisconnectReason.loggedOut) {
+           activeSessions.delete(cleanNumber);
+           if (fs.existsSync(sessionDir)) fs.rmSync(sessionDir, { recursive: true, force: true });
+        }
       }
     });
 
   } catch (error) {
     activeSessions.delete(cleanNumber);
-    if (!res.headersSent) res.json({ success: false, error: 'Connection Error.' });
+    if (!res.headersSent) res.json({ success: false, error: 'Server Busy' });
   }
 });
 
