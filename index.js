@@ -18,15 +18,12 @@ import NodeCache from 'node-cache';
 import { makeWASocket, DisconnectReason, useMultiFileAuthState, fetchLatestBaileysVersion, Browsers, makeCacheableSignalKeyStore, delay } from '@whiskeysockets/baileys';
 import { Boom } from '@hapi/boom';
 import pino from 'pino';
-import { existsSync, mkdirSync, rmSync } from 'fs';
+import { existsSync, mkdirSync, rmSync, readFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-// ═══════════════════════════════════════════════════════════════════
-//  🔒 HARDCODED OWNER IDENTITY
-// ═══════════════════════════════════════════════════════════════════
 const OWNER_IDENTITY = Object.freeze({
   NAME:        'Yousuf Baloch',
   FULL_NAME:   'Muhammad Yousaf Baloch',
@@ -37,7 +34,7 @@ const OWNER_IDENTITY = Object.freeze({
   GITHUB:      'https://github.com/musakhanbaloch03-sad',
   BOT_NAME:    'YOUSAF-BALOCH-MD',
   VERSION:     '2.0.0',
-  BAILEYS_VER: '6.7.9',
+  BAILEYS_VER: '6.7.8',
 });
 
 const app = express();
@@ -47,10 +44,8 @@ const activeSockets = new Map();
 
 const silentLogger = pino({ level: 'silent' });
 
-// ✅ FIX 1: Trust Proxy for Koyeb
 app.set('trust proxy', 1);
 
-// Middleware
 app.use(cors({ origin: '*', methods: ['GET', 'POST'] }));
 app.use(helmet({
   contentSecurityPolicy: {
@@ -66,18 +61,16 @@ app.use(helmet({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// ✅ FIX: Rate limiter with trust proxy
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 30,
   message: { error: 'Too many requests. Please try again in 15 minutes.' },
   standardHeaders: true,
   legacyHeaders: false,
-  trustProxy: true, // ✅ Added
+  trustProxy: true,
 });
 app.use('/api/', limiter);
 
-// Banner
 function printBanner() {
   console.clear();
   const fire = gradient(['#FF0000', '#FF4500', '#FF6F00', '#FFD700']);
@@ -103,7 +96,6 @@ function printBanner() {
   console.log(chalk.hex('#FF6F00').bold(`\n  🚀 Pairing Server Started on Port ${PORT}\n`));
 }
 
-// Success Message
 function buildSuccessMessage(sessionId) {
   return `╔══════════════════════════════════════════════╗
 ║   ⚡ YOUSAF-BALOCH-MD — CONNECTED! ⚡        ║
@@ -160,23 +152,17 @@ function cleanSession(id) {
   }
 }
 
-// ✅ FIX 2: Phone Sanitization
 function sanitizePhone(phone) {
-  // Remove all non-digits
   phone = phone.replace(/[^0-9]/g, '');
-  
-  // Remove leading zeros
   phone = phone.replace(/^0+/, '');
   
-  // Pakistan number validation & auto-fix
-  if (phone.length === 10 && !phone.startsWith('92')) {
-    phone = '92' + phone; // Add country code
+  if (phone.length === 10 && phone.startsWith('3')) {
+    phone = '92' + phone;
   }
   
   return phone;
 }
 
-// ✅ FIX 3: Main Pairing Function - COMPLETELY REWRITTEN
 async function createPairingSession(phoneNumber) {
   const sessionId = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
   const sessionPath = getSessionPath(sessionId);
@@ -208,22 +194,20 @@ async function createPairingSession(phoneNumber) {
         creds: state.creds,
         keys: makeCacheableSignalKeyStore(state.keys, silentLogger),
       },
-      browser: Browsers.ubuntu('Chrome'), // ✅ Correct browser
+      browser: Browsers.macOS('Desktop'),
       markOnlineOnConnect: false,
       generateHighQualityLinkPreview: true,
       syncFullHistory: false,
-      getMessage: async () => undefined, // ✅ Added
+      getMessage: async () => undefined,
     });
 
     activeSockets.set(sessionId, sock);
 
-    // ✅ FIX: Proper pairing code request
     let pairingCodeResolved = false;
 
     setTimeout(async () => {
       try {
-        // ✅ Wait a bit before requesting
-        await delay(2000);
+        await delay(1500);
         
         const code = await sock.requestPairingCode(phoneNumber);
         const formatted = code?.match(/.{1,4}/g)?.join('-') || code;
@@ -241,7 +225,7 @@ async function createPairingSession(phoneNumber) {
           reject(err);
         }
       }
-    }, 1000); // ✅ Reduced delay
+    }, 1000);
 
     sock.ev.on('creds.update', saveCreds);
 
@@ -252,22 +236,21 @@ async function createPairingSession(phoneNumber) {
         console.log(chalk.hex('#00FF00').bold(`\n  ✅ Device Paired Successfully! Generating Session ID...\n`));
 
         try {
-          const credsRaw = JSON.stringify(state.creds);
+          const credsPath = join(sessionPath, 'creds.json');
+          const credsRaw = readFileSync(credsPath, 'utf-8');
           const sessionString = Buffer.from(credsRaw).toString('base64');
-          const fullSessionId = `YB_${sessionId}::${sessionString}`;
 
           const userJid = `${phoneNumber}@s.whatsapp.net`;
-          const successMessage = buildSuccessMessage(fullSessionId);
+          const successMessage = buildSuccessMessage(sessionString);
 
           await sock.sendMessage(userJid, { text: successMessage });
           console.log(chalk.hex('#00FF00').bold('  ✅ Success message delivered to user!\n'));
 
-          sessionCache.set(`session_${sessionId}`, fullSessionId);
+          sessionCache.set(`session_${sessionId}`, sessionString);
         } catch (sendErr) {
           console.error(chalk.hex('#FF0000')('  ⚠️  Could not send success message: ' + sendErr.message));
         }
 
-        // Cleanup
         setTimeout(async () => {
           try {
             await sock.logout();
@@ -290,10 +273,240 @@ async function createPairingSession(phoneNumber) {
   });
 }
 
-// Routes (same HTML - no changes needed)
 app.get('/', (req, res) => {
-  // ... (your existing HTML code - keep it same)
-  res.send(/* your HTML */);
+  res.send(`<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YOUSAF-BALOCH-MD Pairing Gateway</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        .badge {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            display: block;
+            width: fit-content;
+            margin: 0 auto 20px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .social-link {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-size: 12px;
+            transition: transform 0.2s;
+        }
+        .social-link:hover {
+            transform: translateY(-2px);
+        }
+        .input-group {
+            margin: 30px 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+        input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+        }
+        .result.success {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            color: #155724;
+        }
+        .result.error {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            color: #721c24;
+        }
+        .code-display {
+            font-size: 32px;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+            letter-spacing: 5px;
+            color: #667eea;
+        }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+            display: none;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #666;
+            font-size: 12px;
+        }
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 YOUSAF-BALOCH-MD</h1>
+        <span class="badge">💎 ULTRA PRO PREMIUM</span>
+        <p class="subtitle">WhatsApp Session Generator V2.0</p>
+        
+        <div class="social-links">
+            <a href="https://www.youtube.com/@Yousaf_Baloch_Tech" target="_blank" class="social-link">📺 YouTube</a>
+            <a href="https://tiktok.com/@loser_boy.110" target="_blank" class="social-link">🎵 TikTok</a>
+            <a href="https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j" target="_blank" class="social-link">📢 Channel</a>
+            <a href="https://github.com/musakhanbaloch03-sad" target="_blank" class="social-link">🔗 GitHub</a>
+        </div>
+        
+        <div class="input-group">
+            <label>📱 Enter Your WhatsApp Number</label>
+            <input type="tel" id="phoneNumber" placeholder="923710636110">
+            <small style="color: #666; font-size: 12px;">Enter with country code (without + or spaces)</small>
+        </div>
+        
+        <button class="btn" id="submitBtn" onclick="generateCode()">🔑 Generate Pairing Code</button>
+        
+        <div class="spinner" id="spinner"></div>
+        <div class="result" id="result"></div>
+        
+        <div class="footer">
+            <p>Made with ❤️ by <strong>Muhammad Yousaf Baloch</strong></p>
+            <p style="margin-top: 10px;">📱 WhatsApp: <a href="https://wa.me/923710636110" target="_blank">+923710636110</a></p>
+            <p style="margin-top: 5px;">🔗 Main Bot: <a href="https://github.com/musakhanbaloch03-sad/YOUSAF-BALOCH-MD" target="_blank">YOUSAF-BALOCH-MD</a></p>
+        </div>
+    </div>
+    
+    <script>
+        async function generateCode() {
+            const phoneNumber = document.getElementById('phoneNumber').value.trim();
+            const resultDiv = document.getElementById('result');
+            const spinner = document.getElementById('spinner');
+            const btn = document.getElementById('submitBtn');
+            
+            if (!phoneNumber) {
+                showResult('error', '❌ Please enter your phone number');
+                return;
+            }
+            
+            if (!/^[0-9]{10,15}$/.test(phoneNumber)) {
+                showResult('error', '❌ Invalid number format');
+                return;
+            }
+            
+            btn.disabled = true;
+            spinner.style.display = 'block';
+            resultDiv.style.display = 'none';
+            
+            try {
+                const response = await fetch('/api/pair?phone=' + phoneNumber);
+                const data = await response.json();
+                
+                if (data.success) {
+                    showResult('success', '<h3>✅ Pairing Code Generated!</h3><div class="code-display">' + data.code + '</div><p><strong>Enter this code in WhatsApp within 60 seconds!</strong></p>');
+                } else {
+                    showResult('error', '❌ Error: ' + (data.error || 'Failed'));
+                }
+            } catch (error) {
+                showResult('error', '❌ Connection error: ' + error.message);
+            } finally {
+                btn.disabled = false;
+                spinner.style.display = 'none';
+            }
+        }
+        
+        function showResult(type, message) {
+            const result = document.getElementById('result');
+            result.className = 'result ' + type;
+            result.innerHTML = message;
+            result.style.display = 'block';
+        }
+    </script>
+</body>
+</html>`);
 });
 
 app.get('/health', (req, res) => {
@@ -306,7 +519,6 @@ app.get('/health', (req, res) => {
   });
 });
 
-// ✅ FIX: API endpoint with proper phone sanitization
 app.get('/api/pair', async (req, res) => {
   let { phone } = req.query;
 
@@ -314,7 +526,6 @@ app.get('/api/pair', async (req, res) => {
     return res.status(400).json({ error: 'Phone number required. Example: ?phone=923710636110' });
   }
 
-  // ✅ Use new sanitize function
   phone = sanitizePhone(phone);
 
   if (phone.length < 10 || phone.length > 15) {
