@@ -3,253 +3,1027 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YOUSAF-BALOCH-MD | Ultra Pro Dashboard</title>
+    <title>YOUSAF-BALOCH-MD | Ultra Pro Pairing</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@300;400;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=Share+Tech+Mono&display=swap');
 
         :root {
-            --primary: #00d2ff;
-            --secondary: #9d00ff;
-            --bg-dark: #050505;
-            --glass: rgba(255, 255, 255, 0.05);
-            --neon-green: #00ff00;
+            --c1: #00fff7;
+            --c2: #ff00c8;
+            --c3: #ffe600;
+            --c4: #00ff88;
+            --dark: #03000f;
+            --card: rgba(255,255,255,0.03);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            background: var(--bg-dark);
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--dark);
             color: white;
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             overflow-x: hidden;
-            background: radial-gradient(circle at center, #1a1a2e 0%, #050505 100%);
         }
 
-        .container {
-            width: 100%;
-            max-width: 600px;
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 30px;
-            padding: 40px;
+        /* === ANIMATED BACKGROUND === */
+        .bg-grid {
+            position: fixed;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(0,255,247,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,255,247,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: 0;
+        }
+
+        .bg-orbs {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.12;
+            animation: orbFloat linear infinite;
+        }
+
+        .orb1 { width: 500px; height: 500px; background: var(--c1); top: -100px; left: -100px; animation-duration: 20s; }
+        .orb2 { width: 400px; height: 400px; background: var(--c2); bottom: -100px; right: -100px; animation-duration: 25s; animation-direction: reverse; }
+        .orb3 { width: 300px; height: 300px; background: var(--c3); top: 50%; left: 50%; animation-duration: 15s; }
+
+        @keyframes orbFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -30px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+
+        /* === MAIN WRAPPER === */
+        .wrapper {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            padding: 30px 20px 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* === HEADER === */
+        .header {
             text-align: center;
-            box-shadow: 0 0 50px rgba(0, 210, 255, 0.2);
-            animation: fadeIn 0.8s ease-out;
+            margin-bottom: 40px;
+            animation: slideDown 0.8s ease-out;
         }
 
-        .welcome-badge {
-            color: var(--primary);
-            font-size: 12px;
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .welcome-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid rgba(0,255,247,0.2);
+            background: rgba(0,255,247,0.05);
+            padding: 5px 18px;
+            border-radius: 50px;
+            font-size: 11px;
             letter-spacing: 4px;
+            color: var(--c1);
             text-transform: uppercase;
-            font-weight: bold;
-            margin-bottom: 10px;
-            display: block;
+            margin-bottom: 20px;
+        }
+
+        .welcome-tag::before, .welcome-tag::after {
+            content: '◆';
+            font-size: 6px;
         }
 
         .bot-name {
             font-family: 'Orbitron', sans-serif;
-            font-size: 35px;
+            font-size: clamp(28px, 6vw, 52px);
             font-weight: 900;
-            background: linear-gradient(to right, #00d2ff, #9d00ff);
+            line-height: 1;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, var(--c1) 0%, var(--c2) 50%, var(--c3) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 20px;
-            filter: drop-shadow(0 0 15px rgba(0, 210, 255, 0.4));
+            background-clip: text;
+            filter: drop-shadow(0 0 30px rgba(0,255,247,0.4));
+            animation: nameGlow 3s ease-in-out infinite alternate;
         }
 
-        .live-panel {
-            background: rgba(0, 0, 0, 0.4);
-            padding: 12px;
-            border-radius: 15px;
+        @keyframes nameGlow {
+            from { filter: drop-shadow(0 0 15px rgba(0,255,247,0.3)); }
+            to { filter: drop-shadow(0 0 40px rgba(255,0,200,0.5)); }
+        }
+
+        .bot-tagline {
             font-size: 13px;
-            margin-bottom: 30px;
-            display: flex;
-            justify-content: space-around;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 5px;
+            color: rgba(255,255,255,0.3);
+            text-transform: uppercase;
+            margin-bottom: 25px;
         }
 
-        .live-panel span i { color: var(--primary); margin-right: 5px; }
-
-        .input-area { text-align: left; margin-bottom: 25px; }
-        label { font-size: 14px; color: #aaa; margin-left: 5px; }
-        
-        input {
+        /* === CLOCK === */
+        .clock-panel {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 20px;
+            padding: 15px 30px;
+            margin: 0 auto;
+            max-width: 500px;
             width: 100%;
-            padding: 18px;
-            background: rgba(0, 0, 0, 0.3);
-            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .clock-item {
+            text-align: center;
+        }
+
+        .clock-value {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 22px;
+            color: var(--c1);
+            text-shadow: 0 0 10px var(--c1);
+            line-height: 1;
+        }
+
+        .clock-label {
+            font-size: 9px;
+            letter-spacing: 2px;
+            color: rgba(255,255,255,0.3);
+            text-transform: uppercase;
+            margin-top: 3px;
+        }
+
+        .clock-sep {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 22px;
+            color: var(--c2);
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink { 50% { opacity: 0; } }
+
+        .day-badge {
+            background: linear-gradient(45deg, var(--c2), var(--c1));
+            color: black;
+            font-weight: 700;
+            font-size: 11px;
+            letter-spacing: 2px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            text-transform: uppercase;
+        }
+
+        /* === MAIN CARD === */
+        .main-card {
+            width: 100%;
+            max-width: 900px;
+            margin-top: 35px;
+            animation: slideUp 0.8s ease-out 0.2s both;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* === TAB SWITCHER === */
+        .tab-switcher {
+            display: flex;
+            gap: 0;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 20px;
+            padding: 6px;
+            margin-bottom: 25px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 14px 20px;
+            background: transparent;
+            border: none;
+            border-radius: 15px;
+            color: rgba(255,255,255,0.4);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, rgba(0,255,247,0.15), rgba(255,0,200,0.15));
+            color: white;
+            border: 1px solid rgba(0,255,247,0.2);
+            box-shadow: 0 0 20px rgba(0,255,247,0.1);
+        }
+
+        .tab-btn i { font-size: 16px; }
+        .tab-btn.active .tab-qr-icon { color: var(--c1); }
+        .tab-btn.active .tab-pair-icon { color: var(--c2); }
+
+        /* === SECTIONS === */
+        .section {
+            background: rgba(5, 5, 20, 0.8);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 25px;
+            padding: 35px;
+            display: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section.active { display: block; animation: fadeIn 0.4s ease; }
+
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 10%; right: 10%;
+            height: 1px;
+        }
+
+        .section-qr::before { background: linear-gradient(to right, transparent, var(--c1), transparent); }
+        .section-pair::before { background: linear-gradient(to right, transparent, var(--c2), transparent); }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* === QR SECTION === */
+        .qr-layout {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .qr-box {
+            width: 220px;
+            height: 220px;
+            background: white;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 15px;
+            box-shadow: 0 0 40px rgba(0,255,247,0.3), 0 0 80px rgba(0,255,247,0.1);
+        }
+
+        .qr-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 10px;
+        }
+
+        .qr-placeholder {
+            text-align: center;
+            color: #333;
+        }
+
+        .qr-placeholder i { font-size: 60px; color: #ccc; margin-bottom: 10px; display: block; }
+        .qr-placeholder p { font-size: 11px; color: #999; }
+
+        .qr-corner {
+            position: absolute;
+            width: 20px; height: 20px;
+            border-color: var(--c1);
+            border-style: solid;
+        }
+
+        .qr-corner-tl { top: -1px; left: -1px; border-width: 3px 0 0 3px; border-radius: 5px 0 0 0; }
+        .qr-corner-tr { top: -1px; right: -1px; border-width: 3px 3px 0 0; border-radius: 0 5px 0 0; }
+        .qr-corner-bl { bottom: -1px; left: -1px; border-width: 0 0 3px 3px; border-radius: 0 0 0 5px; }
+        .qr-corner-br { bottom: -1px; right: -1px; border-width: 0 3px 3px 0; border-radius: 0 0 5px 0; }
+
+        .qr-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: rgba(255,255,255,0.6);
+        }
+
+        .qr-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: var(--c4);
+            box-shadow: 0 0 8px var(--c4);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse { 50% { opacity: 0.4; transform: scale(0.8); } }
+
+        .qr-refresh-btn {
+            background: transparent;
+            border: 1px solid rgba(0,255,247,0.3);
+            color: var(--c1);
+            padding: 10px 25px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            transition: 0.3s;
+        }
+
+        .qr-refresh-btn:hover {
+            background: rgba(0,255,247,0.1);
+            box-shadow: 0 0 20px rgba(0,255,247,0.2);
+        }
+
+        .qr-instructions {
+            background: rgba(0,255,247,0.04);
+            border: 1px solid rgba(0,255,247,0.1);
+            border-radius: 15px;
+            padding: 20px;
+            width: 100%;
+        }
+
+        .qr-instructions h4 {
+            font-size: 11px;
+            letter-spacing: 3px;
+            color: var(--c1);
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .instr-step {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+            font-size: 13px;
+            color: rgba(255,255,255,0.6);
+        }
+
+        .instr-num {
+            width: 22px; height: 22px;
+            background: rgba(0,255,247,0.1);
+            border: 1px solid rgba(0,255,247,0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: var(--c1);
+            flex-shrink: 0;
+        }
+
+        /* === PAIRING SECTION === */
+        .pair-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .pair-header h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 18px;
+            color: var(--c2);
+            margin-bottom: 5px;
+        }
+
+        .pair-header p {
+            font-size: 13px;
+            color: rgba(255,255,255,0.4);
+            letter-spacing: 1px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-label {
+            font-size: 12px;
+            letter-spacing: 3px;
+            color: rgba(255,255,255,0.4);
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .phone-input-wrap {
+            position: relative;
+        }
+
+        .phone-flag {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 20px;
+        }
+
+        .phone-input {
+            width: 100%;
+            padding: 18px 18px 18px 55px;
+            background: rgba(0,0,0,0.4);
+            border: 1.5px solid rgba(255,255,255,0.08);
             border-radius: 15px;
             color: white;
-            font-size: 18px;
-            margin-top: 10px;
+            font-size: 20px;
+            font-family: 'Share Tech Mono', monospace;
+            letter-spacing: 3px;
             outline: none;
             transition: 0.3s;
         }
 
-        input:focus { border-color: var(--primary); box-shadow: 0 0 15px rgba(0, 210, 255, 0.3); }
-
-        .example-text { font-size: 11px; color: #666; margin-top: 8px; font-style: italic; }
-
-        .btn-main {
-            width: 100%;
-            padding: 18px;
-            background: linear-gradient(45deg, #00d2ff, #9d00ff);
-            border: none;
-            border-radius: 15px;
-            color: white;
-            font-weight: bold;
+        .phone-input::placeholder {
+            color: rgba(255,255,255,0.15);
             font-size: 16px;
-            cursor: pointer;
-            transition: 0.4s;
-            text-transform: uppercase;
             letter-spacing: 2px;
         }
 
-        .btn-main:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(157, 0, 255, 0.4); }
-
-        .result-panel {
-            margin-top: 30px;
-            background: rgba(0, 255, 0, 0.03);
-            border: 1px solid var(--neon-green);
-            border-radius: 20px;
-            padding: 25px;
-            display: none;
+        .phone-input:focus {
+            border-color: var(--c2);
+            box-shadow: 0 0 25px rgba(255,0,200,0.15);
+            background: rgba(255,0,200,0.03);
         }
 
-        .code-text {
-            font-size: 35px;
+        .input-hint {
+            font-size: 11px;
+            color: rgba(255,255,255,0.25);
+            margin-top: 8px;
+            margin-left: 5px;
+            font-style: italic;
+        }
+
+        .generate-btn {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(135deg, #ff00c8, #9d00ff, #00d2ff);
+            background-size: 200% 200%;
+            border: none;
+            border-radius: 15px;
+            color: white;
             font-family: 'Orbitron', sans-serif;
-            color: var(--neon-green);
-            margin: 15px 0;
-            letter-spacing: 8px;
-            text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+            font-size: 14px;
+            letter-spacing: 3px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.4s;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+            animation: gradShift 4s ease infinite;
+         }
+
+        @keyframes gradShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .generate-btn::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+            transition: 0.5s;
+       }
+
+        .generate-btn:hover::after { left: 100%; }
+        .generate-btn:hover { transform: translateY(-3px); box-shadow: 0 20px 40px rgba(157,0,255,0.4); }
+        .generate-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        /* === CODE RESULT === */
+        .code-result {
+            margin-top: 25px;
+            background: rgba(0,255,136,0.03);
+            border: 1px solid rgba(0,255,136,0.2);
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .code-label {
+            font-size: 10px;
+            letter-spacing: 4px;
+            color: rgba(255,255,255,0.3);
+            text-transform: uppercase;
+            margin-bottom: 15px;
+        }
+
+        .code-display {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: clamp(28px, 8vw, 45px);
+            color: var(--c4);
+            letter-spacing: 10px;
+            text-shadow: 0 0 20px rgba(0,255,136,0.6), 0 0 40px rgba(0,255,136,0.3);
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(0,255,136,0.04);
+            border-radius: 12px;
+        }
+
+        .code-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
         }
 
         .copy-btn {
-            background: var(--neon-green);
-            color: black;
+            background: linear-gradient(45deg, var(--c4), var(--c1));
+            color: #000;
             border: none;
-            padding: 10px 20px;
-            border-radius: 10px;
+            padding: 12px 28px;
+            border-radius: 12px;
             cursor: pointer;
-            font-weight: 800;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: 2px;
+            transition: 0.3s;
+        }
+
+        .copy-btn:hover { transform: scale(1.05); box-shadow: 0 8px 20px rgba(0,255,136,0.4); }
+
+        .new-code-btn {
+            background: transparent;
+            color: rgba(255,255,255,0.5);
+            border: 1px solid rgba(255,255,255,0.15);
+            padding: 12px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: 'Rajdhani', sans-serif;
             font-size: 13px;
+            letter-spacing: 1px;
+            transition: 0.3s;
         }
 
-        /* Social Media Grid */
+        .new-code-btn:hover { border-color: var(--c2); color: var(--c2); }
+
+        .copy-toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: var(--c4);
+            color: black;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 13px;
+            letter-spacing: 1px;
+            transition: 0.4s;
+            z-index: 100;
+        }
+
+        .copy-toast.show { transform: translateX(-50%) translateY(0); }
+
+        /* === ERROR === */
+        .error-box {
+            background: rgba(255,0,110,0.08);
+            border: 1px solid rgba(255,0,110,0.2);
+            border-radius: 12px;
+            padding: 14px;
+            margin-top: 15px;
+            font-size: 13px;
+            color: #ff6b9d;
+            display: none;
+            text-align: center;
+        }
+
+        /* === SPINNER === */
+        .spinner {
+            width: 18px; height: 18px;
+            border: 2px solid rgba(255,255,255,0.2);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* === SOCIAL === */
+        .social-section {
+            width: 100%;
+            max-width: 900px;
+            margin-top: 35px;
+            animation: slideUp 0.8s ease-out 0.4s both;
+        }
+
+        .social-title {
+            text-align: center;
+            font-size: 10px;
+            letter-spacing: 5px;
+            color: rgba(255,255,255,0.2);
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
         .social-grid {
-            margin-top: 40px;
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
         }
 
-        .social-box {
-            background: rgba(255, 255, 255, 0.03);
-            padding: 15px;
-            border-radius: 15px;
+        .social-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 18px;
+            padding: 18px 15px;
             text-decoration: none;
-            color: white;
-            font-size: 12px;
+            color: rgba(255,255,255,0.7);
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
             transition: 0.3s;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
         }
 
-        .social-box:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: var(--primary);
-            transform: translateY(-3px);
+        .social-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transition: 0.3s;
         }
 
-        .social-box i { font-size: 20px; }
-        .fa-youtube { color: #ff0000; }
-        .fa-tiktok { color: #ffffff; }
-        .fa-whatsapp { color: #25d366; }
-        .fa-github { color: #f0f6fc; }
+        .social-card:hover {
+            transform: translateY(-4px);
+            color: white;
+            border-color: rgba(255,255,255,0.15);
+        }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .social-card:hover::before { opacity: 1; }
+
+        .sc-yt::before { background: radial-gradient(circle at left, rgba(255,0,0,0.1), transparent); }
+        .sc-tt::before { background: radial-gradient(circle at left, rgba(255,255,255,0.05), transparent); }
+        .sc-ch::before { background: radial-gradient(circle at left, rgba(0,210,255,0.1), transparent); }
+        .sc-wa::before { background: radial-gradient(circle at left, rgba(37,211,102,0.1), transparent); }
+        .sc-gh::before { background: radial-gradient(circle at left, rgba(240,246,252,0.05), transparent); }
+        .sc-ow::before { background: radial-gradient(circle at left, rgba(157,0,255,0.1), transparent); }
+
+        .social-card:hover.sc-yt { border-color: rgba(255,0,0,0.3); box-shadow: 0 8px 25px rgba(255,0,0,0.1); }
+        .social-card:hover.sc-tt { border-color: rgba(255,255,255,0.2); }
+        .social-card:hover.sc-ch { border-color: rgba(0,210,255,0.3); box-shadow: 0 8px 25px rgba(0,210,255,0.1); }
+        .social-card:hover.sc-wa { border-color: rgba(37,211,102,0.3); box-shadow: 0 8px 25px rgba(37,211,102,0.1); }
+        .social-card:hover.sc-gh { border-color: rgba(255,255,255,0.2); }
+        .social-card:hover.sc-ow { border-color: rgba(157,0,255,0.3); box-shadow: 0 8px 25px rgba(157,0,255,0.1); }
+
+        .social-icon-wrap {
+            width: 42px; height: 42px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .sc-yt .social-icon-wrap { background: rgba(255,0,0,0.1); color: #ff0000; }
+        .sc-tt .social-icon-wrap { background: rgba(255,255,255,0.08); color: #fff; }
+        .sc-ch .social-icon-wrap { background: rgba(0,210,255,0.1); color: #00d2ff; }
+        .sc-wa .social-icon-wrap { background: rgba(37,211,102,0.1); color: #25d366; }
+        .sc-gh .social-icon-wrap { background: rgba(240,246,252,0.08); color: #f0f6fc; }
+        .sc-ow .social-icon-wrap { background: rgba(157,0,255,0.1); color: #9d00ff; }
+
+        .social-info { flex: 1; min-width: 0; }
+        .social-name { font-size: 14px; font-weight: 600; letter-spacing: 1px; display: block; }
+        .social-handle { font-size: 11px; color: rgba(255,255,255,0.3); display: block; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+        /* === FOOTER === */
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 10px;
+            letter-spacing: 3px;
+            color: rgba(255,255,255,0.15);
+            text-transform: uppercase;
+            line-height: 2;
+            animation: slideUp 0.8s ease-out 0.6s both;
+        }
+
+        .footer span { color: var(--c2); }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 600px) {
+            .section { padding: 25px 20px; }
+            .clock-panel { gap: 12px; padding: 12px 20px; }
+            .clock-value { font-size: 18px; }
+            .social-grid { grid-template-columns: repeat(2, 1fr); }
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <span class="welcome-badge">--- WELCOME TO SYSTEM ---</span>
-    <h1 class="bot-name">YOUSAF-BALOCH-MD</h1>
-    
-    <div class="live-panel">
-        <span id="liveDate"><i class="fas fa-calendar-alt"></i> --/--/----</span>
-        <span id="liveTime"><i class="fas fa-clock"></i> --:--:--</span>
-    </div>
-
-    <form id="pairingForm">
-        <div class="input-area">
-            <label>📱 WhatsApp Number</label>
-            <input type="tel" id="phoneNumber" placeholder="923710636110" required>
-            <p class="example-text">Example: Enter with country code (923xxxxxxxxx)</p>
-        </div>
-        <button type="submit" class="btn-main" id="submitBtn">Get Pairing Code</button>
-    </form>
-
-    <div class="result-panel" id="resultPanel">
-        <p style="font-size: 12px; opacity: 0.8;">YOUR PAIRING CODE:</p>
-        <div class="code-text" id="codeOutput">------</div>
-        <button class="copy-btn" onclick="copyToClipboard()"><i class="fas fa-copy"></i> COPY CODE</button>
-    </div>
-
-    <div class="social-grid">
-        <a href="https://www.youtube.com/@Yousaf_Baloch_Tech" target="_blank" class="social-box">
-            <i class="fab fa-youtube"></i> YouTube
-        </a>
-        <a href="https://tiktok.com/@loser_boy.110" target="_blank" class="social-box">
-            <i class="fab fa-tiktok"></i> TikTok
-        </a>
-        <a href="https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j" target="_blank" class="social-box">
-            <i class="fas fa-bullhorn"></i> Channel
-        </a>
-        <a href="https://wa.me/923710636110" target="_blank" class="social-box">
-            <i class="fab fa-whatsapp"></i> WhatsApp
-        </a>
-        <a href="https://github.com/musakhanbaloch03-sad/YOUSAF-BALOCH-MD" target="_blank" class="social-box">
-            <i class="fab fa-github"></i> MD Repo
-        </a>
-        <a href="https://github.com/musakhanbaloch03-sad" target="_blank" class="social-box">
-            <i class="fas fa-user-circle"></i> Owner Profile
-        </a>
-    </div>
-
-    <div style="margin-top: 35px; font-size: 10px; opacity: 0.4; letter-spacing: 1px;">
-        DESIGNED BY MUHAMMAD YOUSAF BALOCH | © 2026
-    </div>
+<div class="bg-grid"></div>
+<div class="bg-orbs">
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+    <div class="orb orb3"></div>
 </div>
 
+<div class="wrapper">
+
+    <!-- HEADER -->
+    <div class="header">
+        <div class="welcome-tag">Welcome to System</div>
+        <h1 class="bot-name">YOUSAF-BALOCH-MD</h1>
+        <p class="bot-tagline">Ultra Premium WhatsApp Multi-Device Bot</p>
+
+        <!-- CLOCK -->
+        <div class="clock-panel">
+            <div class="clock-item">
+                <div class="clock-value" id="clockHour">00</div>
+                <div class="clock-label">Hour</div>
+            </div>
+            <div class="clock-sep">:</div>
+            <div class="clock-item">
+                <div class="clock-value" id="clockMin">00</div>
+                <div class="clock-label">Min</div>
+            </div>
+            <div class="clock-sep">:</div>
+            <div class="clock-item">
+                <div class="clock-value" id="clockSec">00</div>
+                <div class="clock-label">Sec</div>
+            </div>
+            <div style="width:1px;height:40px;background:rgba(255,255,255,0.08);margin:0 5px;"></div>
+            <div class="clock-item">
+                <div class="day-badge" id="clockDay">---</div>
+                <div class="clock-label" id="clockDate" style="margin-top:6px;">--/--/----</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN CARD -->
+    <div class="main-card">
+
+        <!-- TAB SWITCHER -->
+        <div class="tab-switcher">
+            <button class="tab-btn active" onclick="switchTab('qr', this)">
+                <i class="fas fa-qrcode tab-qr-icon"></i>
+                QR Code
+            </button>
+            <button class="tab-btn" onclick="switchTab('pair', this)">
+                <i class="fas fa-mobile-alt tab-pair-icon"></i>
+                Pairing Code
+            </button>
+        </div>
+
+        <!-- QR SECTION -->
+        <div class="section section-qr active" id="section-qr">
+            <div class="qr-layout">
+                <div class="qr-box" id="qrBox">
+                    <div class="qr-corner qr-corner-tl"></div>
+                    <div class="qr-corner qr-corner-tr"></div>
+                    <div class="qr-corner qr-corner-bl"></div>
+                    <div class="qr-corner qr-corner-br"></div>
+                    <div class="qr-placeholder" id="qrPlaceholder">
+                        <i class="fas fa-qrcode"></i>
+                        <p>Loading QR Code...</p>
+                    </div>
+                    <img id="qrImage" src="" alt="QR Code" style="display:none;">
+                </div>
+
+                <div class="qr-status">
+                    <div class="qr-dot"></div>
+                    <span id="qrStatusText">Waiting for QR Code from server...</span>
+                </div>
+
+                <button class="qr-refresh-btn" onclick="loadQR()">
+                    <i class="fas fa-sync-alt"></i> Refresh QR
+                </button>
+
+                <div class="qr-instructions">
+                    <h4><i class="fas fa-info-circle"></i> How to Scan</h4>
+                    <div class="instr-step">
+                        <div class="instr-num">1</div>
+                        <span>Open WhatsApp on your phone</span>
+                    </div>
+                    <div class="instr-step">
+                        <div class="instr-num">2</div>
+                        <span>Go to Settings → Linked Devices</span>
+                    </div>
+                    <div class="instr-step">
+                        <div class="instr-num">3</div>
+                        <span>Tap "Link a Device" and scan the QR code</span>
+                    </div>
+                    <div class="instr-step">
+                        <div class="instr-num">4</div>
+                        <span>Wait for connection to be established</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAIRING SECTION -->
+        <div class="section section-pair" id="section-pair">
+            <div class="pair-header">
+                <h3><i class="fas fa-mobile-alt"></i> Phone Number Pairing</h3>
+                <p>Enter your number to generate a pairing code</p>
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">📱 WhatsApp Number</label>
+                <div class="phone-input-wrap">
+                    <span class="phone-flag">🇵🇰</span>
+                    <input 
+                        type="tel" 
+                        class="phone-input" 
+                        id="phoneNumber" 
+                        placeholder="923710636110"
+                        maxlength="15"
+                    >
+                </div>
+                <p class="input-hint">⚠️ Include country code without + or spaces · Example: 923xxxxxxxxx</p>
+            </div>
+
+            <button class="generate-btn" id="generateBtn" onclick="generateCode()">
+                <i class="fas fa-key"></i> &nbsp;Generate Pairing Code
+            </button>
+
+            <div class="error-box" id="errorBox"></div>
+
+            <div class="code-result" id="codeResult">
+                <p class="code-label">Your Pairing Code</p>
+                <div class="code-display" id="codeDisplay">--------</div>
+                <div class="code-actions">
+                    <button class="copy-btn" onclick="copyCode()">
+                        <i class="fas fa-copy"></i> Copy Code
+                    </button>
+                    <button class="new-code-btn" onclick="resetForm()">
+                        <i class="fas fa-redo"></i> New Code
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- SOCIAL LINKS -->
+    <div class="social-section">
+        <p class="social-title">◆ Connect With Owner ◆</p>
+        <div class="social-grid">
+            <a href="https://www.youtube.com/@Yousaf_Baloch_Tech" target="_blank" class="social-card sc-yt">
+                <div class="social-icon-wrap"><i class="fab fa-youtube"></i></div>
+                <div class="social-info">
+                    <span class="social-name">YouTube</span>
+                    <span class="social-handle">@Yousaf_Baloch_Tech</span>
+                </div>
+            </a>
+            <a href="https://tiktok.com/@loser_boy.110" target="_blank" class="social-card sc-tt">
+                <div class="social-icon-wrap"><i class="fab fa-tiktok"></i></div>
+                <div class="social-info">
+                    <span class="social-name">TikTok</span>
+                    <span class="social-handle">@loser_boy.110</span>
+                </div>
+            </a>
+            <a href="https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j" target="_blank" class="social-card sc-ch">
+                <div class="social-icon-wrap"><i class="fas fa-bullhorn"></i></div>
+                <div class="social-info">
+                    <span class="social-name">Channel</span>
+                    <span class="social-handle">WhatsApp Channel</span>
+                </div>
+            </a>
+            <a href="https://wa.me/923710636110" target="_blank" class="social-card sc-wa">
+                <div class="social-icon-wrap"><i class="fab fa-whatsapp"></i></div>
+                <div class="social-info">
+                    <span class="social-name">WhatsApp</span>
+                    <span class="social-handle">+92 371 063 6110</span>
+                </div>
+            </a>
+            <a href="https://github.com/musakhanbaloch03-sad/YOUSAF-BALOCH-MD" target="_blank" class="social-card sc-gh">
+                <div class="social-icon-wrap"><i class="fab fa-github"></i></div>
+                <div class="social-info">
+                    <span class="social-name">Bot Repo</span>
+                    <span class="social-handle">YOUSAF-BALOCH-MD</span>
+                </div>
+            </a>
+            <a href="https://github.com/musakhanbaloch03-sad" target="_blank" class="social-card sc-ow">
+                <div class="social-icon-wrap"><i class="fas fa-user-astronaut"></i></div>
+                <div class="social-info">
+                    <span class="social-name">GitHub</span>
+                    <span class="social-handle">musakhanbaloch03-sad</span>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+        Designed by <span>Muhammad Yousaf Baloch</span><br>
+        +923710636110 &nbsp;·&nbsp; © 2026 All Rights Reserved
+    </div>
+
+</div>
+
+<!-- COPY TOAST -->
+<div class="copy-toast" id="copyToast">✅ Code Copied!</div>
+
 <script>
-    // Real-time Clock
+    // === CLOCK ===
     function updateClock() {
         const now = new Date();
-        document.getElementById('liveDate').innerHTML = `<i class="fas fa-calendar-alt"></i> ${now.toLocaleDateString()}`;
-        document.getElementById('liveTime').innerHTML = `<i class="fas fa-clock"></i> ${now.toLocaleTimeString()}`;
+        const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+        const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+        const h = String(now.getHours()).padStart(2, '0');
+        const m = String(now.getMinutes()).padStart(2, '0');
+        const s = String(now.getSeconds()).padStart(2, '0');
+
+        document.getElementById('clockHour').textContent = h;
+        document.getElementById('clockMin').textContent = m;
+        document.getElementById('clockSec').textContent = s;
+        document.getElementById('clockDay').textContent = days[now.getDay()];
+        document.getElementById('clockDate').textContent = 
+            `${String(now.getDate()).padStart(2,'0')} ${months[now.getMonth()]} ${now.getFullYear()}`;
     }
     setInterval(updateClock, 1000);
     updateClock();
 
-    // Handling Pairing Logic
-    const form = document.getElementById('pairingForm');
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
+    // === TAB SWITCHER ===
+    function switchTab(tab, btn) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('section-' + tab).classList.add('active');
+        btn.classList.add('active');
+        if (tab === 'qr') loadQR();
+    }
+
+    // === QR CODE LOADER ===
+    async function loadQR() {
+        const placeholder = document.getElementById('qrPlaceholder');
+        const img = document.getElementById('qrImage');
+        const statusText = document.getElementById('qrStatusText');
+
+        img.style.display = 'none';
+        placeholder.style.display = 'block';
+        placeholder.innerHTML = '<i class="fas fa-spinner fa-spin" style="font-size:50px;color:#00fff7;margin-bottom:10px;display:block;"></i><p style="color:#666">Generating QR...</p>';
+        statusText.textContent = 'Generating QR Code...';
+
+        try {
+            const res = await fetch('/get-qr');
+            const data = await res.json();
+
+            if (data.success && data.qr) {
+                img.src = data.qr;
+                img.style.display = 'block';
+                placeholder.style.display = 'none';
+                statusText.textContent = 'QR Ready — Scan within 60 seconds';
+            } else {
+                placeholder.innerHTML = '<i class="fas fa-qrcode" style="font-size:60px;color:#ccc;margin-bottom:10px;display:block;"></i><p style="color:#999;font-size:11px;">QR not available yet.<br>Click Refresh to try again.</p>';
+                statusText.textContent = data.message || 'Already connected or QR not ready';
+            }
+        } catch (err) {
+            placeholder.innerHTML = '<i class="fas fa-exclamation-triangle" style="font-size:50px;color:#ff006e;margin-bottom:10px;display:block;"></i><p style="color:#ff6b9d;font-size:11px;">Server not responding.<br>Please refresh.</p>';
+            statusText.textContent = 'Connection error — try refreshing';
+        }
+    }
+
+    // Auto-load QR on page open
+    loadQR();
+
+    // === PAIRING CODE GENERATOR ===
+    async function generateCode() {
         const number = document.getElementById('phoneNumber').value.replace(/[^0-9]/g, '');
-        const btn = document.getElementById('submitBtn');
-        
-        btn.innerText = "GENERATING...";
+        const btn = document.getElementById('generateBtn');
+        const errorBox = document.getElementById('errorBox');
+        const codeResult = document.getElementById('codeResult');
+
+        errorBox.style.display = 'none';
+        codeResult.style.display = 'none';
+
+        if (!number || number.length < 10 || number.length > 15) {
+            errorBox.textContent = '❌ Invalid number! Enter with country code (e.g. 923xxxxxxxxx)';
+            errorBox.style.display = 'block';
+            return;
+        }
+
+        btn.innerHTML = '<span class="spinner"></span> Generating...';
         btn.disabled = true;
 
         try {
@@ -258,27 +1032,57 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ phoneNumber: number })
             });
-            const data = await res.json();
-            if (data.success) {
-                document.getElementById('codeOutput').innerText = data.code;
-                document.getElementById('resultPanel').style.display = 'block';
-                btn.innerText = "GET NEW CODE";
-            } else { 
-                alert("Error: " + data.error); 
-                btn.innerText = "TRY AGAIN"; 
-            }
-        } catch (err) { 
-            alert("Connection Error!"); 
-            btn.innerText = "TRY AGAIN"; 
-        }
-        btn.disabled = false;
-    });
 
-    function copyToClipboard() {
-        const code = document.getElementById('codeOutput').innerText;
-        navigator.clipboard.writeText(code);
-        alert("Copied to clipboard: " + code);
+            const data = await res.json();
+
+            if (data.success) {
+                document.getElementById('codeDisplay').textContent = data.code;
+                codeResult.style.display = 'block';
+                btn.innerHTML = '<i class="fas fa-check"></i> &nbsp;Code Generated!';
+            } else {
+                errorBox.textContent = '❌ ' + (data.error || 'Failed to generate code. Try again.');
+                errorBox.style.display = 'block';
+                btn.innerHTML = '<i class="fas fa-key"></i> &nbsp;Try Again';
+            }
+        } catch (err) {
+            errorBox.textContent = '❌ Server connection failed. Please try again.';
+            errorBox.style.display = 'block';
+            btn.innerHTML = '<i class="fas fa-key"></i> &nbsp;Try Again';
+        }
+
+        btn.disabled = false;
     }
+
+    // === COPY CODE ===
+    function copyCode() {
+        const code = document.getElementById('codeDisplay').textContent;
+        const toast = document.getElementById('copyToast');
+
+        navigator.clipboard.writeText(code).catch(() => {
+            const el = document.createElement('textarea');
+            el.value = code;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+        });
+
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    // === RESET FORM ===
+    function resetForm() {
+        document.getElementById('phoneNumber').value = '';
+        document.getElementById('codeResult').style.display = 'none';
+        document.getElementById('errorBox').style.display = 'none';
+        document.getElementById('generateBtn').innerHTML = '<i class="fas fa-key"></i> &nbsp;Generate Pairing Code';
+    }
+
+    // Enter key support
+    document.getElementById('phoneNumber').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') generateCode();
+    });
 </script>
 
 </body>
