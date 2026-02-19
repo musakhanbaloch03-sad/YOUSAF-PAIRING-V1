@@ -23,7 +23,8 @@
     "cors": "^2.8.5",
     "helmet": "^7.1.0",
     "express-rate-limit": "^7.1.5",
-    "@hapi/boom": "^10.0.1"
+    "@hapi/boom": "^10.0.1",
+    "qrcode": "^1.5.3"
   },
   "keywords": ["whatsapp", "bot", "baileys", "pairing", "yousaf-baloch"],
   "author": "Muhammad Yousaf Baloch",
