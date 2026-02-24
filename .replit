@@ -1,0 +1,22 @@
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# YOUSAF-PAIRING-V1 — Replit Config
+# Created by: Muhammad Yousaf Baloch
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+run = "node index.js"
+entrypoint = "index.js"
+
+[nix]
+channel = "stable-23_11"
+
+[env]
+PORT = "8000"
+NODE_ENV = "production"
+
+[deployment]
+run = ["sh", "-c", "node index.js"]
+deploymentTarget = "cloudrun"
+
+[[ports]]
+localPort = 8000
+externalPort = 80
