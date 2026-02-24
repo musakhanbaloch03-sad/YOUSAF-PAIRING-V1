@@ -2,11 +2,22 @@
   "name": "YOUSAF-PAIRING-V1",
   "description": "⚡ Official Session Generator for YOUSAF-BALOCH-MD | Created by Muhammad Yousaf Baloch | +923710636110",
   "repository": "https://github.com/musakhanbaloch03-sad/YOUSAF-PAIRING-V1",
-  "keywords": ["whatsapp", "pairing", "session", "baileys", "yousaf-baloch"],
+  "logo": "https://i.imgur.com/your-logo.png",
+  "keywords": ["whatsapp", "pairing", "session", "baileys", "yousaf-baloch", "pakistan"],
   "env": {
     "PORT": {
-      "description": "🌐 Server port (default: 8000) | YOUSAF-PAIRING-V1 by Muhammad Yousaf Baloch",
+      "description": "🌐 Server port — default 8000, leave as is",
       "value": "8000",
+      "required": false
+    },
+    "NODE_ENV": {
+      "description": "⚙️ Environment — production or development",
+      "value": "production",
+      "required": false
+    },
+    "ALLOWED_ORIGINS": {
+      "description": "🔒 Allowed CORS origins — leave empty to allow all (recommended for public pairing server)",
+      "value": "",
       "required": false
     }
   },
