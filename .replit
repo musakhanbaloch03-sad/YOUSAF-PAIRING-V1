@@ -5,6 +5,7 @@
 
 run = "node index.js"
 entrypoint = "index.js"
+modules = ["nodejs-20"]
 
 [nix]
 channel = "stable-23_11"
@@ -14,9 +15,38 @@ PORT = "8000"
 NODE_ENV = "production"
 
 [deployment]
-run = ["sh", "-c", "node index.js"]
-deploymentTarget = "cloudrun"
+run = ["node", "index.js"]
+deploymentTarget = "vm"
 
 [[ports]]
 localPort = 8000
 externalPort = 80
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Start application"
+
+[[workflows.workflow]]
+name = "Start application"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node index.js"
+waitForPort = 8000
+
+[workflows.workflow.metadata]
+outputType = "webview"
+
+[userenv]
+
+[userenv.shared]
+PORT = "8000"
