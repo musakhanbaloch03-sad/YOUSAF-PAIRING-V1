@@ -7,43 +7,57 @@
  * ╚══════════════════════════════════════════════════════════════════╝
  */
 
-import express from 'express';
-import cors from 'cors';
-import helmet from 'helmet';
-import rateLimit from 'express-rate-limit';
-import chalk from 'chalk';
-import figlet from 'figlet';
-import gradient from 'gradient-string';
-import NodeCache from 'node-cache';
-import qrcode from 'qrcode';
-import { makeWASocket, DisconnectReason, useMultiFileAuthState, fetchLatestBaileysVersion, Browsers, makeCacheableSignalKeyStore, delay } from '@whiskeysockets/baileys';
-import { Boom } from '@hapi/boom';
-import pino from 'pino';
+// ✅ FIX 1: dotenv import — process.env variables load ہوں گے
+import dotenv from 'dotenv';
+dotenv.config();
+
+import express         from 'express';
+import cors            from 'cors';
+import helmet          from 'helmet';
+import rateLimit       from 'express-rate-limit';
+import chalk           from 'chalk';
+import figlet          from 'figlet';
+import gradient        from 'gradient-string';
+import NodeCache       from 'node-cache';
+import qrcode          from 'qrcode';
+import {
+  makeWASocket,
+  DisconnectReason,
+  useMultiFileAuthState,
+  fetchLatestBaileysVersion,
+  Browsers,
+  makeCacheableSignalKeyStore,
+  delay,
+} from '@whiskeysockets/baileys';
+import { Boom }        from '@hapi/boom';
+import pino            from 'pino';
 import { existsSync, mkdirSync, rmSync, readFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
+// ✅ FIX 2: TikTok link corrected — @loser_boy.110
 const OWNER_IDENTITY = Object.freeze({
   NAME:        'Yousuf Baloch',
   FULL_NAME:   'Muhammad Yousaf Baloch',
   WHATSAPP:    '923710636110',
-  TIKTOK:      'https://www.tiktok.com/@yousaf_baloch_tech',
+  TIKTOK:      'https://tiktok.com/@loser_boy.110',
   YOUTUBE:     'https://www.youtube.com/@Yousaf_Baloch_Tech',
   CHANNEL:     'https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j',
   GITHUB:      'https://github.com/musakhanbaloch03-sad',
   BOT_NAME:    'YOUSAF-BALOCH-MD',
   VERSION:     '2.0.0',
-  BAILEYS_VER: '6.7.8',
+  BAILEYS_VER: '6.7.9',
 });
 
-const app = express();
-const PORT = process.env.PORT || 8000;
-const sessionCache = new NodeCache({ stdTTL: 300, checkperiod: 60 });
-const activeSockets = new Map();
+const app          = express();
+const PORT         = process.env.PORT || 8000;
 
-const silentLogger = pino({ level: 'silent' });
+// ✅ FIX 3: Session cache TTL 300 → 600 (10 minutes)
+const sessionCache  = new NodeCache({ stdTTL: 600, checkperiod: 60 });
+const activeSockets = new Map();
+const silentLogger  = pino({ level: 'silent' });
 
 app.set('trust proxy', 1);
 
@@ -51,33 +65,38 @@ app.use(cors({ origin: '*', methods: ['GET', 'POST'] }));
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
-      defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com"],
-      fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com"],
-      imgSrc: ["'self'", "data:", "https:"],
-    }
-  }
+      defaultSrc : ["'self'"],
+      styleSrc   : ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com"],
+      scriptSrc  : ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com"],
+      fontSrc    : ["'self'", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com"],
+      imgSrc     : ["'self'", "data:", "https:"],
+    },
+  },
 }));
-app.use(express.json({ limit: '10mb' }));
+app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(join(__dirname, 'public')));
 
+// ✅ FIX 4: Rate limiter — /get-code اور /api/ دونوں پر
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 30,
-  message: { error: 'Too many requests. Please try again in 15 minutes.' },
+  windowMs      : 15 * 60 * 1000,
+  max           : 30,
+  message       : { error: 'Too many requests. Please try again in 15 minutes.' },
   standardHeaders: true,
-  legacyHeaders: false,
-  trustProxy: true,
+  legacyHeaders  : false,
 });
-app.use('/api/', limiter);
+app.use('/api/',     limiter);
+app.use('/get-code', limiter);
+app.use('/get-qr',   limiter);
 
-// ── QR Socket (global, for QR-based login) ──────────────────────────
-let qrSocket = null;
-let currentQR = null;
+// ── QR Socket globals ────────────────────────────────────────────────
+let qrSocket   = null;
+let currentQR  = null;
 let qrConnected = false;
 
+// ═══════════════════════════════════════════════════════════════════
+//  🎨 TERMINAL BANNER
+// ═══════════════════════════════════════════════════════════════════
 function printBanner() {
   console.clear();
   const fire  = gradient(['#FF0000', '#FF4500', '#FF6F00', '#FFD700']);
@@ -100,6 +119,9 @@ function printBanner() {
   console.log(chalk.hex('#FF6F00').bold(`\n  🚀 Pairing Server Started on Port ${PORT}\n`));
 }
 
+// ═══════════════════════════════════════════════════════════════════
+//  ✅ SUCCESS MESSAGE
+// ═══════════════════════════════════════════════════════════════════
 function buildSuccessMessage(sessionId) {
   return `╔══════════════════════════════════════════════╗
 ║   ⚡ YOUSAF-BALOCH-MD — CONNECTED! ⚡        ║
@@ -136,106 +158,145 @@ function buildSuccessMessage(sessionId) {
 💡 *NEXT STEPS:*
 1️⃣ Copy the SESSION ID above
 2️⃣ Go to your bot deployment
-3️⃣ Paste in SESSION_ID config variable
+3️⃣ Paste in SESSION_ID variable
 4️⃣ Restart your bot
-5️⃣ Enjoy 280+ Premium Commands! 🚀
+5️⃣ Enjoy 500+ Premium Commands! 🚀
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ⚡ *Powered by ${OWNER_IDENTITY.FULL_NAME} © 2026* ⚡
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
 }
 
+// ═══════════════════════════════════════════════════════════════════
+//  🛠️ HELPER FUNCTIONS
+// ═══════════════════════════════════════════════════════════════════
+
 function getSessionPath(id) {
   return join(__dirname, 'sessions', `session_${id}`);
 }
 
+// ✅ FIX 5: cleanSession — try-catch add کیا — crash نہیں ہوگا
 function cleanSession(id) {
-  const path = getSessionPath(id);
-  if (existsSync(path)) rmSync(path, { recursive: true, force: true });
+  try {
+    const p = getSessionPath(id);
+    if (existsSync(p)) rmSync(p, { recursive: true, force: true });
+  } catch (err) {
+    console.warn(`[Session] Could not clean session ${id}: ${err.message}`);
+  }
 }
 
+function ensureSessionsDir() {
+  try {
+    const dir = join(__dirname, 'sessions');
+    if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
+  } catch (err) {
+    console.error('[Session] Could not create sessions directory:', err.message);
+  }
+}
+
+// ✅ FIX 6: sanitizePhone — international support
+// پاکستانی + انٹرنیشنل سب numbers support کرتا ہے
 function sanitizePhone(phone) {
+  if (!phone || typeof phone !== 'string') return '';
+
+  // صرف numbers رکھیں
   phone = phone.replace(/[^0-9]/g, '');
+
+  // شروع کے zeros ہٹائیں — لیکن صرف ایک بار
   phone = phone.replace(/^0+/, '');
+
+  // ✅ Pakistan: 3xxxxxxxxx (10 digits) → 923xxxxxxxxx
   if (phone.length === 10 && phone.startsWith('3')) {
     phone = '92' + phone;
   }
+
+  // ✅ Pakistan: 03xxxxxxxxx already handled above (0 removed)
+  // ✅ International: already has country code (11-15 digits) — no change
+  // ✅ India: 91xxxxxxxxxx — no change needed
+  // ✅ Bangladesh: 880xxxxxxxxx — no change needed
+
   return phone;
 }
 
+// ✅ FIX 7: Phone validation — separate function
+function isValidPhone(phone) {
+  return phone && phone.length >= 10 && phone.length <= 15;
+}
+
 // ═══════════════════════════════════════════════════════════════════
-//  QR CODE SESSION
+//  📷 QR CODE SESSION
 // ═══════════════════════════════════════════════════════════════════
 async function startQRSession() {
-  const sessionId = 'qr_session';
+  const sessionId   = 'qr_session';
   const sessionPath = getSessionPath(sessionId);
 
-  if (!existsSync(join(__dirname, 'sessions'))) {
-    mkdirSync(join(__dirname, 'sessions'), { recursive: true });
-  }
-  mkdirSync(sessionPath, { recursive: true });
+  ensureSessionsDir();
+
+  try {
+    mkdirSync(sessionPath, { recursive: true });
+  } catch (_) {}
 
   const { state, saveCreds } = await useMultiFileAuthState(sessionPath);
-  const { version } = await fetchLatestBaileysVersion();
+  const { version }          = await fetchLatestBaileysVersion();
 
   if (qrSocket) {
     try { qrSocket.end(); } catch {}
+    qrSocket = null;
   }
 
   const sock = makeWASocket({
     version,
-    logger: silentLogger,
-    printQRInTerminal: false,
+    logger                        : silentLogger,
+    printQRInTerminal             : false,
     auth: {
       creds: state.creds,
-      keys: makeCacheableSignalKeyStore(state.keys, silentLogger),
+      keys : makeCacheableSignalKeyStore(state.keys, silentLogger),
     },
-    browser: Browsers.ubuntu('Chrome'),
-    markOnlineOnConnect: false,
+    browser                       : Browsers.ubuntu('Chrome'),
+    markOnlineOnConnect           : false,
     generateHighQualityLinkPreview: true,
-    syncFullHistory: false,
-    getMessage: async () => undefined,
+    syncFullHistory               : false,
+    getMessage                    : async () => undefined,
   });
 
   qrSocket = sock;
-
   sock.ev.on('creds.update', saveCreds);
 
   sock.ev.on('connection.update', async ({ connection, lastDisconnect, qr }) => {
+
     if (qr) {
       try {
-        currentQR = await qrcode.toDataURL(qr);
+        currentQR   = await qrcode.toDataURL(qr);
         qrConnected = false;
         console.log(chalk.hex('#00FFFF')('  📷 QR Code generated!'));
       } catch (e) {
-        console.error('QR generation error:', e.message);
+        console.error('[QR] Generation error:', e.message);
       }
     }
 
     if (connection === 'open') {
       qrConnected = true;
-      currentQR = null;
+      currentQR   = null;
       console.log(chalk.hex('#00FF00').bold('  ✅ QR Login Successful!'));
-
       try {
-        const credsPath = join(sessionPath, 'creds.json');
-        const credsRaw = readFileSync(credsPath, 'utf-8');
-        const sessionString = Buffer.from(credsRaw).toString('base64');
-        const userJid = sock.user?.id;
+        const credsRaw    = readFileSync(join(sessionPath, 'creds.json'), 'utf-8');
+        const sessionStr  = Buffer.from(credsRaw).toString('base64');
+        const userJid     = sock.user?.id;
         if (userJid) {
-          await sock.sendMessage(userJid, { text: buildSuccessMessage(sessionString) });
+          await sock.sendMessage(userJid, { text: buildSuccessMessage(sessionStr) });
         }
       } catch (e) {
-        console.error('QR success message error:', e.message);
+        console.error('[QR] Success message error:', e.message);
       }
     }
 
     if (connection === 'close') {
       const reason = new Boom(lastDisconnect?.error)?.output?.statusCode;
-      qrConnected = false;
-      currentQR = null;
+      qrConnected  = false;
+      currentQR    = null;
+
       if (reason !== DisconnectReason.loggedOut) {
-        console.log(chalk.hex('#FF6600')('  ⚠️ QR connection closed. Restarting...'));
+        console.log(chalk.hex('#FF6600')('  ⚠️ QR connection closed. Restarting in 5s...'));
         setTimeout(startQRSession, 5000);
       } else {
         cleanSession(sessionId);
@@ -246,112 +307,120 @@ async function startQRSession() {
 }
 
 // ═══════════════════════════════════════════════════════════════════
-//  PAIRING CODE SESSION
+//  🔑 PAIRING CODE SESSION
+//  ✅ FIX 8: Pairing code requested immediately — no "Server Busy"
 // ═══════════════════════════════════════════════════════════════════
 async function createPairingSession(phoneNumber) {
-  const sessionId = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+  const sessionId   = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
   const sessionPath = getSessionPath(sessionId);
 
-  if (!existsSync(join(__dirname, 'sessions'))) {
-    mkdirSync(join(__dirname, 'sessions'), { recursive: true });
-  }
-  mkdirSync(sessionPath, { recursive: true });
+  ensureSessionsDir();
+  try { mkdirSync(sessionPath, { recursive: true }); } catch (_) {}
 
   const { state, saveCreds } = await useMultiFileAuthState(sessionPath);
-  const { version } = await fetchLatestBaileysVersion();
+  const { version }          = await fetchLatestBaileysVersion();
 
   return new Promise((resolve, reject) => {
+    let pairingDone = false;
+
     const timeoutHandle = setTimeout(() => {
-      const sock = activeSockets.get(sessionId);
-      if (sock) { try { sock.end(); } catch {} activeSockets.delete(sessionId); }
+      const s = activeSockets.get(sessionId);
+      if (s) { try { s.end(); } catch {} activeSockets.delete(sessionId); }
       cleanSession(sessionId);
       reject(new Error('Pairing timeout. Please try again.'));
     }, 120000);
 
     const sock = makeWASocket({
       version,
-      logger: silentLogger,
-      printQRInTerminal: false,
+      logger                        : silentLogger,
+      printQRInTerminal             : false,
       auth: {
         creds: state.creds,
-        keys: makeCacheableSignalKeyStore(state.keys, silentLogger),
+        keys : makeCacheableSignalKeyStore(state.keys, silentLogger),
       },
-      // ✅ FIX: ubuntu Chrome is accepted by WhatsApp
-      browser: Browsers.ubuntu('Chrome'),
-      markOnlineOnConnect: false,
-      generateHighQualityLinkPreview: true,
-      syncFullHistory: false,
-      getMessage: async () => undefined,
+      browser                       : Browsers.ubuntu('Chrome'),
+      markOnlineOnConnect           : false,
+      generateHighQualityLinkPreview: false,
+      syncFullHistory               : false,
+      getMessage                    : async () => undefined,
     });
 
     activeSockets.set(sessionId, sock);
-
     sock.ev.on('creds.update', saveCreds);
 
-    // ✅ FIX: Request pairing code after socket is ready
     sock.ev.on('connection.update', async ({ connection, lastDisconnect }) => {
 
-      if (connection === 'connecting') {
-        // Request pairing code once connecting
+      // ✅ FIX: Request pairing code immediately on 'connecting'
+      // NOT after connection is 'open' — this fixes "Server Busy" error
+      if (connection === 'connecting' && !pairingDone) {
         setTimeout(async () => {
           try {
-            if (!sock.authState.creds.registered) {
-              await delay(2000);
-              const code = await sock.requestPairingCode(phoneNumber);
+            if (!sock.authState.creds.registered && !pairingDone) {
+              await delay(1500);
+              const code      = await sock.requestPairingCode(phoneNumber);
               const formatted = code?.match(/.{1,4}/g)?.join('-') || code;
-              console.log(chalk.hex('#FFD700').bold(`\n  📱 Pairing Code: ${chalk.hex('#00FF00').bold(formatted)}\n`));
+              pairingDone     = true;
+
+              console.log(chalk.hex('#FFD700').bold(
+                `\n  📱 Pairing Code for +${phoneNumber}: ${chalk.hex('#00FF00').bold(formatted)}\n`
+              ));
+
               sessionCache.set(`code_${sessionId}`, formatted);
               resolve({ sessionId, code: formatted });
             }
           } catch (err) {
-            clearTimeout(timeoutHandle);
-            activeSockets.delete(sessionId);
-            cleanSession(sessionId);
-            reject(new Error('Failed to generate pairing code: ' + err.message));
+            if (!pairingDone) {
+              clearTimeout(timeoutHandle);
+              activeSockets.delete(sessionId);
+              cleanSession(sessionId);
+              // ✅ FIX 9: Error message نہیں leak ہوتی — generic message
+              reject(new Error('Failed to generate pairing code. Please try again.'));
+            }
           }
-        }, 3000);
+        }, 2000);
       }
 
       if (connection === 'open') {
         clearTimeout(timeoutHandle);
-        console.log(chalk.hex('#00FF00').bold(`\n  ✅ Device Paired Successfully!\n`));
+        console.log(chalk.hex('#00FF00').bold(`\n  ✅ Device Paired! Sending Session ID...\n`));
 
         try {
-          const credsPath = join(sessionPath, 'creds.json');
-          const credsRaw = readFileSync(credsPath, 'utf-8');
-          const sessionString = Buffer.from(credsRaw).toString('base64');
-          const userJid = `${phoneNumber}@s.whatsapp.net`;
-          await sock.sendMessage(userJid, { text: buildSuccessMessage(sessionString) });
-          sessionCache.set(`session_${sessionId}`, sessionString);
-          console.log(chalk.hex('#00FF00').bold('  ✅ Session ID sent to user on WhatsApp!\n'));
+          const credsRaw    = readFileSync(join(sessionPath, 'creds.json'), 'utf-8');
+          const sessionStr  = Buffer.from(credsRaw).toString('base64');
+          const userJid     = `${phoneNumber}@s.whatsapp.net`;
+
+          await sock.sendMessage(userJid, { text: buildSuccessMessage(sessionStr) });
+          sessionCache.set(`session_${sessionId}`, sessionStr);
+          console.log(chalk.hex('#00FF00').bold('  ✅ Session ID sent to WhatsApp!\n'));
         } catch (sendErr) {
-          console.error(chalk.hex('#FF0000')('  ⚠️ Could not send success message: ' + sendErr.message));
+          console.error('[Pairing] Could not send session message:', sendErr.message);
         }
 
+        // Cleanup after 60 seconds
         setTimeout(async () => {
           try { await sock.logout(); } catch {}
           activeSockets.delete(sessionId);
           cleanSession(sessionId);
         }, 60000);
+      }
 
-      } else if (connection === 'close') {
+      if (connection === 'close') {
         const reason = new Boom(lastDisconnect?.error)?.output?.statusCode;
         clearTimeout(timeoutHandle);
         activeSockets.delete(sessionId);
         if (reason !== DisconnectReason.loggedOut) {
-          console.log(chalk.hex('#FF6600')(`  ⚠️ Connection closed. Reason: ${reason}`));
+          console.log(chalk.hex('#FF6600')(`  ⚠️ Pairing connection closed. Reason: ${reason}`));
         }
         cleanSession(sessionId);
       }
     });
   });
 }
-
 // ═══════════════════════════════════════════════════════════════════
-//  ROUTES
+//  🌐 ROUTES
 // ═══════════════════════════════════════════════════════════════════
 
-// Main page — serve HTML file
+// Main page
 app.get('/', (req, res) => {
   res.sendFile(join(__dirname, 'public', 'index.html'));
 });
@@ -359,16 +428,17 @@ app.get('/', (req, res) => {
 // Health check
 app.get('/health', (req, res) => {
   res.json({
-    status: '✅ Online',
-    service: 'YOUSAF-PAIRING-V1',
-    owner: OWNER_IDENTITY.FULL_NAME,
-    version: OWNER_IDENTITY.VERSION,
-    timestamp: new Date().toISOString(),
+    status    : '✅ Online',
+    service   : 'YOUSAF-PAIRING-V1',
+    owner     : OWNER_IDENTITY.FULL_NAME,
+    version   : OWNER_IDENTITY.VERSION,
+    timestamp : new Date().toISOString(),
+    activeSess: activeSockets.size,
   });
 });
 
-// ✅ NEW: GET QR Code for HTML frontend
-app.get('/get-qr', async (req, res) => {
+// GET QR Code
+app.get('/get-qr', (req, res) => {
   if (qrConnected) {
     return res.json({ success: false, message: 'Already connected via QR!' });
   }
@@ -378,18 +448,27 @@ app.get('/get-qr', async (req, res) => {
   return res.json({ success: false, message: 'QR not ready yet. Please wait...' });
 });
 
-// ✅ NEW: POST /get-code for HTML frontend (Pairing Code)
+// POST /get-code — Pairing Code
 app.post('/get-code', async (req, res) => {
   let { phoneNumber } = req.body;
 
-  if (!phoneNumber) {
+  // ✅ FIX 10: Input validation
+  if (!phoneNumber || typeof phoneNumber !== 'string') {
     return res.status(400).json({ success: false, error: 'Phone number required.' });
+  }
+
+  // ✅ Max length check — XSS/injection prevention
+  if (phoneNumber.length > 20) {
+    return res.status(400).json({ success: false, error: 'Invalid phone number.' });
   }
 
   phoneNumber = sanitizePhone(phoneNumber);
 
-  if (phoneNumber.length < 10 || phoneNumber.length > 15) {
-    return res.status(400).json({ success: false, error: 'Invalid phone number format.' });
+  if (!isValidPhone(phoneNumber)) {
+    return res.status(400).json({
+      success: false,
+      error  : 'Invalid phone number format. Example: 923710636110',
+    });
   }
 
   console.log(chalk.hex('#00FFFF')(`\n  📲 Pairing request for: +${phoneNumber}`));
@@ -397,74 +476,96 @@ app.post('/get-code', async (req, res) => {
   try {
     const result = await createPairingSession(phoneNumber);
     return res.json({
-      success: true,
-      code: result.code,
-      message: 'Enter this code in WhatsApp → Linked Devices → Link with phone number',
+      success : true,
+      code    : result.code,
+      message : 'Enter this code in WhatsApp → Linked Devices → Link with phone number',
     });
   } catch (err) {
     console.error(chalk.hex('#FF0000')(`  ❌ Pairing error: ${err.message}`));
-    return res.status(500).json({ success: false, error: err.message || 'Pairing failed. Please try again.' });
+    // ✅ FIX: Generic error — server details نہیں leak ہوتے
+    return res.status(500).json({
+      success: false,
+      error  : 'Pairing failed. Please try again.',
+    });
   }
 });
 
-// Old API endpoint (backward compatible)
+// Old API (backward compatible)
 app.get('/api/pair', async (req, res) => {
   let { phone } = req.query;
-  if (!phone) return res.status(400).json({ error: 'Phone number required. Example: ?phone=923710636110' });
+
+  if (!phone) {
+    return res.status(400).json({ error: 'Phone number required. Example: ?phone=923710636110' });
+  }
+
+  if (typeof phone !== 'string' || phone.length > 20) {
+    return res.status(400).json({ error: 'Invalid phone number.' });
+  }
 
   phone = sanitizePhone(phone);
-  if (phone.length < 10 || phone.length > 15) return res.status(400).json({ error: 'Invalid phone number format.' });
+
+  if (!isValidPhone(phone)) {
+    return res.status(400).json({ error: 'Invalid phone number format.' });
+  }
 
   console.log(chalk.hex('#00FFFF')(`\n  📲 API Pairing request for: +${phone}`));
 
   try {
     const result = await createPairingSession(phone);
     return res.json({
-      success: true,
-      code: result.code,
+      success   : true,
+      code      : result.code,
       session_id: result.sessionId,
-      message: 'Enter the code in WhatsApp → Linked Devices → Link with phone number',
-      owner: OWNER_IDENTITY.FULL_NAME,
+      message   : 'Enter the code in WhatsApp → Linked Devices → Link with phone number',
+      owner     : OWNER_IDENTITY.FULL_NAME,
     });
   } catch (err) {
-    return res.status(500).json({ success: false, error: err.message || 'Pairing failed.' });
+    return res.status(500).json({ success: false, error: 'Pairing failed. Please try again.' });
   }
 });
 
+// Session status check
 app.get('/api/session/:id', (req, res) => {
-  const { id } = req.params;
+  const { id }  = req.params;
   const session = sessionCache.get(`session_${id}`);
   if (session) {
-    return res.json({ success: true, connected: true, session_id: session, owner: OWNER_IDENTITY.FULL_NAME });
+    return res.json({ success: true, connected: true, session_id: session });
   }
   return res.json({ success: true, connected: false, message: 'Session pending.' });
 });
 
+// 404 handler
 app.use((req, res) => {
   res.status(404).json({
-    error: 'Endpoint not found.',
-    available: ['/get-code (POST)', '/get-qr (GET)', '/api/pair?phone=YOUR_NUMBER'],
-    owner: OWNER_IDENTITY.FULL_NAME,
+    error    : 'Endpoint not found.',
+    available: [
+      'GET  /',
+      'GET  /health',
+      'GET  /get-qr',
+      'POST /get-code',
+      'GET  /api/pair?phone=923710636110',
+    ],
   });
 });
 
+// Global error handler
 app.use((err, req, res, next) => {
-  console.error(chalk.hex('#FF0000')('  ❌ Server error: ' + err.message));
+  console.error('[Server Error]', err.message);
   res.status(500).json({ error: 'Internal server error.' });
 });
 
 // ═══════════════════════════════════════════════════════════════════
-//  START SERVER
+//  🚀 START SERVER
 // ═══════════════════════════════════════════════════════════════════
 printBanner();
+ensureSessionsDir();
 
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(chalk.hex('#00FF00').bold(`  🌐 Server live at: http://0.0.0.0:${PORT}`));
+  console.log(chalk.hex('#00FF00').bold(`  🌐 Server live: http://0.0.0.0:${PORT}`));
   console.log(chalk.hex('#FFD700')(`  📡 Pairing: POST http://0.0.0.0:${PORT}/get-code\n`));
   console.log(chalk.hex('#00FFFF')('  ═══════════════════════════════════════════════════════════════\n'));
 
-  // Start QR session automatically
   startQRSession().catch(err => {
-    console.error(chalk.hex('#FF0000')('  ⚠️ QR session error: ' + err.message));
+    console.error('[QR] Session error:', err.message);
   });
 });
