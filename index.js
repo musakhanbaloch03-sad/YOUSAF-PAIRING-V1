@@ -7,8 +7,7 @@
  * ╚══════════════════════════════════════════════════════════════════╝
  */
 
-// ✅ FIX 1: dotenv import — process.env variables load ہوں گے
-import dotenv from 'dotenv';
+import dotenv          from 'dotenv';
 dotenv.config();
 
 import express         from 'express';
@@ -20,6 +19,7 @@ import figlet          from 'figlet';
 import gradient        from 'gradient-string';
 import NodeCache       from 'node-cache';
 import qrcode          from 'qrcode';
+import { randomBytes } from 'crypto';
 import {
   makeWASocket,
   DisconnectReason,
@@ -37,7 +37,6 @@ import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-// ✅ FIX 2: TikTok link corrected — @loser_boy.110
 const OWNER_IDENTITY = Object.freeze({
   NAME:        'Yousuf Baloch',
   FULL_NAME:   'Muhammad Yousaf Baloch',
@@ -51,17 +50,36 @@ const OWNER_IDENTITY = Object.freeze({
   BAILEYS_VER: '6.7.9',
 });
 
-const app          = express();
-const PORT         = process.env.PORT || 8000;
-
-// ✅ FIX 3: Session cache TTL 300 → 600 (10 minutes)
+const app           = express();
+const PORT          = process.env.PORT || 8000;
 const sessionCache  = new NodeCache({ stdTTL: 600, checkperiod: 60 });
 const activeSockets = new Map();
 const silentLogger  = pino({ level: 'silent' });
 
 app.set('trust proxy', 1);
 
-app.use(cors({ origin: '*', methods: ['GET', 'POST'] }));
+// ✅ FIX: CORS — permissive configuration fix
+// Default: allows all origins (for public pairing server)
+// To restrict: set ALLOWED_ORIGINS=https://yourdomain.com in .env
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
+  : ['*'];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (
+      !origin ||
+      allowedOrigins.includes('*') ||
+      allowedOrigins.includes(origin)
+    ) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST'],
+}));
+
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
@@ -77,7 +95,6 @@ app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(join(__dirname, 'public')));
 
-// ✅ FIX 4: Rate limiter — /get-code اور /api/ دونوں پر
 const limiter = rateLimit({
   windowMs      : 15 * 60 * 1000,
   max           : 30,
@@ -90,8 +107,8 @@ app.use('/get-code', limiter);
 app.use('/get-qr',   limiter);
 
 // ── QR Socket globals ────────────────────────────────────────────────
-let qrSocket   = null;
-let currentQR  = null;
+let qrSocket    = null;
+let currentQR   = null;
 let qrConnected = false;
 
 // ═══════════════════════════════════════════════════════════════════
@@ -175,7 +192,6 @@ function getSessionPath(id) {
   return join(__dirname, 'sessions', `session_${id}`);
 }
 
-// ✅ FIX 5: cleanSession — try-catch add کیا — crash نہیں ہوگا
 function cleanSession(id) {
   try {
     const p = getSessionPath(id);
@@ -194,33 +210,24 @@ function ensureSessionsDir() {
   }
 }
 
-// ✅ FIX 6: sanitizePhone — international support
-// پاکستانی + انٹرنیشنل سب numbers support کرتا ہے
+// ✅ FIX: International phone support
 function sanitizePhone(phone) {
   if (!phone || typeof phone !== 'string') return '';
-
-  // صرف numbers رکھیں
   phone = phone.replace(/[^0-9]/g, '');
-
-  // شروع کے zeros ہٹائیں — لیکن صرف ایک بار
   phone = phone.replace(/^0+/, '');
-
-  // ✅ Pakistan: 3xxxxxxxxx (10 digits) → 923xxxxxxxxx
   if (phone.length === 10 && phone.startsWith('3')) {
     phone = '92' + phone;
   }
-
-  // ✅ Pakistan: 03xxxxxxxxx already handled above (0 removed)
-  // ✅ International: already has country code (11-15 digits) — no change
-  // ✅ India: 91xxxxxxxxxx — no change needed
-  // ✅ Bangladesh: 880xxxxxxxxx — no change needed
-
   return phone;
 }
 
-// ✅ FIX 7: Phone validation — separate function
 function isValidPhone(phone) {
   return phone && phone.length >= 10 && phone.length <= 15;
+}
+
+// ✅ FIX: Secure random ID — crypto کے ذریعے
+function generateSecureSessionId() {
+  return `${Date.now()}_${randomBytes(8).toString('hex')}`;
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -231,10 +238,7 @@ async function startQRSession() {
   const sessionPath = getSessionPath(sessionId);
 
   ensureSessionsDir();
-
-  try {
-    mkdirSync(sessionPath, { recursive: true });
-  } catch (_) {}
+  try { mkdirSync(sessionPath, { recursive: true }); } catch (_) {}
 
   const { state, saveCreds } = await useMultiFileAuthState(sessionPath);
   const { version }          = await fetchLatestBaileysVersion();
@@ -263,7 +267,6 @@ async function startQRSession() {
   sock.ev.on('creds.update', saveCreds);
 
   sock.ev.on('connection.update', async ({ connection, lastDisconnect, qr }) => {
-
     if (qr) {
       try {
         currentQR   = await qrcode.toDataURL(qr);
@@ -279,9 +282,9 @@ async function startQRSession() {
       currentQR   = null;
       console.log(chalk.hex('#00FF00').bold('  ✅ QR Login Successful!'));
       try {
-        const credsRaw    = readFileSync(join(sessionPath, 'creds.json'), 'utf-8');
-        const sessionStr  = Buffer.from(credsRaw).toString('base64');
-        const userJid     = sock.user?.id;
+        const credsRaw   = readFileSync(join(sessionPath, 'creds.json'), 'utf-8');
+        const sessionStr = Buffer.from(credsRaw).toString('base64');
+        const userJid    = sock.user?.id;
         if (userJid) {
           await sock.sendMessage(userJid, { text: buildSuccessMessage(sessionStr) });
         }
@@ -294,7 +297,6 @@ async function startQRSession() {
       const reason = new Boom(lastDisconnect?.error)?.output?.statusCode;
       qrConnected  = false;
       currentQR    = null;
-
       if (reason !== DisconnectReason.loggedOut) {
         console.log(chalk.hex('#FF6600')('  ⚠️ QR connection closed. Restarting in 5s...'));
         setTimeout(startQRSession, 5000);
@@ -308,10 +310,11 @@ async function startQRSession() {
 
 // ═══════════════════════════════════════════════════════════════════
 //  🔑 PAIRING CODE SESSION
-//  ✅ FIX 8: Pairing code requested immediately — no "Server Busy"
 // ═══════════════════════════════════════════════════════════════════
 async function createPairingSession(phoneNumber) {
-  const sessionId   = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+
+  // ✅ FIX: crypto.randomBytes — secure random ID
+  const sessionId   = generateSecureSessionId();
   const sessionPath = getSessionPath(sessionId);
 
   ensureSessionsDir();
@@ -350,8 +353,6 @@ async function createPairingSession(phoneNumber) {
 
     sock.ev.on('connection.update', async ({ connection, lastDisconnect }) => {
 
-      // ✅ FIX: Request pairing code immediately on 'connecting'
-      // NOT after connection is 'open' — this fixes "Server Busy" error
       if (connection === 'connecting' && !pairingDone) {
         setTimeout(async () => {
           try {
@@ -373,7 +374,6 @@ async function createPairingSession(phoneNumber) {
               clearTimeout(timeoutHandle);
               activeSockets.delete(sessionId);
               cleanSession(sessionId);
-              // ✅ FIX 9: Error message نہیں leak ہوتی — generic message
               reject(new Error('Failed to generate pairing code. Please try again.'));
             }
           }
@@ -383,12 +383,10 @@ async function createPairingSession(phoneNumber) {
       if (connection === 'open') {
         clearTimeout(timeoutHandle);
         console.log(chalk.hex('#00FF00').bold(`\n  ✅ Device Paired! Sending Session ID...\n`));
-
         try {
-          const credsRaw    = readFileSync(join(sessionPath, 'creds.json'), 'utf-8');
-          const sessionStr  = Buffer.from(credsRaw).toString('base64');
-          const userJid     = `${phoneNumber}@s.whatsapp.net`;
-
+          const credsRaw   = readFileSync(join(sessionPath, 'creds.json'), 'utf-8');
+          const sessionStr = Buffer.from(credsRaw).toString('base64');
+          const userJid    = `${phoneNumber}@s.whatsapp.net`;
           await sock.sendMessage(userJid, { text: buildSuccessMessage(sessionStr) });
           sessionCache.set(`session_${sessionId}`, sessionStr);
           console.log(chalk.hex('#00FF00').bold('  ✅ Session ID sent to WhatsApp!\n'));
@@ -396,7 +394,6 @@ async function createPairingSession(phoneNumber) {
           console.error('[Pairing] Could not send session message:', sendErr.message);
         }
 
-        // Cleanup after 60 seconds
         setTimeout(async () => {
           try { await sock.logout(); } catch {}
           activeSockets.delete(sessionId);
@@ -416,16 +413,15 @@ async function createPairingSession(phoneNumber) {
     });
   });
 }
+
 // ═══════════════════════════════════════════════════════════════════
 //  🌐 ROUTES
 // ═══════════════════════════════════════════════════════════════════
 
-// Main page
 app.get('/', (req, res) => {
   res.sendFile(join(__dirname, 'public', 'index.html'));
 });
 
-// Health check
 app.get('/health', (req, res) => {
   res.json({
     status    : '✅ Online',
@@ -437,7 +433,6 @@ app.get('/health', (req, res) => {
   });
 });
 
-// GET QR Code
 app.get('/get-qr', (req, res) => {
   if (qrConnected) {
     return res.json({ success: false, message: 'Already connected via QR!' });
@@ -448,16 +443,12 @@ app.get('/get-qr', (req, res) => {
   return res.json({ success: false, message: 'QR not ready yet. Please wait...' });
 });
 
-// POST /get-code — Pairing Code
 app.post('/get-code', async (req, res) => {
   let { phoneNumber } = req.body;
 
-  // ✅ FIX 10: Input validation
   if (!phoneNumber || typeof phoneNumber !== 'string') {
     return res.status(400).json({ success: false, error: 'Phone number required.' });
   }
-
-  // ✅ Max length check — XSS/injection prevention
   if (phoneNumber.length > 20) {
     return res.status(400).json({ success: false, error: 'Invalid phone number.' });
   }
@@ -482,7 +473,6 @@ app.post('/get-code', async (req, res) => {
     });
   } catch (err) {
     console.error(chalk.hex('#FF0000')(`  ❌ Pairing error: ${err.message}`));
-    // ✅ FIX: Generic error — server details نہیں leak ہوتے
     return res.status(500).json({
       success: false,
       error  : 'Pairing failed. Please try again.',
@@ -490,14 +480,12 @@ app.post('/get-code', async (req, res) => {
   }
 });
 
-// Old API (backward compatible)
 app.get('/api/pair', async (req, res) => {
   let { phone } = req.query;
 
   if (!phone) {
     return res.status(400).json({ error: 'Phone number required. Example: ?phone=923710636110' });
   }
-
   if (typeof phone !== 'string' || phone.length > 20) {
     return res.status(400).json({ error: 'Invalid phone number.' });
   }
@@ -524,7 +512,6 @@ app.get('/api/pair', async (req, res) => {
   }
 });
 
-// Session status check
 app.get('/api/session/:id', (req, res) => {
   const { id }  = req.params;
   const session = sessionCache.get(`session_${id}`);
@@ -534,7 +521,6 @@ app.get('/api/session/:id', (req, res) => {
   return res.json({ success: true, connected: false, message: 'Session pending.' });
 });
 
-// 404 handler
 app.use((req, res) => {
   res.status(404).json({
     error    : 'Endpoint not found.',
@@ -548,7 +534,6 @@ app.use((req, res) => {
   });
 });
 
-// Global error handler
 app.use((err, req, res, next) => {
   console.error('[Server Error]', err.message);
   res.status(500).json({ error: 'Internal server error.' });
