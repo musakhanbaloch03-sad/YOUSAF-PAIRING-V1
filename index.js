@@ -51,7 +51,7 @@ const OWNER_IDENTITY = Object.freeze({
 });
 
 const app           = express();
-const PORT          = process.env.PORT || 8000;
+const PORT          = process.env.PORT || 5000;
 const sessionCache  = new NodeCache({ stdTTL: 600, checkperiod: 60 });
 const activeSockets = new Map();
 const silentLogger  = pino({ level: 'silent' });
