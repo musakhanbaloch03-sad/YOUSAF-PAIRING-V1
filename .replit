@@ -10,7 +10,7 @@ entrypoint = "index.js"
 channel = "stable-23_11"
 
 [env]
-PORT = "5000"
+PORT = "8000"
 NODE_ENV = "production"
 
 [deployment]
@@ -18,5 +18,5 @@ run = ["sh", "-c", "node index.js"]
 deploymentTarget = "cloudrun"
 
 [[ports]]
-localPort = 5000
+localPort = 8000
 externalPort = 80
