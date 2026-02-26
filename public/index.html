@@ -1,1219 +1,886 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YOUSAF-BALOCH-MD | Official Pairing Gateway</title>
-    <meta name="description" content="Get your Session ID for YOUSAF-BALOCH-MD WhatsApp Bot by Muhammad Yousaf Baloch">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=Share+Tech+Mono&display=swap');
-
-        :root {
-            --c1: #00fff7;
-            --c2: #ff00c8;
-            --c3: #ffe600;
-            --c4: #00ff88;
-            --dark: #03000f;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: 'Rajdhani', sans-serif;
-            background: var(--dark);
-            color: white;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        .bg-grid {
-            position: fixed;
-            inset: 0;
-            background-image:
-                linear-gradient(rgba(0,255,247,0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0,255,247,0.03) 1px, transparent 1px);
-            background-size: 40px 40px;
-            z-index: 0;
-        }
-
-        .bg-orbs { position: fixed; inset: 0; z-index: 0; overflow: hidden; }
-
-        .orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.12;
-            animation: orbFloat linear infinite;
-        }
-
-        .orb1 { width: 500px; height: 500px; background: var(--c1); top: -100px; left: -100px; animation-duration: 20s; }
-        .orb2 { width: 400px; height: 400px; background: var(--c2); bottom: -100px; right: -100px; animation-duration: 25s; animation-direction: reverse; }
-        .orb3 { width: 300px; height: 300px; background: var(--c3); top: 50%; left: 50%; animation-duration: 15s; }
-
-        @keyframes orbFloat {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            33%  { transform: translate(30px, -30px) scale(1.1); }
-            66%  { transform: translate(-20px, 20px) scale(0.9); }
-        }
-
-        .wrapper {
-            position: relative;
-            z-index: 1;
-            min-height: 100vh;
-            padding: 30px 20px 60px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        /* === HEADER === */
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-            animation: slideDown 0.8s ease-out;
-        }
-
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-30px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-
-        .welcome-tag {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            border: 1px solid rgba(0,255,247,0.2);
-            background: rgba(0,255,247,0.05);
-            padding: 5px 18px;
-            border-radius: 50px;
-            font-size: 11px;
-            letter-spacing: 4px;
-            color: var(--c1);
-            text-transform: uppercase;
-            margin-bottom: 20px;
-        }
-
-        .welcome-tag::before, .welcome-tag::after { content: '◆'; font-size: 6px; }
-
-        .bot-name {
-            font-family: 'Orbitron', sans-serif;
-            font-size: clamp(28px, 6vw, 52px);
-            font-weight: 900;
-            line-height: 1;
-            margin-bottom: 8px;
-            background: linear-gradient(135deg, var(--c1) 0%, var(--c2) 50%, var(--c3) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            filter: drop-shadow(0 0 30px rgba(0,255,247,0.4));
-            animation: nameGlow 3s ease-in-out infinite alternate;
-        }
-
-        @keyframes nameGlow {
-            from { filter: drop-shadow(0 0 15px rgba(0,255,247,0.3)); }
-            to   { filter: drop-shadow(0 0 40px rgba(255,0,200,0.5)); }
-        }
-
-        .bot-tagline {
-            font-size: 13px;
-            letter-spacing: 5px;
-            color: rgba(255,255,255,0.3);
-            text-transform: uppercase;
-            margin-bottom: 25px;
-        }
-
-        /* === CLOCK === */
-        .clock-panel {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 20px;
-            background: rgba(0,0,0,0.4);
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 20px;
-            padding: 15px 30px;
-            margin: 0 auto;
-            max-width: 500px;
-            width: 100%;
-        }
-
-        .clock-item { text-align: center; }
-
-        .clock-value {
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 22px;
-            color: var(--c1);
-            text-shadow: 0 0 10px var(--c1);
-            line-height: 1;
-        }
-
-        .clock-label {
-            font-size: 9px;
-            letter-spacing: 2px;
-            color: rgba(255,255,255,0.3);
-            text-transform: uppercase;
-            margin-top: 3px;
-        }
-
-        .clock-sep {
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 22px;
-            color: var(--c2);
-            animation: blink 1s step-end infinite;
-        }
-
-        @keyframes blink { 50% { opacity: 0; } }
-
-        .day-badge {
-            background: linear-gradient(45deg, var(--c2), var(--c1));
-            color: black;
-            font-weight: 700;
-            font-size: 11px;
-            letter-spacing: 2px;
-            padding: 4px 12px;
-            border-radius: 20px;
-            text-transform: uppercase;
-        }
-
-        /* === MAIN CARD === */
-        .main-card {
-            width: 100%;
-            max-width: 900px;
-            margin-top: 35px;
-            animation: slideUp 0.8s ease-out 0.2s both;
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-
-        /* === TAB SWITCHER === */
-        .tab-switcher {
-            display: flex;
-            background: rgba(0,0,0,0.5);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 20px;
-            padding: 6px;
-            margin-bottom: 25px;
-            max-width: 500px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .tab-btn {
-            flex: 1;
-            padding: 14px 20px;
-            background: transparent;
-            border: none;
-            border-radius: 15px;
-            color: rgba(255,255,255,0.4);
-            font-family: 'Orbitron', sans-serif;
-            font-size: 12px;
-            letter-spacing: 2px;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-transform: uppercase;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .tab-btn.active {
-            background: linear-gradient(135deg, rgba(0,255,247,0.15), rgba(255,0,200,0.15));
-            color: white;
-            border: 1px solid rgba(0,255,247,0.2);
-            box-shadow: 0 0 20px rgba(0,255,247,0.1);
-        }
-
-        .tab-btn i { font-size: 16px; }
-        .tab-btn.active .tab-qr-icon   { color: var(--c1); }
-        .tab-btn.active .tab-pair-icon { color: var(--c2); }
-
-        /* === SECTIONS === */
-        .section {
-            background: rgba(5, 5, 20, 0.8);
-            border: 1px solid rgba(255,255,255,0.07);
-            border-radius: 25px;
-            padding: 35px;
-            display: none;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .section.active { display: block; animation: fadeIn 0.4s ease; }
-
-        .section::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 10%; right: 10%;
-            height: 1px;
-        }
-
-        .section-qr::before   { background: linear-gradient(to right, transparent, var(--c1), transparent); }
-        .section-pair::before { background: linear-gradient(to right, transparent, var(--c2), transparent); }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-
-        /* === QR SECTION === */
-        .qr-layout {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 25px;
-        }
-
-        .qr-box {
-            width: 220px;
-            height: 220px;
-            background: white;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            padding: 15px;
-            box-shadow: 0 0 40px rgba(0,255,247,0.3), 0 0 80px rgba(0,255,247,0.1);
-        }
-
-        .qr-box img { width: 100%; height: 100%; object-fit: contain; border-radius: 10px; }
-
-        .qr-placeholder { text-align: center; color: #333; }
-        .qr-placeholder i { font-size: 60px; color: #ccc; margin-bottom: 10px; display: block; }
-        .qr-placeholder p { font-size: 11px; color: #999; }
-
-        .qr-corner {
-            position: absolute;
-            width: 20px; height: 20px;
-            border-color: var(--c1);
-            border-style: solid;
-        }
-
-        .qr-corner-tl { top: -1px; left: -1px;   border-width: 3px 0 0 3px; border-radius: 5px 0 0 0; }
-        .qr-corner-tr { top: -1px; right: -1px;  border-width: 3px 3px 0 0; border-radius: 0 5px 0 0; }
-        .qr-corner-bl { bottom: -1px; left: -1px;  border-width: 0 0 3px 3px; border-radius: 0 0 0 5px; }
-        .qr-corner-br { bottom: -1px; right: -1px; border-width: 0 3px 3px 0; border-radius: 0 0 5px 0; }
-
-        .qr-status {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-            color: rgba(255,255,255,0.6);
-        }
-
-        .qr-dot {
-            width: 8px; height: 8px;
-            border-radius: 50%;
-            background: var(--c4);
-            box-shadow: 0 0 8px var(--c4);
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse { 50% { opacity: 0.4; transform: scale(0.8); } }
-
-        /* ✅ QR timer bar */
-        .qr-timer-bar {
-            width: 220px;
-            height: 4px;
-            background: rgba(255,255,255,0.08);
-            border-radius: 10px;
-            overflow: hidden;
-            display: none;
-        }
-
-        .qr-timer-fill {
-            height: 100%;
-            width: 100%;
-            background: linear-gradient(90deg, var(--c4), var(--c1));
-            border-radius: 10px;
-            transition: width linear;
-        }
-
-        .qr-refresh-btn {
-            background: transparent;
-            border: 1px solid rgba(0,255,247,0.3);
-            color: var(--c1);
-            padding: 10px 25px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 14px;
-            font-weight: 600;
-            letter-spacing: 2px;
-            transition: 0.3s;
-        }
-
-        .qr-refresh-btn:hover {
-            background: rgba(0,255,247,0.1);
-            box-shadow: 0 0 20px rgba(0,255,247,0.2);
-        }
-
-        .qr-instructions {
-            background: rgba(0,255,247,0.04);
-            border: 1px solid rgba(0,255,247,0.1);
-            border-radius: 15px;
-            padding: 20px;
-            width: 100%;
-        }
-
-        .qr-instructions h4 {
-            font-size: 11px;
-            letter-spacing: 3px;
-            color: var(--c1);
-            text-transform: uppercase;
-            margin-bottom: 12px;
-        }
-
-        .instr-step {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 10px;
-            font-size: 13px;
-            color: rgba(255,255,255,0.6);
-        }
-
-        .instr-num {
-            width: 22px; height: 22px;
-            background: rgba(0,255,247,0.1);
-            border: 1px solid rgba(0,255,247,0.3);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            color: var(--c1);
-            flex-shrink: 0;
-        }
-
-        /* === PAIRING SECTION === */
-        .pair-header { text-align: center; margin-bottom: 25px; }
-
-        .pair-header h3 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 18px;
-            color: var(--c2);
-            margin-bottom: 5px;
-        }
-
-        .pair-header p {
-            font-size: 13px;
-            color: rgba(255,255,255,0.4);
-            letter-spacing: 1px;
-        }
-
-        .input-group { margin-bottom: 20px; }
-
-        .input-label {
-            font-size: 12px;
-            letter-spacing: 3px;
-            color: rgba(255,255,255,0.4);
-            text-transform: uppercase;
-            display: block;
-            margin-bottom: 10px;
-        }
-
-        .phone-input-wrap { position: relative; }
-
-        .phone-flag {
-            position: absolute;
-            left: 18px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 20px;
-        }
-
-        .phone-input {
-            width: 100%;
-            padding: 18px 18px 18px 55px;
-            background: rgba(0,0,0,0.4);
-            border: 1.5px solid rgba(255,255,255,0.08);
-            border-radius: 15px;
-            color: white;
-            font-size: 20px;
-            font-family: 'Share Tech Mono', monospace;
-            letter-spacing: 3px;
-            outline: none;
-            transition: 0.3s;
-        }
-
-        .phone-input::placeholder {
-            color: rgba(255,255,255,0.15);
-            font-size: 16px;
-            letter-spacing: 2px;
-        }
-
-        .phone-input:focus {
-            border-color: var(--c2);
-            box-shadow: 0 0 25px rgba(255,0,200,0.15);
-            background: rgba(255,0,200,0.03);
-        }
-
-        /* ✅ Validation border colors */
-        .phone-input.valid   { border-color: var(--c4); box-shadow: 0 0 15px rgba(0,255,136,0.1); }
-        .phone-input.invalid { border-color: #ff006e;   box-shadow: 0 0 15px rgba(255,0,110,0.1); }
-
-        .input-hint {
-            font-size: 11px;
-            color: rgba(255,255,255,0.25);
-            margin-top: 8px;
-            margin-left: 5px;
-            font-style: italic;
-        }
-
-        /* ✅ Validation feedback message */
-        .validation-msg {
-            font-size: 12px;
-            margin-top: 8px;
-            margin-left: 5px;
-            display: none;
-        }
-
-        .validation-msg.valid   { color: var(--c4); display: block; }
-        .validation-msg.invalid { color: #ff6b9d;   display: block; }
-
-        .generate-btn {
-            width: 100%;
-            padding: 20px;
-            background: linear-gradient(135deg, #ff00c8, #9d00ff, #00d2ff);
-            background-size: 200% 200%;
-            border: none;
-            border-radius: 15px;
-            color: white;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 14px;
-            letter-spacing: 3px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: 0.4s;
-            text-transform: uppercase;
-            position: relative;
-            overflow: hidden;
-            animation: gradShift 4s ease infinite;
-        }
-
-        @keyframes gradShift {
-            0%, 100% { background-position: 0% 50%; }
-            50%       { background-position: 100% 50%; }
-        }
-
-        .generate-btn::after {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%;
-            width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
-            transition: 0.5s;
-        }
-
-        .generate-btn:hover::after  { left: 100%; }
-        .generate-btn:hover         { transform: translateY(-3px); box-shadow: 0 20px 40px rgba(157,0,255,0.4); }
-        .generate-btn:disabled      { opacity: 0.6; cursor: not-allowed; transform: none; }
-
-        /* === CODE RESULT === */
-        .code-result {
-            margin-top: 25px;
-            background: rgba(0,255,136,0.03);
-            border: 1px solid rgba(0,255,136,0.2);
-            border-radius: 20px;
-            padding: 25px;
-            text-align: center;
-            display: none;
-            animation: fadeIn 0.5s ease;
-        }
-
-        .code-label {
-            font-size: 10px;
-            letter-spacing: 4px;
-            color: rgba(255,255,255,0.3);
-            text-transform: uppercase;
-            margin-bottom: 15px;
-        }
-
-        .code-display {
-            font-family: 'Share Tech Mono', monospace;
-            font-size: clamp(28px, 8vw, 45px);
-            color: var(--c4);
-            letter-spacing: 10px;
-            text-shadow: 0 0 20px rgba(0,255,136,0.6), 0 0 40px rgba(0,255,136,0.3);
-            margin-bottom: 20px;
-            padding: 15px;
-            background: rgba(0,255,136,0.04);
-            border-radius: 12px;
-        }
-
-        /* ✅ Code expiry warning */
-        .code-expiry {
-            font-size: 12px;
-            color: rgba(255,230,0,0.7);
-            margin-bottom: 15px;
-        }
-
-        .code-actions {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-        }
-
-        .copy-btn {
-            background: linear-gradient(45deg, var(--c4), var(--c1));
-            color: #000;
-            border: none;
-            padding: 12px 28px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-family: 'Rajdhani', sans-serif;
-            font-weight: 700;
-            font-size: 14px;
-            letter-spacing: 2px;
-            transition: 0.3s;
-        }
-
-        .copy-btn:hover { transform: scale(1.05); box-shadow: 0 8px 20px rgba(0,255,136,0.4); }
-
-        .new-code-btn {
-            background: transparent;
-            color: rgba(255,255,255,0.5);
-            border: 1px solid rgba(255,255,255,0.15);
-            padding: 12px 20px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 13px;
-            letter-spacing: 1px;
-            transition: 0.3s;
-        }
-
-        .new-code-btn:hover { border-color: var(--c2); color: var(--c2); }
-
-        .copy-toast {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%) translateY(80px);
-            background: var(--c4);
-            color: black;
-            padding: 12px 25px;
-            border-radius: 50px;
-            font-weight: 700;
-            font-size: 13px;
-            letter-spacing: 1px;
-            transition: 0.4s;
-            z-index: 100;
-        }
-
-        .copy-toast.show { transform: translateX(-50%) translateY(0); }
-
-        /* === ERROR === */
-        .error-box {
-            background: rgba(255,0,110,0.08);
-            border: 1px solid rgba(255,0,110,0.2);
-            border-radius: 12px;
-            padding: 14px;
-            margin-top: 15px;
-            font-size: 13px;
-            color: #ff6b9d;
-            display: none;
-            text-align: center;
-        }
-
-        /* === SPINNER === */
-        .spinner {
-            width: 18px; height: 18px;
-            border: 2px solid rgba(255,255,255,0.2);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 0.7s linear infinite;
-            display: inline-block;
-            vertical-align: middle;
-            margin-right: 8px;
-        }
-
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* === SOCIAL === */
-        .social-section {
-            width: 100%;
-            max-width: 900px;
-            margin-top: 35px;
-            animation: slideUp 0.8s ease-out 0.4s both;
-        }
-
-        .social-title {
-            text-align: center;
-            font-size: 10px;
-            letter-spacing: 5px;
-            color: rgba(255,255,255,0.2);
-            text-transform: uppercase;
-            margin-bottom: 20px;
-        }
-
-        .social-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 12px;
-        }
-
-        .social-card {
-            background: rgba(255,255,255,0.02);
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 18px;
-            padding: 18px 15px;
-            text-decoration: none;
-            color: rgba(255,255,255,0.7);
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            transition: 0.3s;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .social-card::before { content: ''; position: absolute; inset: 0; opacity: 0; transition: 0.3s; }
-        .social-card:hover   { transform: translateY(-4px); color: white; border-color: rgba(255,255,255,0.15); }
-        .social-card:hover::before { opacity: 1; }
-
-        .sc-yt::before { background: radial-gradient(circle at left, rgba(255,0,0,0.1), transparent); }
-        .sc-tt::before { background: radial-gradient(circle at left, rgba(255,255,255,0.05), transparent); }
-        .sc-ch::before { background: radial-gradient(circle at left, rgba(0,210,255,0.1), transparent); }
-        .sc-wa::before { background: radial-gradient(circle at left, rgba(37,211,102,0.1), transparent); }
-        .sc-gh::before { background: radial-gradient(circle at left, rgba(240,246,252,0.05), transparent); }
-        .sc-ow::before { background: radial-gradient(circle at left, rgba(157,0,255,0.1), transparent); }
-
-        .social-card:hover.sc-yt { border-color: rgba(255,0,0,0.3);     box-shadow: 0 8px 25px rgba(255,0,0,0.1); }
-        .social-card:hover.sc-tt { border-color: rgba(255,255,255,0.2); }
-        .social-card:hover.sc-ch { border-color: rgba(0,210,255,0.3);   box-shadow: 0 8px 25px rgba(0,210,255,0.1); }
-        .social-card:hover.sc-wa { border-color: rgba(37,211,102,0.3);  box-shadow: 0 8px 25px rgba(37,211,102,0.1); }
-        .social-card:hover.sc-gh { border-color: rgba(255,255,255,0.2); }
-        .social-card:hover.sc-ow { border-color: rgba(157,0,255,0.3);   box-shadow: 0 8px 25px rgba(157,0,255,0.1); }
-
-        .social-icon-wrap {
-            width: 42px; height: 42px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            flex-shrink: 0;
-        }
-
-        .sc-yt .social-icon-wrap { background: rgba(255,0,0,0.1);       color: #ff0000; }
-        .sc-tt .social-icon-wrap { background: rgba(255,255,255,0.08);   color: #fff; }
-        .sc-ch .social-icon-wrap { background: rgba(0,210,255,0.1);     color: #00d2ff; }
-        .sc-wa .social-icon-wrap { background: rgba(37,211,102,0.1);    color: #25d366; }
-        .sc-gh .social-icon-wrap { background: rgba(240,246,252,0.08);  color: #f0f6fc; }
-        .sc-ow .social-icon-wrap { background: rgba(157,0,255,0.1);     color: #9d00ff; }
-
-        .social-info  { flex: 1; min-width: 0; }
-        .social-name  { font-size: 14px; font-weight: 600; letter-spacing: 1px; display: block; }
-        .social-handle { font-size: 11px; color: rgba(255,255,255,0.3); display: block; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-
-        /* === FOOTER === */
-        .footer {
-            margin-top: 40px;
-            text-align: center;
-            font-size: 10px;
-            letter-spacing: 3px;
-            color: rgba(255,255,255,0.15);
-            text-transform: uppercase;
-            line-height: 2;
-            animation: slideUp 0.8s ease-out 0.6s both;
-        }
-
-        .footer span { color: var(--c2); }
-
-        /* === RESPONSIVE === */
-        @media (max-width: 600px) {
-            .section          { padding: 25px 20px; }
-            .clock-panel      { gap: 12px; padding: 12px 20px; }
-            .clock-value      { font-size: 18px; }
-            .social-grid      { grid-template-columns: repeat(2, 1fr); }
-            .code-display     { letter-spacing: 5px; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YOUSAF-BALOCH-MD | Ultra Pro Pairing Gateway</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root{
+  --c1:#00fff7;--c2:#ff00c8;--c3:#ffe600;
+  --c4:#00ff88;--c5:#ff6600;--c6:#aa00ff;
+  --dark:#02000a;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Rajdhani',sans-serif;background:var(--dark);color:#fff;min-height:100vh;overflow-x:hidden;}
+
+/* ═══ ANIMATED GRID BG ═══ */
+.bg-grid{position:fixed;inset:0;z-index:0;
+  background-image:linear-gradient(rgba(0,255,247,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,247,.05) 1px,transparent 1px);
+  background-size:40px 40px;animation:gridScroll 15s linear infinite;}
+@keyframes gridScroll{to{background-position:40px 40px;}}
+
+/* ═══ ORBS ═══ */
+.bg-orbs{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;}
+.orb{position:absolute;border-radius:50%;filter:blur(100px);opacity:.2;animation:orbF linear infinite;}
+.o1{width:700px;height:700px;background:var(--c1);top:-200px;left:-200px;animation-duration:18s;}
+.o2{width:600px;height:600px;background:var(--c2);bottom:-200px;right:-200px;animation-duration:22s;animation-direction:reverse;}
+.o3{width:400px;height:400px;background:var(--c6);top:35%;left:25%;animation-duration:13s;}
+.o4{width:350px;height:350px;background:var(--c3);top:10%;right:10%;animation-duration:26s;}
+.o5{width:300px;height:300px;background:var(--c4);bottom:20%;left:60%;animation-duration:20s;}
+@keyframes orbF{
+  0%,100%{transform:translate(0,0) scale(1);}
+  25%{transform:translate(50px,-50px) scale(1.1);}
+  50%{transform:translate(-40px,40px) scale(.9);}
+  75%{transform:translate(30px,60px) scale(1.05);}
+}
+
+/* ═══ SCANLINES ═══ */
+.scanlines{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.15) 2px,rgba(0,0,0,.15) 4px);
+  animation:scanMove 8s linear infinite;}
+@keyframes scanMove{to{background-position:0 100px;}}
+
+/* ═══ PARTICLES ═══ */
+.particles{position:fixed;inset:0;z-index:0;pointer-events:none;}
+.pt{position:absolute;border-radius:50%;animation:ptFly linear infinite;}
+@keyframes ptFly{
+  0%{transform:translateY(100vh) scale(0);opacity:0;}
+  5%{opacity:1;}90%{opacity:1;}
+  100%{transform:translateY(-5vh) scale(1);opacity:0;}
+}
+
+/* ═══ WRAPPER ═══ */
+.wrapper{position:relative;z-index:1;min-height:100vh;padding:25px 16px 80px;display:flex;flex-direction:column;align-items:center;}
+
+/* ═══ WELCOME TAG ═══ */
+.welcome-tag{
+  display:inline-flex;align-items:center;gap:10px;
+  border:1px solid rgba(0,255,247,.4);background:rgba(0,255,247,.07);
+  padding:6px 24px;border-radius:50px;font-size:10px;letter-spacing:5px;
+  color:var(--c1);text-transform:uppercase;margin-bottom:20px;
+  box-shadow:0 0 25px rgba(0,255,247,.2),0 0 60px rgba(0,255,247,.08),inset 0 0 25px rgba(0,255,247,.04);
+  animation:tagP 2.5s ease-in-out infinite;
+}
+@keyframes tagP{
+  0%,100%{box-shadow:0 0 25px rgba(0,255,247,.2),0 0 60px rgba(0,255,247,.08);}
+  50%{box-shadow:0 0 45px rgba(0,255,247,.5),0 0 90px rgba(0,255,247,.2),inset 0 0 30px rgba(0,255,247,.08);}
+}
+.welcome-tag::before,.welcome-tag::after{content:'◆';font-size:7px;animation:spinS 3s linear infinite;}
+@keyframes spinS{to{transform:rotate(360deg);}}
+
+/* ═══ MEGA BOT NAME ═══ */
+.bot-name-outer{position:relative;display:inline-block;margin-bottom:8px;}
+
+/* 4-sided animated neon border */
+.bot-name-outer::before{
+  content:'';position:absolute;inset:-14px;border-radius:18px;
+  padding:3px;
+  background:linear-gradient(90deg,var(--c1),var(--c2),var(--c3),var(--c4),var(--c6),var(--c5),var(--c1));
+  background-size:500% 100%;
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+  animation:borderRainbow 2.5s linear infinite;
+}
+@keyframes borderRainbow{to{background-position:-500% 0;}}
+
+/* Outer glow */
+.bot-name-outer::after{
+  content:'';position:absolute;inset:-30px;border-radius:32px;z-index:-1;
+  background:radial-gradient(ellipse,rgba(0,255,247,.18) 0%,rgba(255,0,200,.12) 40%,transparent 70%);
+  animation:nameGlowP 2s ease-in-out infinite alternate;
+}
+@keyframes nameGlowP{from{opacity:.5;transform:scale(.93);}to{opacity:1;transform:scale(1.04);}}
+
+.bot-name{
+  font-family:'Orbitron',sans-serif;
+  font-size:clamp(22px,5vw,54px);font-weight:900;line-height:1.15;
+  padding:14px 22px;display:block;
+  background:linear-gradient(90deg,var(--c1),var(--c2),var(--c3),var(--c4),var(--c6),var(--c5),var(--c1));
+  background-size:500% 100%;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:rainbowText 3s linear infinite;
+}
+@keyframes rainbowText{to{background-position:-500% 0;}}
+
+.bot-tagline{font-size:12px;letter-spacing:6px;color:rgba(255,255,255,.3);text-transform:uppercase;margin:18px 0 14px;}
+
+/* ═══ PREMIUM BADGE ═══ */
+.premium-badge{
+  display:inline-block;
+  background:linear-gradient(135deg,var(--c3),var(--c5),var(--c2),var(--c6),var(--c1));
+  background-size:400% 400%;color:#000;padding:9px 30px;border-radius:50px;
+  font-weight:900;font-size:13px;letter-spacing:3px;margin-bottom:28px;
+  box-shadow:0 0 30px rgba(255,230,0,.6),0 0 70px rgba(255,0,200,.35);
+  animation:badgeG 3s ease-in-out infinite,gradBtn 4s ease infinite;
+}
+@keyframes badgeG{
+  0%,100%{transform:scale(1);box-shadow:0 0 30px rgba(255,230,0,.6),0 0 70px rgba(255,0,200,.35);}
+  50%{transform:scale(1.06);box-shadow:0 0 55px rgba(255,230,0,.9),0 0 120px rgba(255,0,200,.6);}
+}
+
+/* ═══ CLOCK ═══ */
+.clock-wrap{
+  background:rgba(0,0,0,.55);
+  border:1px solid rgba(0,255,247,.2);border-radius:22px;padding:18px 28px;
+  display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;
+  max-width:580px;width:100%;position:relative;overflow:hidden;
+  box-shadow:0 0 40px rgba(0,255,247,.1),inset 0 0 40px rgba(0,0,0,.4);
+}
+.clock-wrap::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(to right,transparent,var(--c1),var(--c2),var(--c3),var(--c1),transparent);
+  animation:topScan 2.5s linear infinite;
+}
+@keyframes topScan{0%,100%{opacity:.5;}50%{opacity:1;}}
+.clock-item{text-align:center;}
+.clock-val{
+  font-family:'Share Tech Mono',monospace;font-size:30px;color:var(--c1);line-height:1;
+  text-shadow:0 0 20px var(--c1),0 0 40px rgba(0,255,247,.5),0 0 70px rgba(0,255,247,.2);
+}
+.clock-lbl{font-size:9px;letter-spacing:2px;color:rgba(255,255,255,.3);text-transform:uppercase;margin-top:3px;}
+.clock-sep{
+  font-family:'Share Tech Mono',monospace;font-size:30px;color:var(--c2);
+  text-shadow:0 0 15px var(--c2);animation:blinkK 1s step-end infinite;
+}
+@keyframes blinkK{50%{opacity:0;}}
+.day-badge{
+  background:linear-gradient(45deg,var(--c2),var(--c6),var(--c1));
+  color:#000;font-weight:900;font-size:12px;letter-spacing:3px;
+  padding:6px 18px;border-radius:20px;text-transform:uppercase;
+  box-shadow:0 0 20px rgba(0,255,247,.5),0 0 40px rgba(255,0,200,.3);
+}
+
+/* ═══ MAIN CARD ═══ */
+.main-card{width:100%;max-width:940px;margin-top:38px;animation:slideU .9s cubic-bezier(.22,1,.36,1) .2s both;}
+@keyframes slideU{from{opacity:0;transform:translateY(40px);}to{opacity:1;transform:translateY(0);}}
+
+/* ═══ TABS ═══ */
+.tabs{
+  display:flex;gap:0;background:rgba(0,0,0,.65);
+  border:1px solid rgba(255,255,255,.08);border-radius:22px;padding:7px;
+  margin-bottom:26px;max-width:540px;margin-left:auto;margin-right:auto;
+  position:relative;overflow:hidden;
+}
+.tabs::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(to right,transparent,var(--c2),var(--c1),transparent);
+}
+.tab-btn{
+  flex:1;padding:16px 20px;background:transparent;border:none;border-radius:16px;
+  color:rgba(255,255,255,.3);font-family:'Orbitron',sans-serif;font-size:11px;
+  letter-spacing:2px;cursor:pointer;transition:all .35s;text-transform:uppercase;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.tab-btn.active{
+  background:linear-gradient(135deg,rgba(0,255,247,.14),rgba(255,0,200,.14),rgba(170,0,255,.1));
+  color:#fff;border:1px solid rgba(0,255,247,.28);
+  box-shadow:0 0 30px rgba(0,255,247,.13);
+}
+.tab-btn i{font-size:17px;}
+#tbP.active i{color:var(--c2);text-shadow:0 0 12px var(--c2);}
+#tbQ.active i{color:var(--c1);text-shadow:0 0 12px var(--c1);}
+
+/* ═══ SECTION ═══ */
+.sec{
+  background:rgba(4,2,20,.92);border:1px solid rgba(255,255,255,.07);
+  border-radius:28px;padding:36px 32px;display:none;
+  position:relative;overflow:hidden;backdrop-filter:blur(30px);
+}
+.sec.on{display:block;animation:fadeU .45s ease;}
+@keyframes fadeU{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+
+.sec::before{content:'';position:absolute;top:0;left:4%;right:4%;height:3px;border-radius:3px;}
+.sec-pair::before{
+  background:linear-gradient(to right,transparent,var(--c2),var(--c6),var(--c2),transparent);
+  box-shadow:0 0 25px var(--c2),0 4px 20px rgba(255,0,200,.3);
+}
+.sec-qr::before{
+  background:linear-gradient(to right,transparent,var(--c1),var(--c4),var(--c1),transparent);
+  box-shadow:0 0 25px var(--c1),0 4px 20px rgba(0,255,247,.3);
+}
+
+/* ═══ PAIR HEADER ═══ */
+.ph{text-align:center;margin-bottom:28px;}
+.ph h3{
+  font-family:'Orbitron',sans-serif;font-size:24px;font-weight:900;margin-bottom:7px;
+  background:linear-gradient(90deg,var(--c2),var(--c6),var(--c1),var(--c2));
+  background-size:300% 100%;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:rainbowText 3s linear infinite;
+  filter:drop-shadow(0 0 18px rgba(255,0,200,.7));
+}
+.ph p{font-size:13px;color:rgba(255,255,255,.35);letter-spacing:2px;}
+
+/* ═══ PHONE INPUT ═══ */
+.inp-lbl{font-size:11px;letter-spacing:4px;color:rgba(255,255,255,.35);text-transform:uppercase;display:block;margin-bottom:12px;}
+.inp-wrap{position:relative;margin-bottom:8px;}
+.inp-flag{position:absolute;left:18px;top:50%;transform:translateY(-50%);font-size:22px;z-index:2;}
+.phone-inp{
+  width:100%;padding:20px 20px 20px 60px;
+  background:rgba(0,0,0,.55);border:2px solid rgba(255,255,255,.1);
+  border-radius:16px;color:#fff;font-size:22px;
+  font-family:'Share Tech Mono',monospace;letter-spacing:4px;outline:none;transition:.3s;
+}
+.phone-inp::placeholder{color:rgba(255,255,255,.12);font-size:17px;letter-spacing:2px;}
+.phone-inp:focus {border-color:var(--c2);box-shadow:0 0 35px rgba(255,0,200,.25),inset 0 0 25px rgba(255,0,200,.05);}
+.phone-inp.ok   {border-color:var(--c4);box-shadow:0 0 25px rgba(0,255,136,.25);}
+.phone-inp.bad  {border-color:#ff006e;  box-shadow:0 0 25px rgba(255,0,110,.25);}
+.inp-hint{font-size:11px;color:rgba(255,255,255,.2);margin-left:5px;font-style:italic;}
+.val-msg{font-size:12px;margin-top:8px;margin-left:5px;display:none;font-weight:700;}
+.val-msg.ok {color:var(--c4);display:block;}
+.val-msg.bad{color:#ff6b9d;display:block;}
+
+/* ═══ GENERATE BUTTON — ULTRA SPECTACULAR ═══ */
+.gen-btn{
+  width:100%;padding:22px;border:none;border-radius:18px;
+  color:#fff;font-family:'Orbitron',sans-serif;
+  font-size:15px;letter-spacing:4px;font-weight:900;cursor:pointer;
+  text-transform:uppercase;position:relative;overflow:hidden;margin-top:22px;
+  background:linear-gradient(135deg,#ff00c8,#aa00ff,#0055ff,#00d2ff,#00ff88,#ffe600,#ff00c8);
+  background-size:500% 500%;animation:gradBtn 4s ease infinite;
+  box-shadow:0 0 35px rgba(255,0,200,.5),0 0 70px rgba(0,255,247,.25),0 0 120px rgba(170,0,255,.15);
+  transition:transform .3s,box-shadow .3s;
+}
+@keyframes gradBtn{0%,100%{background-position:0% 50%;}50%{background-position:100% 50%;}}
+.gen-btn::before{
+  content:'';position:absolute;inset:-3px;border-radius:21px;z-index:-1;
+  background:linear-gradient(135deg,#ff00c8,#aa00ff,#00fff7,#00ff88,#ffe600,#ff00c8);
+  background-size:500% 500%;animation:gradBtn 3s ease infinite;filter:blur(10px);opacity:.8;
+}
+.gen-btn::after{
+  content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);transition:.6s;
+}
+.gen-btn:hover::after{left:100%;}
+.gen-btn:hover{transform:translateY(-5px) scale(1.02);box-shadow:0 0 60px rgba(255,0,200,.8),0 0 120px rgba(0,255,247,.4),0 25px 50px rgba(170,0,255,.5);}
+.gen-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;animation:none;box-shadow:none;}
+.gen-btn:disabled::before{display:none;}
+
+/* ═══ ERROR BOX ═══ */
+.err-box{
+  background:rgba(255,0,80,.08);border:1px solid rgba(255,0,80,.4);
+  border-radius:14px;padding:16px;margin-top:18px;
+  font-size:14px;color:#ff6b9d;display:none;text-align:center;
+  animation:fadeU .3s ease;font-weight:600;
+}
+
+/* ═══ CODE RESULT — STAR OF THE SHOW ═══ */
+.code-result{
+  margin-top:28px;border-radius:24px;padding:32px;text-align:center;
+  display:none;position:relative;overflow:hidden;animation:fadeU .5s ease;
+  background:rgba(0,255,136,.04);
+}
+/* Animated rainbow border on result box */
+.code-result::before{
+  content:'';position:absolute;inset:0;border-radius:24px;padding:3px;z-index:0;
+  background:linear-gradient(90deg,var(--c4),var(--c1),var(--c2),var(--c6),var(--c3),var(--c4));
+  background-size:400% 100%;animation:rainbowText 2.5s linear infinite;
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+}
+.code-result>*{position:relative;z-index:1;}
+
+.code-label{
+  font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:5px;
+  text-transform:uppercase;margin-bottom:16px;
+  background:linear-gradient(90deg,var(--c4),var(--c1));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+
+/* THE CODE ITSELF */
+.code-display{
+  font-family:'Share Tech Mono',monospace;
+  font-size:clamp(30px,10vw,62px);color:var(--c4);letter-spacing:14px;
+  text-shadow:
+    0 0 15px rgba(0,255,136,1),
+    0 0 35px rgba(0,255,136,.8),
+    0 0 70px rgba(0,255,136,.5),
+    0 0 120px rgba(0,255,136,.25);
+  margin-bottom:14px;padding:20px 14px;
+  background:rgba(0,255,136,.06);border-radius:16px;
+  border:1px solid rgba(0,255,136,.2);
+  animation:codePulse 2s ease-in-out infinite;
+}
+@keyframes codePulse{
+  0%,100%{text-shadow:0 0 15px rgba(0,255,136,1),0 0 35px rgba(0,255,136,.8),0 0 70px rgba(0,255,136,.5);}
+  50%{text-shadow:0 0 25px rgba(0,255,136,1),0 0 60px rgba(0,255,136,1),0 0 100px rgba(0,255,136,.7),0 0 160px rgba(0,255,136,.35);}
+}
+
+.code-expiry{font-size:13px;color:rgba(255,230,0,.85);margin-bottom:22px;font-weight:700;text-shadow:0 0 10px rgba(255,230,0,.4);}
+
+.code-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
+
+/* COPY BUTTON — GLOWING */
+.copy-btn{
+  background:linear-gradient(135deg,var(--c4),var(--c1),var(--c4));
+  background-size:300% 300%;
+  color:#000;border:none;padding:16px 38px;border-radius:16px;
+  cursor:pointer;font-family:'Orbitron',sans-serif;font-weight:900;
+  font-size:14px;letter-spacing:3px;text-transform:uppercase;transition:.3s;
+  box-shadow:0 0 28px rgba(0,255,136,.5),0 0 55px rgba(0,255,247,.3);
+  animation:gradBtn 3s ease infinite;
+}
+.copy-btn:hover{transform:scale(1.08) translateY(-3px);box-shadow:0 0 50px rgba(0,255,136,.8),0 0 100px rgba(0,255,247,.5);}
+
+.new-btn{
+  background:transparent;color:rgba(255,255,255,.5);
+  border:1px solid rgba(255,255,255,.15);padding:16px 26px;
+  border-radius:16px;cursor:pointer;font-family:'Rajdhani',sans-serif;
+  font-size:14px;letter-spacing:2px;font-weight:700;transition:.3s;
+}
+.new-btn:hover{border-color:var(--c2);color:var(--c2);box-shadow:0 0 18px rgba(255,0,200,.2);}
+
+/* ═══ COPY TOAST ═══ */
+.toast{
+  position:fixed;bottom:38px;left:50%;
+  transform:translateX(-50%) translateY(120px);
+  background:linear-gradient(135deg,var(--c4),var(--c1));
+  color:#000;padding:15px 35px;border-radius:50px;
+  font-weight:900;font-size:15px;letter-spacing:2px;
+  transition:.45s cubic-bezier(.22,1,.36,1);z-index:9999;
+  box-shadow:0 0 40px rgba(0,255,136,.6);
+  font-family:'Orbitron',sans-serif;
+}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+/* ═══ HOW-TO STEPS ═══ */
+.how-to{
+  background:rgba(255,0,200,.04);border:1px solid rgba(255,0,200,.15);
+  border-radius:18px;padding:22px;margin-top:26px;
+}
+.how-to h4{
+  font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:4px;
+  text-transform:uppercase;margin-bottom:16px;
+  color:var(--c2);text-shadow:0 0 12px rgba(255,0,200,.6);
+}
+.step{display:flex;align-items:flex-start;gap:14px;margin-bottom:12px;font-size:13px;color:rgba(255,255,255,.6);}
+.step-n{
+  width:25px;height:25px;flex-shrink:0;
+  background:rgba(255,0,200,.15);border:1px solid rgba(255,0,200,.4);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:11px;color:var(--c2);font-weight:900;
+  box-shadow:0 0 10px rgba(255,0,200,.25);
+}
+
+/* ═══ SPINNER ═══ */
+.spin{
+  width:18px;height:18px;border:2px solid rgba(255,255,255,.2);border-top-color:#fff;
+  border-radius:50%;animation:spinK .7s linear infinite;
+  display:inline-block;vertical-align:middle;margin-right:8px;
+}
+@keyframes spinK{to{transform:rotate(360deg);}}
+
+/* ═══ QR SECTION ═══ */
+.qr-layout{display:flex;flex-direction:column;align-items:center;gap:22px;}
+.qr-head{text-align:center;}
+.qr-head h3{
+  font-family:'Orbitron',sans-serif;font-size:24px;font-weight:900;margin-bottom:7px;
+  background:linear-gradient(90deg,var(--c1),var(--c4),var(--c1));background-size:300% 100%;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:rainbowText 3s linear infinite;
+  filter:drop-shadow(0 0 18px rgba(0,255,247,.8));
+}
+.qr-head p{font-size:13px;color:rgba(255,255,255,.35);letter-spacing:2px;}
+
+/* QR box with glowing border */
+.qr-outer{
+  position:relative;padding:3px;border-radius:24px;
+  background:linear-gradient(90deg,var(--c1),var(--c2),var(--c4),var(--c6),var(--c3),var(--c1));
+  background-size:400% 100%;animation:rainbowText 2.5s linear infinite;
+  box-shadow:0 0 50px rgba(0,255,247,.5),0 0 100px rgba(0,255,247,.2);
+}
+.qr-box{
+  width:250px;height:250px;background:#fff;border-radius:22px;
+  display:flex;align-items:center;justify-content:center;overflow:hidden;
+}
+.qr-box img{width:100%;height:100%;object-fit:contain;}
+.qr-ph{text-align:center;color:#bbb;padding:20px;}
+.qr-ph i{font-size:70px;color:#ccc;margin-bottom:12px;display:block;}
+.qr-ph p{font-size:11px;color:#aaa;}
+
+/* QR timer */
+.qr-timer-bar{width:250px;height:5px;background:rgba(255,255,255,.08);border-radius:10px;overflow:hidden;display:none;}
+.qr-timer-fill{height:100%;width:100%;background:linear-gradient(90deg,var(--c4),var(--c1),var(--c2));border-radius:10px;transition:width 1s linear;}
+
+.qr-status{display:flex;align-items:center;gap:9px;font-size:13px;color:rgba(255,255,255,.5);font-weight:700;}
+.qr-dot{width:10px;height:10px;border-radius:50%;background:var(--c4);box-shadow:0 0 12px var(--c4);animation:dotP 1.5s infinite;}
+@keyframes dotP{50%{opacity:.3;transform:scale(.7);}}
+
+/* QR button */
+.qr-btn{
+  background:transparent;border:2px solid rgba(0,255,247,.4);color:var(--c1);
+  padding:15px 40px;border-radius:16px;cursor:pointer;
+  font-family:'Orbitron',sans-serif;font-size:12px;font-weight:900;
+  letter-spacing:3px;text-transform:uppercase;transition:.3s;
+  box-shadow:0 0 20px rgba(0,255,247,.15);
+}
+.qr-btn:hover{background:rgba(0,255,247,.1);border-color:var(--c1);box-shadow:0 0 45px rgba(0,255,247,.4);transform:translateY(-3px);}
+.qr-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+
+.qr-err{
+  background:rgba(255,0,80,.08);border:1px solid rgba(255,0,80,.3);
+  border-radius:12px;padding:14px;font-size:13px;color:#ff6b9d;
+  display:none;text-align:center;width:100%;font-weight:600;
+}
+
+.qr-how{background:rgba(0,255,247,.03);border:1px solid rgba(0,255,247,.12);border-radius:18px;padding:22px;width:100%;}
+.qr-how h4{font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:4px;color:var(--c1);text-transform:uppercase;margin-bottom:16px;text-shadow:0 0 12px rgba(0,255,247,.6);}
+
+/* ═══ SOCIAL ═══ */
+.social{
+  width:100%;max-width:940px;margin-top:42px;
+  background:rgba(4,2,20,.92);backdrop-filter:blur(30px);
+  border:1px solid rgba(255,255,255,.07);border-radius:28px;padding:38px;
+  position:relative;overflow:hidden;animation:slideU .9s cubic-bezier(.22,1,.36,1) .4s both;
+}
+.social::before{
+  content:'';position:absolute;top:0;left:4%;right:4%;height:3px;border-radius:3px;
+  background:linear-gradient(to right,transparent,var(--c3),var(--c5),var(--c2),var(--c3),transparent);
+  box-shadow:0 0 25px var(--c3);
+}
+.social-title{
+  text-align:center;margin-bottom:28px;
+  font-family:'Orbitron',sans-serif;font-size:13px;letter-spacing:6px;text-transform:uppercase;
+  background:linear-gradient(90deg,var(--c3),var(--c5),var(--c2),var(--c6),var(--c1),var(--c3));
+  background-size:400% 100%;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:rainbowText 3s linear infinite;
+  filter:drop-shadow(0 0 10px rgba(255,230,0,.5));
+}
+.social-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:16px;}
+.s-btn{
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.09);
+  border-radius:18px;padding:24px 16px;text-align:center;
+  text-decoration:none;color:rgba(255,255,255,.6);
+  font-family:'Rajdhani',sans-serif;font-weight:700;font-size:14px;
+  letter-spacing:1px;transition:.35s;display:block;
+}
+.s-btn .ic{font-size:34px;margin-bottom:11px;display:block;}
+.s-btn .su{font-size:10px;letter-spacing:2px;color:rgba(255,255,255,.3);margin-top:5px;display:block;text-transform:uppercase;}
+.s-btn:hover{transform:translateY(-6px);}
+.s-btn.yt:hover{border-color:rgba(255,50,50,.6);color:#ff5555;box-shadow:0 0 30px rgba(255,50,50,.2);}
+.s-btn.tt:hover{border-color:rgba(0,255,247,.5);color:var(--c1);box-shadow:0 0 30px rgba(0,255,247,.15);}
+.s-btn.wa:hover{border-color:rgba(0,255,136,.5);color:var(--c4);box-shadow:0 0 30px rgba(0,255,136,.15);}
+.s-btn.gh:hover{border-color:rgba(255,255,255,.4);color:#fff;box-shadow:0 0 30px rgba(255,255,255,.1);}
+
+/* ═══ FOOTER ═══ */
+.footer{width:100%;max-width:940px;margin-top:30px;text-align:center;padding:28px;border-top:1px solid rgba(255,255,255,.05);}
+.footer p{font-size:13px;color:rgba(255,255,255,.25);margin-bottom:6px;}
+.footer .own{color:var(--c3);font-weight:900;text-shadow:0 0 12px rgba(255,230,0,.5);}
+.footer .cp{font-size:11px;letter-spacing:2px;color:rgba(255,255,255,.15);}
+
+@media(max-width:600px){
+  .sec{padding:24px 14px;}
+  .qr-box,.qr-outer-w{width:200px;height:200px;}
+  .qr-timer-bar{width:200px;}
+  .code-display{letter-spacing:7px;}
+  .social-grid{grid-template-columns:1fr 1fr;}
+  .clock-wrap{padding:14px 16px;gap:10px;}
+}
+</style>
 </head>
 <body>
 
 <div class="bg-grid"></div>
 <div class="bg-orbs">
-    <div class="orb orb1"></div>
-    <div class="orb orb2"></div>
-    <div class="orb orb3"></div>
+  <div class="orb o1"></div><div class="orb o2"></div>
+  <div class="orb o3"></div><div class="orb o4"></div><div class="orb o5"></div>
 </div>
+<div class="scanlines"></div>
+<div class="particles" id="pts"></div>
 
 <div class="wrapper">
 
-    <!-- HEADER -->
-    <div class="header">
-        <div class="welcome-tag">Welcome to System</div>
-        <h1 class="bot-name">YOUSAF-BALOCH-MD</h1>
-        <p class="bot-tagline">Ultra Premium WhatsApp Multi-Device Bot</p>
+  <!-- ═══ HEADER ═══ -->
+  <div class="welcome-tag">⚡ Official Pairing Gateway ⚡</div>
 
-        <div class="clock-panel">
-            <div class="clock-item">
-                <div class="clock-value" id="clockHour">00</div>
-                <div class="clock-label">Hour</div>
-            </div>
-            <div class="clock-sep">:</div>
-            <div class="clock-item">
-                <div class="clock-value" id="clockMin">00</div>
-                <div class="clock-label">Min</div>
-            </div>
-            <div class="clock-sep">:</div>
-            <div class="clock-item">
-                <div class="clock-value" id="clockSec">00</div>
-                <div class="clock-label">Sec</div>
-            </div>
-            <div style="width:1px;height:40px;background:rgba(255,255,255,0.08);margin:0 5px;"></div>
-            <div class="clock-item">
-                <div class="day-badge" id="clockDay">---</div>
-                <div class="clock-label" id="clockDate" style="margin-top:6px;">--/--/----</div>
-            </div>
-        </div>
+  <div class="bot-name-outer">
+    <span class="bot-name">YOUSAF-BALOCH-MD</span>
+  </div>
+
+  <div class="bot-tagline">WhatsApp Multi-Device Bot System</div>
+  <div class="premium-badge">💎 ULTRA PRO PREMIUM 💎</div>
+
+  <!-- Clock -->
+  <div class="clock-wrap">
+    <div class="clock-item"><div class="clock-val" id="cH">00</div><div class="clock-lbl">Hour</div></div>
+    <div class="clock-sep">:</div>
+    <div class="clock-item"><div class="clock-val" id="cM">00</div><div class="clock-lbl">Min</div></div>
+    <div class="clock-sep">:</div>
+    <div class="clock-item"><div class="clock-val" id="cS">00</div><div class="clock-lbl">Sec</div></div>
+    <div class="day-badge" id="cD">---</div>
+  </div>
+
+  <!-- ═══ MAIN CARD ═══ -->
+  <div class="main-card">
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="sw('pair')" id="tbP">
+        <i class="fas fa-key"></i> Pairing Code
+      </button>
+      <button class="tab-btn" onclick="sw('qr')" id="tbQ">
+        <i class="fas fa-qrcode"></i> QR Code
+      </button>
     </div>
 
-    <!-- MAIN CARD -->
-    <div class="main-card">
+    <!-- ═══ PAIRING SECTION ═══ -->
+    <div class="sec sec-pair on" id="sPair">
+      <div class="ph">
+        <h3><i class="fas fa-key"></i> &nbsp;Pairing Code Generator</h3>
+        <p>Enter your WhatsApp number to get your pairing code instantly</p>
+      </div>
 
-        <!-- TAB SWITCHER -->
-        <div class="tab-switcher">
-            <button class="tab-btn active" onclick="switchTab('qr', this)">
-                <i class="fas fa-qrcode tab-qr-icon"></i>
-                QR Code
-            </button>
-            <button class="tab-btn" onclick="switchTab('pair', this)">
-                <i class="fas fa-mobile-alt tab-pair-icon"></i>
-                Pairing Code
-            </button>
+      <label class="inp-lbl"><i class="fas fa-mobile-alt"></i> &nbsp;WhatsApp Number</label>
+      <div class="inp-wrap">
+        <span class="inp-flag">📱</span>
+        <input type="text" class="phone-inp" id="phoneNumber"
+               placeholder="923XXXXXXXXX" autocomplete="off" maxlength="15">
+      </div>
+      <div class="inp-hint">Country code required — no spaces or + &nbsp;(e.g. 923001234567)</div>
+      <div class="val-msg" id="valMsg"></div>
+
+      <button class="gen-btn" id="genBtn" onclick="generateCode()">
+        <i class="fas fa-key"></i> &nbsp;Generate Pairing Code
+      </button>
+
+      <div class="err-box" id="errBox"></div>
+
+      <!-- ✅ CODE RESULT BOX — always in DOM, toggled by JS -->
+      <div class="code-result" id="codeResult">
+        <div class="code-label">✨ YOUR PAIRING CODE ✨</div>
+        <div class="code-display" id="codeDisplay">----</div>
+        <div class="code-expiry" id="codeExpiry">⏳ Code expires in <span id="expTimer">60</span>s</div>
+        <div class="code-actions">
+          <button class="copy-btn" onclick="copyCode()">
+            <i class="fas fa-copy"></i> &nbsp;COPY CODE
+          </button>
+          <button class="new-btn" onclick="resetForm()">
+            <i class="fas fa-redo"></i> &nbsp;New Code
+          </button>
         </div>
+      </div>
 
-        <!-- QR SECTION -->
-        <div class="section section-qr active" id="section-qr">
-            <div class="qr-layout">
-                <div class="qr-box" id="qrBox">
-                    <div class="qr-corner qr-corner-tl"></div>
-                    <div class="qr-corner qr-corner-tr"></div>
-                    <div class="qr-corner qr-corner-bl"></div>
-                    <div class="qr-corner qr-corner-br"></div>
-                    <div class="qr-placeholder" id="qrPlaceholder">
-                        <i class="fas fa-qrcode"></i>
-                        <p>Loading QR Code...</p>
-                    </div>
-                    <img id="qrImage" src="" alt="WhatsApp QR Code" style="display:none;">
-                </div>
-
-                <!-- ✅ QR timer bar -->
-                <div class="qr-timer-bar" id="qrTimerBar">
-                    <div class="qr-timer-fill" id="qrTimerFill"></div>
-                </div>
-
-                <div class="qr-status">
-                    <div class="qr-dot"></div>
-                    <span id="qrStatusText">Waiting for QR Code from server...</span>
-                </div>
-
-                <button class="qr-refresh-btn" onclick="loadQR()">
-                    <i class="fas fa-sync-alt"></i> Refresh QR
-                </button>
-
-                <div class="qr-instructions">
-                    <h4><i class="fas fa-info-circle"></i> How to Scan</h4>
-                    <div class="instr-step">
-                        <div class="instr-num">1</div>
-                        <span>Open WhatsApp on your phone</span>
-                    </div>
-                    <div class="instr-step">
-                        <div class="instr-num">2</div>
-                        <span>Go to Settings → Linked Devices</span>
-                    </div>
-                    <div class="instr-step">
-                        <div class="instr-num">3</div>
-                        <span>Tap "Link a Device" and scan the QR code</span>
-                    </div>
-                    <div class="instr-step">
-                        <div class="instr-num">4</div>
-                        <span>Wait for connection — Session ID will be sent to WhatsApp</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- PAIRING SECTION -->
-        <div class="section section-pair" id="section-pair">
-            <div class="pair-header">
-                <h3><i class="fas fa-mobile-alt"></i> Phone Number Pairing</h3>
-                <p>Enter your number to generate a pairing code</p>
-            </div>
-
-            <div class="input-group">
-                <label class="input-label" for="phoneNumber">📱 WhatsApp Number</label>
-                <div class="phone-input-wrap">
-                    <span class="phone-flag">🌍</span>
-                    <input
-                        type="tel"
-                        class="phone-input"
-                        id="phoneNumber"
-                        placeholder="923710636110"
-                        maxlength="15"
-                        autocomplete="tel"
-                        inputmode="numeric"
-                    >
-                </div>
-                <!-- ✅ Real-time validation message -->
-                <div class="validation-msg" id="validationMsg"></div>
-                <p class="input-hint">⚠️ Include country code without + or spaces · Example: 923xxxxxxxxx (Pakistan), 919xxxxxxxxx (India)</p>
-            </div>
-
-            <button class="generate-btn" id="generateBtn" onclick="generateCode()">
-                <i class="fas fa-key"></i> &nbsp;Generate Pairing Code
-            </button>
-
-            <div class="error-box" id="errorBox"></div>
-
-            <div class="code-result" id="codeResult">
-                <p class="code-label">Your Pairing Code</p>
-                <div class="code-display" id="codeDisplay">--------</div>
-                <!-- ✅ Code expiry warning -->
-                <p class="code-expiry" id="codeExpiry">⏱️ This code expires in <span id="expiryTimer">60</span> seconds</p>
-                <div class="code-actions">
-                    <button class="copy-btn" onclick="copyCode()">
-                        <i class="fas fa-copy"></i> Copy Code
-                    </button>
-                    <button class="new-code-btn" onclick="resetForm()">
-                        <i class="fas fa-redo"></i> New Code
-                    </button>
-                </div>
-            </div>
-        </div>
-
+      <!-- How to link -->
+      <div class="how-to">
+        <h4><i class="fas fa-info-circle"></i> &nbsp;How to Link Your WhatsApp</h4>
+        <div class="step"><div class="step-n">1</div><span>Open WhatsApp → Settings → Linked Devices</span></div>
+        <div class="step"><div class="step-n">2</div><span>Tap "Link a Device" → "Link with Phone Number"</span></div>
+        <div class="step"><div class="step-n">3</div><span>Enter the pairing code shown above</span></div>
+        <div class="step"><div class="step-n">4</div><span>Your SESSION ID will be sent to your WhatsApp 🚀</span></div>
+      </div>
     </div>
 
-    <!-- SOCIAL LINKS -->
-    <div class="social-section">
-        <p class="social-title">◆ Connect With Owner ◆</p>
-        <div class="social-grid">
-            <a href="https://www.youtube.com/@Yousaf_Baloch_Tech" target="_blank" rel="noopener noreferrer" class="social-card sc-yt">
-                <div class="social-icon-wrap"><i class="fab fa-youtube"></i></div>
-                <div class="social-info">
-                    <span class="social-name">YouTube</span>
-                    <span class="social-handle">@Yousaf_Baloch_Tech</span>
-                </div>
-            </a>
-            <a href="https://tiktok.com/@loser_boy.110" target="_blank" rel="noopener noreferrer" class="social-card sc-tt">
-                <div class="social-icon-wrap"><i class="fab fa-tiktok"></i></div>
-                <div class="social-info">
-                    <span class="social-name">TikTok</span>
-                    <span class="social-handle">@loser_boy.110</span>
-                </div>
-            </a>
-            <a href="https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j" target="_blank" rel="noopener noreferrer" class="social-card sc-ch">
-                <div class="social-icon-wrap"><i class="fas fa-bullhorn"></i></div>
-                <div class="social-info">
-                    <span class="social-name">Channel</span>
-                    <span class="social-handle">WhatsApp Channel</span>
-                </div>
-            </a>
-            <a href="https://wa.me/923710636110" target="_blank" rel="noopener noreferrer" class="social-card sc-wa">
-                <div class="social-icon-wrap"><i class="fab fa-whatsapp"></i></div>
-                <div class="social-info">
-                    <span class="social-name">WhatsApp</span>
-                    <span class="social-handle">+92 371 063 6110</span>
-                </div>
-            </a>
-            <a href="https://github.com/musakhanbaloch03-sad/YOUSAF-BALOCH-MD" target="_blank" rel="noopener noreferrer" class="social-card sc-gh">
-                <div class="social-icon-wrap"><i class="fab fa-github"></i></div>
-                <div class="social-info">
-                    <span class="social-name">Bot Repo</span>
-                    <span class="social-handle">YOUSAF-BALOCH-MD</span>
-                </div>
-            </a>
-            <a href="https://github.com/musakhanbaloch03-sad" target="_blank" rel="noopener noreferrer" class="social-card sc-ow">
-                <div class="social-icon-wrap"><i class="fas fa-user-astronaut"></i></div>
-                <div class="social-info">
-                    <span class="social-name">GitHub</span>
-                    <span class="social-handle">musakhanbaloch03-sad</span>
-                </div>
-            </a>
+    <!-- ═══ QR SECTION ═══ -->
+    <div class="sec sec-qr" id="sQr">
+      <div class="qr-layout">
+        <div class="qr-head">
+          <h3><i class="fas fa-qrcode"></i> &nbsp;QR Code Scanner</h3>
+          <p>Generate and scan with WhatsApp to link instantly</p>
         </div>
+
+        <div class="qr-outer">
+          <div class="qr-box" id="qrBox">
+            <div class="qr-ph" id="qrPh">
+              <i class="fas fa-qrcode"></i>
+              <p>Click the button below to generate</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="qr-timer-bar" id="qrBar"><div class="qr-timer-fill" id="qrFill"></div></div>
+
+        <div class="qr-status">
+          <div class="qr-dot"></div>
+          <span id="qrSt">Ready to generate</span>
+        </div>
+
+        <button class="qr-btn" id="qrBtn" onclick="generateQR()">
+          <i class="fas fa-sync-alt"></i> &nbsp;Generate QR Code
+        </button>
+
+        <div class="qr-err" id="qrErr"></div>
+
+        <div class="qr-how">
+          <h4><i class="fas fa-camera"></i> &nbsp;How to Scan</h4>
+          <div class="step"><div class="step-n">1</div><span>Open WhatsApp → Settings → Linked Devices</span></div>
+          <div class="step"><div class="step-n">2</div><span>Tap "Link a Device" → "Scan QR Code"</span></div>
+          <div class="step"><div class="step-n">3</div><span>Point your camera at the QR code shown above</span></div>
+          <div class="step"><div class="step-n">4</div><span>Your SESSION ID will be sent to your WhatsApp 🚀</span></div>
+        </div>
+      </div>
     </div>
+  </div><!-- end main-card -->
 
-    <!-- FOOTER -->
-    <div class="footer">
-        Designed by <span>Muhammad Yousaf Baloch</span><br>
-        +923710636110 &nbsp;·&nbsp; © 2026 All Rights Reserved
+  <!-- ═══ SOCIAL ═══ -->
+  <div class="social">
+    <div class="social-title">⚡ Connect with Muhammad Yousaf Baloch ⚡</div>
+    <div class="social-grid">
+      <a href="https://www.youtube.com/@Yousaf_Baloch_Tech" target="_blank" class="s-btn yt">
+        <span class="ic">📺</span>YouTube Channel<span class="su">Yousaf Baloch Tech</span>
+      </a>
+      <a href="https://tiktok.com/@loser_boy.110" target="_blank" class="s-btn tt">
+        <span class="ic">🎵</span>TikTok<span class="su">@loser_boy.110</span>
+      </a>
+      <a href="https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j" target="_blank" class="s-btn wa">
+        <span class="ic">📢</span>WhatsApp Channel<span class="su">Official Updates</span>
+      </a>
+      <a href="https://github.com/musakhanbaloch03-sad" target="_blank" class="s-btn gh">
+        <span class="ic">💻</span>GitHub<span class="su">musakhanbaloch03</span>
+      </a>
     </div>
+  </div>
 
-</div>
+  <!-- ═══ FOOTER ═══ -->
+  <div class="footer">
+    <p>Created with ❤️ by <span class="own">Muhammad Yousaf Baloch</span></p>
+    <p>📱 WhatsApp: <strong>+923710636110</strong></p>
+    <p class="cp">© 2026 YOUSAF-BALOCH-MD | All Rights Reserved</p>
+  </div>
 
-<!-- COPY TOAST -->
-<div class="copy-toast" id="copyToast">✅ Code Copied!</div>
+</div><!-- end wrapper -->
+
+<div class="toast" id="toast">✅ Code Copied!</div>
 
 <script>
-    // ═══════════════════════════════════════════
-    //  CLOCK
-    // ═══════════════════════════════════════════
-    function updateClock() {
-        const now    = new Date();
-        const days   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-        const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+// ─── PARTICLES ───
+(function(){
+  const c=['#00fff7','#ff00c8','#ffe600','#00ff88','#aa00ff','#ff6600'];
+  const w=document.getElementById('pts');
+  for(let i=0;i<65;i++){
+    const p=document.createElement('div');
+    p.className='pt';
+    const col=c[Math.floor(Math.random()*c.length)];
+    const sz=(Math.random()*3+1)+'px';
+    p.style.cssText=`left:${Math.random()*100}%;width:${sz};height:${sz};
+      background:${col};box-shadow:0 0 8px ${col};
+      animation-duration:${Math.random()*14+7}s;
+      animation-delay:${Math.random()*12}s;
+      opacity:${Math.random()*.5+.1};`;
+    w.appendChild(p);
+  }
+})();
 
-        document.getElementById('clockHour').textContent = String(now.getHours()).padStart(2,'0');
-        document.getElementById('clockMin').textContent  = String(now.getMinutes()).padStart(2,'0');
-        document.getElementById('clockSec').textContent  = String(now.getSeconds()).padStart(2,'0');
-        document.getElementById('clockDay').textContent  = days[now.getDay()];
-        document.getElementById('clockDate').textContent =
-            `${String(now.getDate()).padStart(2,'0')} ${months[now.getMonth()]} ${now.getFullYear()}`;
-    }
-    setInterval(updateClock, 1000);
-    updateClock();
+// ─── CLOCK ───
+const DAYS=['SUN','MON','TUE','WED','THU','FRI','SAT'];
+function pad(n){return String(n).padStart(2,'0');}
+function tick(){
+  const n=new Date();
+  document.getElementById('cH').textContent=pad(n.getHours());
+  document.getElementById('cM').textContent=pad(n.getMinutes());
+  document.getElementById('cS').textContent=pad(n.getSeconds());
+  document.getElementById('cD').textContent=DAYS[n.getDay()];
+}
+tick();setInterval(tick,1000);
 
-    // ═══════════════════════════════════════════
-    //  TAB SWITCHER
-    // ═══════════════════════════════════════════
-    function switchTab(tab, btn) {
-        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById('section-' + tab).classList.add('active');
-        btn.classList.add('active');
-        if (tab === 'qr') loadQR();
-    }
+// ─── TABS ───
+function sw(t){
+  document.getElementById('tbP').classList.toggle('active',t==='pair');
+  document.getElementById('tbQ').classList.toggle('active',t==='qr');
+  document.getElementById('sPair').classList.toggle('on',t==='pair');
+  document.getElementById('sQr').classList.toggle('on',t==='qr');
+}
 
-    // ═══════════════════════════════════════════
-    //  QR CODE — Auto refresh every 30 seconds
-    // ═══════════════════════════════════════════
-    let qrAutoRefreshTimer  = null;
-    let qrCountdownInterval = null;
+// ─── PHONE VALIDATION ───
+const phoneEl=document.getElementById('phoneNumber');
+const valMsg=document.getElementById('valMsg');
+phoneEl.addEventListener('input',()=>{
+  phoneEl.value=phoneEl.value.replace(/[^0-9]/g,'');
+  const n=phoneEl.value;
+  phoneEl.classList.remove('ok','bad');
+  valMsg.className='val-msg';
+  if(!n.length){valMsg.style.display='none';return;}
+  if(n.length<10){phoneEl.classList.add('bad');valMsg.textContent='❌ Too short — please include country code';valMsg.classList.add('bad');}
+  else if(n.length>15){phoneEl.classList.add('bad');valMsg.textContent='❌ Too long — check the number';valMsg.classList.add('bad');}
+  else{phoneEl.classList.add('ok');valMsg.textContent='✅ Number looks good!';valMsg.classList.add('ok');}
+});
+phoneEl.addEventListener('keypress',e=>{if(e.key==='Enter')generateCode();});
 
-    async function loadQR() {
-        const placeholder  = document.getElementById('qrPlaceholder');
-        const img          = document.getElementById('qrImage');
-        const statusText   = document.getElementById('qrStatusText');
-        const timerBar     = document.getElementById('qrTimerBar');
-        const timerFill    = document.getElementById('qrTimerFill');
+// ─── PAIRING CODE — ROBUST API HANDLER ───
+let expInterval=null;
 
-        // Clear existing timers
-        if (qrAutoRefreshTimer)  clearTimeout(qrAutoRefreshTimer);
-        if (qrCountdownInterval) clearInterval(qrCountdownInterval);
+async function generateCode(){
+  const number=phoneEl.value.replace(/[^0-9]/g,'');
+  const btn=document.getElementById('genBtn');
+  const errBox=document.getElementById('errBox');
+  const codeResult=document.getElementById('codeResult');
 
-        img.style.display         = 'none';
-        placeholder.style.display = 'block';
-        timerBar.style.display    = 'none';
-        placeholder.innerHTML     = '<i class="fas fa-spinner fa-spin" style="font-size:50px;color:#00fff7;margin-bottom:10px;display:block;"></i><p style="color:#666">Generating QR...</p>';
-        statusText.textContent    = 'Connecting to server...';
+  // Reset
+  errBox.style.display='none';
+  codeResult.style.display='none';
+  if(expInterval)clearInterval(expInterval);
 
-        try {
-            const res  = await fetch('/get-qr');
-            const data = await res.json();
+  // Validate
+  if(!number){showErr('❌ Please enter your phone number first.');phoneEl.focus();return;}
+  if(number.length<10){showErr('❌ Number too short! Please add country code (e.g. 923001234567)');phoneEl.focus();return;}
+  if(number.length>15){showErr('❌ Number too long! Please check and try again.');phoneEl.focus();return;}
 
-            if (data.success && data.qr) {
-                img.src                   = data.qr;
-                img.style.display         = 'block';
-                placeholder.style.display = 'none';
-                statusText.textContent    = 'QR Ready — Scan within 60 seconds!';
+  // Loading
+  btn.disabled=true;
+  btn.innerHTML='<span class="spin"></span> Generating...';
 
-                // ✅ Show countdown timer bar
-                timerBar.style.display = 'block';
-                timerFill.style.width  = '100%';
-                timerFill.style.transition = 'width 60s linear';
-                setTimeout(() => { timerFill.style.width = '0%'; }, 100);
-
-                // ✅ Auto refresh after 60 seconds
-                qrAutoRefreshTimer = setTimeout(() => {
-                    statusText.textContent = 'QR expired — Refreshing...';
-                    loadQR();
-                }, 60000);
-
-            } else if (data.message && data.message.includes('connected')) {
-                placeholder.innerHTML  = '<i class="fas fa-check-circle" style="font-size:60px;color:#00ff88;margin-bottom:10px;display:block;"></i><p style="color:#00ff88;font-size:12px;">Already Connected!</p>';
-                statusText.textContent = 'Device is already connected via QR';
-            } else {
-                placeholder.innerHTML  = '<i class="fas fa-qrcode" style="font-size:60px;color:#ccc;margin-bottom:10px;display:block;"></i><p style="color:#999;font-size:11px;">QR not ready yet.<br>Click Refresh to try again.</p>';
-                statusText.textContent = data.message || 'QR not ready — please wait';
-
-                // ✅ Auto retry in 5 seconds
-                qrAutoRefreshTimer = setTimeout(loadQR, 5000);
-            }
-        } catch (err) {
-            placeholder.innerHTML  = '<i class="fas fa-exclamation-triangle" style="font-size:50px;color:#ff006e;margin-bottom:10px;display:block;"></i><p style="color:#ff6b9d;font-size:11px;">Server not responding.<br>Please refresh.</p>';
-            statusText.textContent = 'Connection error — retrying in 5s';
-            qrAutoRefreshTimer     = setTimeout(loadQR, 5000);
-        }
-    }
-
-    loadQR();
-
-    // ═══════════════════════════════════════════
-    //  ✅ REAL-TIME PHONE VALIDATION
-    // ═══════════════════════════════════════════
-    const phoneInput     = document.getElementById('phoneNumber');
-    const validationMsg  = document.getElementById('validationMsg');
-
-    phoneInput.addEventListener('input', () => {
-        // Only allow numbers
-        phoneInput.value = phoneInput.value.replace(/[^0-9]/g, '');
-
-        const num = phoneInput.value;
-        phoneInput.classList.remove('valid', 'invalid');
-        validationMsg.className = 'validation-msg';
-
-        if (num.length === 0) {
-            validationMsg.style.display = 'none';
-            return;
-        }
-
-        if (num.length < 10) {
-            phoneInput.classList.add('invalid');
-            validationMsg.textContent = '❌ Too short — add country code';
-            validationMsg.classList.add('invalid');
-        } else if (num.length > 15) {
-            phoneInput.classList.add('invalid');
-            validationMsg.textContent = '❌ Too long — check the number';
-            validationMsg.classList.add('invalid');
-        } else {
-            phoneInput.classList.add('valid');
-            validationMsg.textContent = '✅ Number looks good!';
-            validationMsg.classList.add('valid');
-        }
+  try{
+    const res=await fetch('/get-code',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({phoneNumber:number})
     });
 
-    // ═══════════════════════════════════════════
-    //  PAIRING CODE GENERATOR
-    // ═══════════════════════════════════════════
-    let expiryInterval = null;
+    const data=await res.json();
 
-    async function generateCode() {
-        const number     = phoneInput.value.replace(/[^0-9]/g, '');
-        const btn        = document.getElementById('generateBtn');
-        const errorBox   = document.getElementById('errorBox');
-        const codeResult = document.getElementById('codeResult');
+    // ✅ Flexible response parsing — works with multiple API formats
+    const code=data.code||data.pairingCode||data.pairing_code||data.sessionId||null;
 
-        // Hide previous results
-        errorBox.style.display   = 'none';
-        codeResult.style.display = 'none';
-        if (expiryInterval) clearInterval(expiryInterval);
+    if(code){
+      // Show the code
+      document.getElementById('codeDisplay').textContent=code;
+      codeResult.style.display='block';
+      btn.innerHTML='<i class="fas fa-check-circle"></i> &nbsp;Code Generated!';
 
-        // ✅ Frontend validation
-        if (!number) {
-            showError('❌ Please enter your phone number.');
-            phoneInput.focus();
-            return;
+      // Scroll to code
+      setTimeout(()=>codeResult.scrollIntoView({behavior:'smooth',block:'center'}),100);
+
+      // 60s countdown
+      let rem=60;
+      document.getElementById('codeExpiry').innerHTML=`⏳ Code expires in <span id="expTimer">${rem}</span>s`;
+      expInterval=setInterval(()=>{
+        rem--;
+        const el=document.getElementById('expTimer');
+        if(el)el.textContent=rem;
+        if(rem<=0){
+          clearInterval(expInterval);
+          document.getElementById('codeExpiry').innerHTML='⚠️ Code expired — generate a new one';
         }
+      },1000);
 
-        if (number.length < 10) {
-            showError('❌ Number too short! Include country code (e.g. 923xxxxxxxxx)');
-            phoneInput.focus();
-            return;
-        }
-
-        if (number.length > 15) {
-            showError('❌ Number too long! Check and try again.');
-            phoneInput.focus();
-            return;
-        }
-
-        // ✅ Loading state
-        btn.innerHTML = '<span class="spinner"></span> Generating...';
-        btn.disabled  = true;
-
-        try {
-            const res  = await fetch('/get-code', {
-                method : 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body   : JSON.stringify({ phoneNumber: number }),
-            });
-
-            const data = await res.json();
-
-            if (data.success && data.code) {
-                document.getElementById('codeDisplay').textContent = data.code;
-                codeResult.style.display = 'block';
-                btn.innerHTML = '<i class="fas fa-check"></i> &nbsp;Code Generated!';
-
-                // ✅ Expiry countdown
-                let remaining = 60;
-                document.getElementById('expiryTimer').textContent = remaining;
-                expiryInterval = setInterval(() => {
-                    remaining--;
-                    document.getElementById('expiryTimer').textContent = remaining;
-                    if (remaining <= 0) {
-                        clearInterval(expiryInterval);
-                        document.getElementById('codeExpiry').innerHTML = '⚠️ Code expired — generate a new one';
-                    }
-                }, 1000);
-
-            } else {
-                showError('❌ ' + (data.error || 'Failed to generate code. Try again.'));
-                btn.innerHTML = '<i class="fas fa-key"></i> &nbsp;Try Again';
-            }
-
-        } catch (err) {
-            showError('❌ Server connection failed. Please try again.');
-            btn.innerHTML = '<i class="fas fa-key"></i> &nbsp;Try Again';
-        }
-
-        btn.disabled = false;
+    }else{
+      // Show the actual server response for debugging
+      const errMsg=data.error||data.message||data.msg||JSON.stringify(data);
+      showErr('❌ '+errMsg);
+      btn.innerHTML='<i class="fas fa-key"></i> &nbsp;Try Again';
     }
 
-    function showError(msg) {
-        const errorBox          = document.getElementById('errorBox');
-        errorBox.textContent    = msg;
-        errorBox.style.display  = 'block';
-    }
+  }catch(err){
+    showErr('❌ Connection error: '+err.message);
+    btn.innerHTML='<i class="fas fa-key"></i> &nbsp;Try Again';
+  }
 
-    // ═══════════════════════════════════════════
-    //  COPY CODE
-    // ═══════════════════════════════════════════
-    function copyCode() {
-        const code  = document.getElementById('codeDisplay').textContent;
-        const toast = document.getElementById('copyToast');
+  btn.disabled=false;
+}
 
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(code).catch(() => fallbackCopy(code));
-        } else {
-            fallbackCopy(code);
+function showErr(msg){
+  const b=document.getElementById('errBox');
+  b.innerHTML=msg;b.style.display='block';
+}
+
+// ─── COPY CODE ───
+function copyCode(){
+  const code=document.getElementById('codeDisplay').textContent.trim();
+  const t=document.getElementById('toast');
+  if(!code||code==='----')return;
+  const done=()=>{t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);};
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(code).then(done).catch(()=>{fb(code);done();});
+  }else{fb(code);done();}
+}
+function fb(text){
+  const el=document.createElement('textarea');
+  el.value=text;el.style.cssText='position:fixed;opacity:0;top:0;left:0;';
+  document.body.appendChild(el);el.focus();el.select();
+  try{document.execCommand('copy');}catch(e){}
+  document.body.removeChild(el);
+}
+
+// ─── RESET FORM ───
+function resetForm(){
+  phoneEl.value='';
+  phoneEl.classList.remove('ok','bad');
+  valMsg.className='val-msg';valMsg.style.display='none';
+  document.getElementById('codeResult').style.display='none';
+  document.getElementById('errBox').style.display='none';
+  document.getElementById('genBtn').innerHTML='<i class="fas fa-key"></i> &nbsp;Generate Pairing Code';
+  if(expInterval)clearInterval(expInterval);
+  phoneEl.focus();
+}
+
+// ─── QR CODE — ROBUST ───
+const QR_LIFE=60;
+let qrTimer=null;
+
+async function generateQR(){
+  const btn=document.getElementById('qrBtn');
+  const err=document.getElementById('qrErr');
+  const st=document.getElementById('qrSt');
+  const bar=document.getElementById('qrBar');
+
+  if(qrTimer)clearInterval(qrTimer);
+  err.style.display='none';
+  btn.disabled=true;
+  btn.innerHTML='<span class="spin"></span> Generating...';
+  st.textContent='Connecting to server...';
+
+  // Remove old QR image
+  const old=document.getElementById('qrImg');
+  if(old)old.remove();
+  document.getElementById('qrPh').style.display='block';
+
+  try{
+    const res=await fetch('/get-qr');
+    const data=await res.json();
+
+    // Flexible QR image source detection
+    let imgSrc=null;
+    if(data.base64)imgSrc='data:image/png;base64,'+data.base64;
+    else if(data.qr&&data.qr.startsWith('data:'))imgSrc=data.qr;
+    else if(data.qr)imgSrc=data.qr;
+    else if(data.image)imgSrc=data.image;
+    else if(data.qrCode)imgSrc=data.qrCode;
+    else if(data.qrcode)imgSrc=data.qrcode;
+
+    if(data.success!==false && imgSrc){
+      document.getElementById('qrPh').style.display='none';
+      const img=document.createElement('img');
+      img.id='qrImg';img.src=imgSrc;
+      img.style.cssText='width:100%;height:100%;object-fit:contain;';
+      document.getElementById('qrBox').appendChild(img);
+
+      // Timer bar
+      bar.style.display='block';
+      const fill=document.getElementById('qrFill');
+      fill.style.transition='none';fill.style.width='100%';
+      let elapsed=0;
+      qrTimer=setInterval(()=>{
+        elapsed++;
+        fill.style.transition='width 1s linear';
+        fill.style.width=((QR_LIFE-elapsed)/QR_LIFE*100)+'%';
+        st.textContent=`Scan quickly! Expires in ${QR_LIFE-elapsed}s`;
+        if(elapsed>=QR_LIFE){
+          clearInterval(qrTimer);
+          st.textContent='QR expired — generate a new one';
+          btn.innerHTML='<i class="fas fa-sync-alt"></i> &nbsp;Generate New QR';
         }
+      },1000);
 
-        toast.classList.add('show');
-        setTimeout(() => toast.classList.remove('show'), 3000);
+      st.textContent='Scan with WhatsApp now! 📱';
+      btn.innerHTML='<i class="fas fa-sync-alt"></i> &nbsp;Refresh QR';
+    }else{
+      const errMsg=data.error||data.message||JSON.stringify(data);
+      showQrErr('❌ '+errMsg);
+      btn.innerHTML='<i class="fas fa-sync-alt"></i> &nbsp;Retry';
     }
+  }catch(e){
+    showQrErr('❌ Connection error: '+e.message);
+    btn.innerHTML='<i class="fas fa-sync-alt"></i> &nbsp;Retry';
+  }
+  btn.disabled=false;
+}
 
-    function fallbackCopy(text) {
-        const el = document.createElement('textarea');
-        el.value = text;
-        el.style.position = 'fixed';
-        el.style.opacity  = '0';
-        document.body.appendChild(el);
-        el.select();
-        document.execCommand('copy');
-        document.body.removeChild(el);
-    }
-
-    // ═══════════════════════════════════════════
-    //  RESET FORM
-    // ═══════════════════════════════════════════
-    function resetForm() {
-        phoneInput.value                                      = '';
-        phoneInput.classList.remove('valid', 'invalid');
-        validationMsg.className                               = 'validation-msg';
-        validationMsg.style.display                          = 'none';
-        document.getElementById('codeResult').style.display  = 'none';
-        document.getElementById('errorBox').style.display    = 'none';
-        document.getElementById('generateBtn').innerHTML     = '<i class="fas fa-key"></i> &nbsp;Generate Pairing Code';
-        if (expiryInterval) clearInterval(expiryInterval);
-        phoneInput.focus();
-    }
-
-    // ✅ Enter key support
-    phoneInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') generateCode();
-    });
+function showQrErr(msg){
+  const e=document.getElementById('qrErr');
+  e.innerHTML=msg;e.style.display='block';
+  document.getElementById('qrSt').textContent='Error — see message above';
+}
 </script>
-
 </body>
 </html>
