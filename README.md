@@ -1,106 +1,46 @@
 <div align="center">
 
-<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20&height=200&section=header&text=YOUSAF-BALOCH-MD&fontSize=80&fontColor=fff&animation=twinkling&fontAlignY=35"/>
+<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=0,2,2,5,30&height=250&section=header&text=YOUSAF-BALOCH-MD&fontSize=85&fontColor=fff&animation=twinkling&fontAlignY=40&desc=⚡%20Ultra%20Pro%20WhatsApp%20Bot%20System%20⚡&descSize=22&descAlignY=65&descColor=00fff7"/>
 
-# 🤖 YOUSAF-BALOCH-MD Pairing System
+<br>
 
-<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=28&duration=3000&pause=1000&color=667EEA&center=true&vCenter=true&multiline=true&repeat=true&width=700&height=100&lines=%F0%9F%87%B5%F0%9F%87%B0+Made+in+Pakistan+by+MUHAMMAD+YOUSAF;%E2%9A%A1+Premium+WhatsApp+Multi-Device+Bot;%F0%9F%92%8E+Professional+Pairing+Code+System" alt="Typing SVG" />
+<img src="https://readme-typing-svg.demolab.com?font=Orbitron&weight=900&size=32&duration=2500&pause=800&color=00FFF7&center=true&vCenter=true&multiline=false&repeat=true&width=750&height=60&lines=⚡+ULTRA+PRO+WHATSAPP+BOT+SYSTEM+⚡;🇵🇰+Made+in+Pakistan+by+YOUSAF+BALOCH;💎+Premium+Multi-Device+Pairing+System;🚀+Professional+Session+ID+Generator;🔥+100%25+Free+%26+Open+Source!" alt="Typing SVG" />
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Version-2.0.0-blueviolet?style=for-the-badge&logo=semver&logoColor=white&labelColor=000000" alt="Version"/>
-  <img src="https://img.shields.io/badge/Node.js-v18+-success?style=for-the-badge&logo=node.js&logoColor=white&labelColor=000000" alt="Node.js"/>
-  <img src="https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge&logo=opensourceinitiative&logoColor=white&labelColor=000000" alt="License"/>
-  <img src="https://img.shields.io/badge/WhatsApp-Ready-brightgreen?style=for-the-badge&logo=whatsapp&logoColor=white&labelColor=000000" alt="WhatsApp"/>
-</p>
+<br><br>
 
-<p align="center">
-  <img src="https://img.shields.io/github/stars/musakhanbaloch03-sad/YOUSAF-PAIRING-V1?style=for-the-badge&logo=github&labelColor=000000&color=yellow" alt="Stars"/>
-  <img src="https://img.shields.io/github/forks/musakhanbaloch03-sad/YOUSAF-PAIRING-V1?style=for-the-badge&logo=github&labelColor=000000&color=blue" alt="Forks"/>
-</p>
+<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=700&size=20&duration=3000&pause=1000&color=FF00C8&center=true&vCenter=true&width=650&height=45&lines=Version+2.0.0+%7C+Node.js+v18%2B+%7C+MIT+License;Instant+Code+%7C+Secure+%7C+Auto+Session+Delivery" alt="Sub Typing" />
+
+<br>
 
 ---
 
-## 🚀 ONE-CLICK DEPLOY
+### 🌈 PROJECT BADGES
 
-<table align="center">
-<tr>
-<td align="center">
+<p align="center">
+  <img src="https://img.shields.io/badge/Version-2.0.0-blueviolet?style=for-the-badge&logo=semver&logoColor=white&labelColor=0d0d1a" alt="Version"/>
+  &nbsp;
+  <img src="https://img.shields.io/badge/Node.js-v18+-00ff88?style=for-the-badge&logo=node.js&logoColor=white&labelColor=0d0d1a" alt="Node.js"/>
+  &nbsp;
+  <img src="https://img.shields.io/badge/License-MIT-ffe600?style=for-the-badge&logo=opensourceinitiative&logoColor=white&labelColor=0d0d1a" alt="License"/>
+  &nbsp;
+  <img src="https://img.shields.io/badge/WhatsApp-Ready-25D366?style=for-the-badge&logo=whatsapp&logoColor=white&labelColor=0d0d1a" alt="WhatsApp"/>
+</p>
 
-### 🌟 RENDER (RECOMMENDED)
+<p align="center">
+  <img src="https://img.shields.io/badge/Status-🔥_ACTIVE-ff00c8?style=for-the-badge&labelColor=0d0d1a" alt="Status"/>
+  &nbsp;
+  <img src="https://img.shields.io/badge/Platform-Multi_Deploy-00fff7?style=for-the-badge&labelColor=0d0d1a" alt="Platform"/>
+  &nbsp;
+  <img src="https://img.shields.io/badge/Country-🇵🇰_Pakistan-aa00ff?style=for-the-badge&labelColor=0d0d1a" alt="Country"/>
+</p>
 
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/musakhanbaloch03-sad/YOUSAF-PAIRING-V1)
-
-**✅ Free | ⚡ Fast | 🎨 Easy**
-
-</td>
-<td align="center">
-
-### 🚂 RAILWAY
-
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template?template=https://github.com/musakhanbaloch03-sad/YOUSAF-PAIRING-V1)
-
-**✅ Quick | 💨 Simple | 🔥 Reliable**
-
-</td>
-</tr>
-<tr>
-<td align="center">
-
-### 💜 HEROKU
-
-[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/musakhanbaloch03-sad/YOUSAF-PAIRING-V1)
-
-**🏆 Premium | 🎯 Professional**
-
-</td>
-<td align="center">
-
-### 🟣 REPLIT
-
-[![Run on Replit](https://replit.com/badge/github/musakhanbaloch03-sad/YOUSAF-PAIRING-V1)](https://replit.com/new/github/musakhanbaloch03-sad/YOUSAF-PAIRING-V1)
-
-**🎮 Easy | 💻 Browser-based**
-
-</td>
-</tr>
-</table>
-
----
-
-## 🌟 CONNECT WITH MUHAMMAD YOUSAF
-
-<table align="center">
-<tr>
-<td align="center" width="25%">
-<a href="https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j">
-<img src="https://img.shields.io/badge/📱_WhatsApp_Channel-JOIN_NOW-25D366?style=for-the-badge&logo=whatsapp&logoColor=white&labelColor=000000"/>
-</a>
-<br><br>
-<img src="https://img.shields.io/badge/Join_Our-Community-success?style=flat-square"/>
-</td>
-<td align="center" width="25%">
-<a href="https://www.youtube.com/@Yousaf_Baloch_Tech">
-<img src="https://img.shields.io/badge/🎥_YouTube-SUBSCRIBE-FF0000?style=for-the-badge&logo=youtube&logoColor=white&labelColor=000000"/>
-</a>
-<br><br>
-<img src="https://img.shields.io/badge/Tech-Tutorials-red?style=flat-square"/>
-</td>
-<td align="center" width="25%">
-<a href="https://tiktok.com/@loser_boy.110">
-<img src="https://img.shields.io/badge/🎵_TikTok-FOLLOW_ME-000000?style=for-the-badge&logo=tiktok&logoColor=white&labelColor=FF0050"/>
-</a>
-<br><br>
-<img src="https://img.shields.io/badge/Short-Videos-black?style=flat-square"/>
-</td>
-<td align="center" width="25%">
-<a href="tel:923710636110">
-<img src="https://img.shields.io/badge/📞_Phone-923710636110-34B7F1?style=for-the-badge&logo=phone&logoColor=white&labelColor=000000"/>
-</a>
-<br><br>
-<img src="https://img.shields.io/badge/Direct-Contact-blue?style=flat-square"/>
-</td>
-</tr>
-</table>
+<p align="center">
+  <img src="https://img.shields.io/github/stars/musakhanbaloch03-sad/YOUSAF-PAIRING-V1?style=for-the-badge&logo=github&labelColor=0d0d1a&color=ffe600" alt="Stars"/>
+  &nbsp;
+  <img src="https://img.shields.io/github/forks/musakhanbaloch03-sad/YOUSAF-PAIRING-V1?style=for-the-badge&logo=github&labelColor=0d0d1a&color=00fff7" alt="Forks"/>
+  &nbsp;
+  <img src="https://img.shields.io/github/issues/musakhanbaloch03-sad/YOUSAF-PAIRING-V1?style=for-the-badge&logo=github&labelColor=0d0d1a&color=ff00c8" alt="Issues"/>
+</p>
 
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">
 
@@ -108,161 +48,288 @@
 
 ---
 
-## 📖 ABOUT
+<div align="center">
 
-**YOUSAF-BALOCH-MD Pairing System** is a professional WhatsApp Multi-Device pairing system that lets you connect your WhatsApp bot using **phone number pairing codes**!
+## 🚀 ONE-CLICK DEPLOY — CHOOSE YOUR PLATFORM
+
+<img src="https://readme-typing-svg.demolab.com?font=Orbitron&weight=700&size=18&duration=2000&pause=500&color=FFE600&center=true&vCenter=true&width=600&height=40&lines=🌍+Deploy+in+Seconds!+%7C+Free+Hosting+Available" alt="Deploy" />
+
+</div>
+
+<table align="center">
+<tr>
+<td align="center" width="50%">
+
+### 🟢 RENDER *(RECOMMENDED)*
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/musakhanbaloch03-sad/YOUSAF-PAIRING-V1)
+
+![Free](https://img.shields.io/badge/✅_Free-750hrs%2Fmo-00ff88?style=flat-square&labelColor=0d0d1a)
+![Fast](https://img.shields.io/badge/⚡_Fast-Auto_Deploy-00fff7?style=flat-square&labelColor=0d0d1a)
+![Easy](https://img.shields.io/badge/🎯_Easy-No_Card_Needed-ffe600?style=flat-square&labelColor=0d0d1a)
+
+</td>
+<td align="center" width="50%">
+
+### 🚂 RAILWAY
+
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template?template=https://github.com/musakhanbaloch03-sad/YOUSAF-PAIRING-V1)
+
+![Credit](https://img.shields.io/badge/⚠️_$5-Free_Credit-ff6600?style=flat-square&labelColor=0d0d1a)
+![Speed](https://img.shields.io/badge/⚡⚡_Ultra-Fast-ff00c8?style=flat-square&labelColor=0d0d1a)
+![Simple](https://img.shields.io/badge/💨_Simple-One_Click-aa00ff?style=flat-square&labelColor=0d0d1a)
+
+</td>
+</tr>
+<tr>
+<td align="center" width="50%">
+
+### 💜 HEROKU
+
+[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/musakhanbaloch03-sad/YOUSAF-PAIRING-V1)
+
+![Premium](https://img.shields.io/badge/🏆_Premium-Professional-ffe600?style=flat-square&labelColor=0d0d1a)
+![Reliable](https://img.shields.io/badge/🎯_Reliable-99.9%25_Uptime-00ff88?style=flat-square&labelColor=0d0d1a)
+
+</td>
+<td align="center" width="50%">
+
+### 🟣 REPLIT
+
+[![Run on Replit](https://replit.com/badge/github/musakhanbaloch03-sad/YOUSAF-PAIRING-V1)](https://replit.com/new/github/musakhanbaloch03-sad/YOUSAF-PAIRING-V1)
+
+![Browser](https://img.shields.io/badge/💻_Browser-Based-00fff7?style=flat-square&labelColor=0d0d1a)
+![Instant](https://img.shields.io/badge/🎮_Instant-Live_Preview-ff00c8?style=flat-square&labelColor=0d0d1a)
+
+</td>
+</tr>
+</table>
+
+---
+
+<div align="center">
+
+## 🌟 CONNECT WITH MUHAMMAD YOUSAF BALOCH
+
+<img src="https://readme-typing-svg.demolab.com?font=Orbitron&weight=700&size=18&duration=2000&pause=500&color=FF00C8&center=true&vCenter=true&width=600&height=40&lines=📲+Follow+for+Updates+%7C+Join+the+Community!" alt="Connect" />
+
+</div>
+
+<table align="center">
+<tr>
+<td align="center" width="25%">
+
+[![WhatsApp Channel](https://img.shields.io/badge/📱_WhatsApp-JOIN_CHANNEL-25D366?style=for-the-badge&logo=whatsapp&logoColor=white&labelColor=0d0d1a)](https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j)
+
+<img src="https://img.shields.io/badge/🔥_Active-Community-25D366?style=flat-square"/>
+
+</td>
+<td align="center" width="25%">
+
+[![YouTube](https://img.shields.io/badge/🎥_YouTube-SUBSCRIBE-FF0000?style=for-the-badge&logo=youtube&logoColor=white&labelColor=0d0d1a)](https://www.youtube.com/@Yousaf_Baloch_Tech)
+
+<img src="https://img.shields.io/badge/🎬_Tech-Tutorials-FF0000?style=flat-square"/>
+
+</td>
+<td align="center" width="25%">
+
+[![TikTok](https://img.shields.io/badge/🎵_TikTok-FOLLOW_ME-FF0050?style=for-the-badge&logo=tiktok&logoColor=white&labelColor=0d0d1a)](https://tiktok.com/@loser_boy.110)
+
+<img src="https://img.shields.io/badge/📹_Short-Videos-FF0050?style=flat-square"/>
+
+</td>
+<td align="center" width="25%">
+
+[![Phone](https://img.shields.io/badge/📞_Call_Me-923710636110-00fff7?style=for-the-badge&logo=phone&logoColor=white&labelColor=0d0d1a)](tel:923710636110)
+
+<img src="https://img.shields.io/badge/💬_Direct-Contact-00fff7?style=flat-square"/>
+
+</td>
+</tr>
+</table>
+
+<div align="center">
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">
+</div>
+
+---
+
+<div align="center">
+
+## 📖 ABOUT THIS PROJECT
+
+</div>
+
+**YOUSAF-BALOCH-MD Pairing System** is a professional, ultra-fast WhatsApp Multi-Device pairing system. Generate pairing codes instantly, link your bot, and get your **Session ID** delivered directly to your WhatsApp!
+
+<div align="center">
 
 ### ✨ KEY FEATURES
 
-| Feature | Description | Status |
-|:-------:|:------------|:------:|
-| 📱 | **Phone Number Pairing** | ✅ |
-| ⚡ | **Instant Code Generation** | ✅ |
-| 🎨 | **Beautiful UI Design** | ✅ |
-| 👨‍💻 | **Owner Information** | ✅ |
-| 🌐 | **Social Media Links** | ✅ |
-| 📱 | **Mobile Responsive** | ✅ |
-| 🔒 | **Secure Sessions** | ✅ |
-| 🔄 | **Auto Session Delivery** | ✅ |
-| 🛡️ | **Rate Limiting** | ✅ |
-| 🎯 | **Universal Deployment** | ✅ |
+</div>
+
+| # | Icon | Feature | Description | Status |
+|:-:|:----:|:-------:|:------------|:------:|
+| 1 | 📱 | **Phone Pairing** | Link via phone number pairing code | ![✅](https://img.shields.io/badge/✅-Active-00ff88?style=flat-square&labelColor=0d0d1a) |
+| 2 | ⚡ | **Instant Generation** | Codes generated in milliseconds | ![✅](https://img.shields.io/badge/✅-Active-00ff88?style=flat-square&labelColor=0d0d1a) |
+| 3 | 🎨 | **Ultra Pro UI** | Neon cyberpunk design | ![✅](https://img.shields.io/badge/✅-Active-00ff88?style=flat-square&labelColor=0d0d1a) |
+| 4 | 📱 | **Mobile Responsive** | Perfect on all screen sizes | ![✅](https://img.shields.io/badge/✅-Active-00ff88?style=flat-square&labelColor=0d0d1a) |
+| 5 | 🔒 | **Secure Sessions** | Encrypted & auto-deleted | ![✅](https://img.shields.io/badge/✅-Active-00ff88?style=flat-square&labelColor=0d0d1a) |
+| 6 | 🔄 | **Auto Delivery** | Session ID sent to WhatsApp | ![✅](https://img.shields.io/badge/✅-Active-00ff88?style=flat-square&labelColor=0d0d1a) |
+| 7 | 🛡️ | **Rate Limiting** | DDoS & abuse protection | ![✅](https://img.shields.io/badge/✅-Active-00ff88?style=flat-square&labelColor=0d0d1a) |
+| 8 | 🌐 | **Multi-Platform** | Deploy anywhere, free | ![✅](https://img.shields.io/badge/✅-Active-00ff88?style=flat-square&labelColor=0d0d1a) |
+| 9 | 🎯 | **QR Code** | Alternative QR linking | ![✅](https://img.shields.io/badge/✅-Active-00ff88?style=flat-square&labelColor=0d0d1a) |
+| 10 | 💎 | **100% Free** | Open source, no hidden costs | ![✅](https://img.shields.io/badge/✅-Active-00ff88?style=flat-square&labelColor=0d0d1a) |
 
 ---
 
-## 🚀 INSTALLATION
+<div align="center">
 
-### 📥 METHOD 1: GITHUB CLONE
+## 🚀 INSTALLATION GUIDE
+
+<img src="https://readme-typing-svg.demolab.com?font=Share+Tech+Mono&weight=700&size=20&duration=2000&pause=500&color=00FF88&center=true&vCenter=true&width=600&height=40&lines=Choose+your+installation+method+below!" alt="Install" />
+
+</div>
+
+### 📥 METHOD 1 — GITHUB CLONE
 
 ```bash
-# Clone repository
+# 🔽 Clone the repository
 git clone https://github.com/musakhanbaloch03-sad/YOUSAF-PAIRING-V1.git
 
-# Navigate to folder
+# 📂 Navigate to project folder
 cd YOUSAF-PAIRING-V1
 
-# Install dependencies
+# 📦 Install all dependencies
 npm install
 
-# Start server
+# 🚀 Start the server
 npm start
 ```
 
-### 🌐 METHOD 2: ONE-CLICK DEPLOY
+> 🌐 Open browser: `http://localhost:3000`
 
-**Choose your favorite platform:**
+---
 
-#### 1️⃣ **RENDER.COM** (RECOMMENDED) 🏆
+### 🌐 METHOD 2 — ONE-CLICK CLOUD DEPLOY
 
-1. Click the **"Deploy to Render"** button above
-2. Sign up/Login to Render
-3. Click **"Create Web Service"**
-4. Wait 2-3 minutes
-5. ✅ Done! Your URL: `https://your-app.onrender.com`
+#### 1️⃣ 🟢 RENDER.COM *(MOST RECOMMENDED)*
 
-#### 2️⃣ **RAILWAY.APP**
-
-```bash
-# Install Railway CLI
-npm i -g @railway/cli
-
-# Login
-railway login
-
-# Deploy
-railway up
+```
+1. Click "Deploy to Render" button above  ☝️
+2. Sign in / Create free account
+3. Click "Create Web Service"
+4. Wait 2-3 minutes for build
+5. ✅ LIVE at: https://your-app.onrender.com
 ```
 
-#### 3️⃣ **HEROKU**
+#### 2️⃣ 🚂 RAILWAY.APP
 
 ```bash
-# Install Heroku CLI
-# Then run:
+npm i -g @railway/cli   # Install CLI
+railway login           # Login to Railway
+railway up              # 🚀 Deploy!
+```
+
+#### 3️⃣ 💜 HEROKU
+
+```bash
 heroku login
-heroku create yousaf-pairing
+heroku create yousaf-baloch-pairing
 git push heroku main
 ```
 
-#### 4️⃣ **REPLIT**
+#### 4️⃣ 🟣 REPLIT
 
-1. Click **"Run on Replit"** button
+```
+1. Click "Run on Replit" button above  ☝️
 2. Fork the repository
-3. Click **"Run"** button
-4. ✅ Your site is live!
+3. Click the green "Run" button
+4. ✅ Instant live preview!
+```
 
-#### 5️⃣ **KOYEB**
-
-1. Sign up at [Koyeb.com](https://koyeb.com)
-2. Connect GitHub repository
-3. Select Node.js buildpack
-4. Deploy automatically
-
-#### 6️⃣ **VPS / SERVER**
+#### 5️⃣ 🖥️ VPS / SERVER
 
 ```bash
-# SSH into your server
+# SSH into server, then:
 git clone https://github.com/musakhanbaloch03-sad/YOUSAF-PAIRING-V1.git
-cd YOUSAF-PAIRING-V1
-npm install
-npm start
+cd YOUSAF-PAIRING-V1 && npm install
 
-# Or with PM2 (recommended)
+# 🔥 Run with PM2 (recommended for production)
 npm install -g pm2
-pm2 start index.js --name pairing
-pm2 save
+pm2 start index.js --name "yousaf-pairing"
+pm2 save && pm2 startup
 ```
 
 ---
 
-## 💻 USAGE
+<div align="center">
+
+## 💻 HOW TO USE
+
+<img src="https://readme-typing-svg.demolab.com?font=Orbitron&weight=700&size=18&duration=2000&pause=500&color=AA00FF&center=true&vCenter=true&width=600&height=40&lines=Simple+3+Step+Process!+⚡" alt="Use" />
+
+</div>
 
 ### 📱 PHONE NUMBER PAIRING:
 
-1. Open your deployed website
-2. Enter your WhatsApp number (e.g., `923710636110`)
-3. Click **"Generate Pairing Code"**
-4. Copy the 8-character code (e.g., `ABCD-EFGH`)
-5. Open WhatsApp on your phone
-6. Go to **Settings → Linked Devices**
-7. Tap **"Link a Device" → "Link with phone number"**
-8. Enter the pairing code
-9. ✅ Session ID will be sent to your WhatsApp!
-10. Copy and use the Session ID in your bot
+```
+Step 1 ➡️  Open your deployed website
+Step 2 ➡️  Enter WhatsApp number (e.g. 923710636110)
+Step 3 ➡️  Click "⚡ GENERATE PAIRING CODE"
+Step 4 ➡️  Copy the 8-character code (e.g. ABCD-EFGH)
+Step 5 ➡️  Open WhatsApp → Settings → Linked Devices
+Step 6 ➡️  Tap "Link a Device" → "Link with phone number"
+Step 7 ➡️  Enter the pairing code
+Step 8 ➡️  ✅ SESSION ID sent to your WhatsApp!
+Step 9 ➡️  Copy & use Session ID in your bot config
+```
 
 ### 🌐 API ENDPOINT:
 
 ```bash
-GET /api/pair?phone=923710636110
+POST /get-code
+Content-Type: application/json
+
+{ "phoneNumber": "923710636110" }
 ```
 
-**Response:**
+**✅ Response:**
 ```json
 {
   "success": true,
   "code": "ABCD-EFGH",
-  "session_id": "abc123",
-  "message": "Enter code in WhatsApp",
+  "message": "Enter code in WhatsApp Linked Devices",
   "owner": "Muhammad Yousaf Baloch"
 }
 ```
 
 ---
 
-## 🌐 DEPLOYMENT COMPARISON
+<div align="center">
 
-| Platform | Free Tier | Speed | Ease | Auto-Deploy | Recommended |
-|----------|-----------|-------|------|-------------|-------------|
-| **Render** | ✅ 750 hrs | ⚡⚡⚡⚡ | ⭐⭐⭐⭐⭐ | ✅ | 🏆 **BEST** |
-| **Railway** | ⚠️ $5 credit | ⚡⚡⚡⚡⚡ | ⭐⭐⭐⭐ | ✅ | ✅ Great |
-| **Heroku** | ❌ Paid only | ⚡⚡⚡⚡ | ⭐⭐⭐ | ✅ | ⚠️ Premium |
-| **Replit** | ✅ Limited | ⚡⚡⚡ | ⭐⭐⭐⭐⭐ | ✅ | ✅ Good |
-| **Koyeb** | ✅ Free tier | ⚡⚡⚡⚡ | ⭐⭐⭐⭐ | ✅ | ✅ Good |
-| **VPS** | ⚠️ Paid | ⚡⚡⚡⚡⚡ | ⭐⭐⭐ | ❌ | ✅ Advanced |
+## 🌐 PLATFORM COMPARISON
+
+</div>
+
+| Platform | Free? | Speed | Ease | Auto-Deploy | Verdict |
+|:--------:|:-----:|:-----:|:----:|:-----------:|:-------:|
+| ![Render](https://img.shields.io/badge/Render-46E3B7?style=flat-square&logo=render&logoColor=white) | ✅ 750h | ⚡⚡⚡⚡ | ⭐⭐⭐⭐⭐ | ✅ | 🏆 **BEST** |
+| ![Railway](https://img.shields.io/badge/Railway-0B0D0E?style=flat-square&logo=railway&logoColor=white) | ⚠️ $5 | ⚡⚡⚡⚡⚡ | ⭐⭐⭐⭐ | ✅ | ✅ Great |
+| ![Heroku](https://img.shields.io/badge/Heroku-430098?style=flat-square&logo=heroku&logoColor=white) | ❌ Paid | ⚡⚡⚡⚡ | ⭐⭐⭐ | ✅ | ⚠️ Premium |
+| ![Replit](https://img.shields.io/badge/Replit-667881?style=flat-square&logo=replit&logoColor=white) | ✅ Limited | ⚡⚡⚡ | ⭐⭐⭐⭐⭐ | ✅ | ✅ Good |
+| ![Koyeb](https://img.shields.io/badge/Koyeb-121212?style=flat-square&logoColor=white) | ✅ Free | ⚡⚡⚡⚡ | ⭐⭐⭐⭐ | ✅ | ✅ Good |
+| 🖥️ VPS | ⚠️ Paid | ⚡⚡⚡⚡⚡ | ⭐⭐⭐ | ❌ | ✅ Advanced |
 
 ---
 
+<div align="center">
+
 ## 🛠️ TECH STACK
 
-<div align="center">
+<img src="https://readme-typing-svg.demolab.com?font=Share+Tech+Mono&weight=700&size=18&duration=2000&pause=500&color=FFE600&center=true&vCenter=true&width=500&height=40&lines=Built+with+the+best+technologies!" alt="Tech" />
+
+<br>
 
 ![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white)
 ![Express](https://img.shields.io/badge/Express-000000?style=for-the-badge&logo=express&logoColor=white)
@@ -275,116 +342,153 @@ GET /api/pair?phone=923710636110
 
 ---
 
+<div align="center">
+
 ## 📁 PROJECT STRUCTURE
 
+</div>
+
 ```
-YOUSAF-PAIRING-V1/
+🗂️ YOUSAF-PAIRING-V1/
 │
-├── sessions/               # Auto-generated sessions (temporary)
+├── 📁 sessions/            ← Auto-generated sessions (temporary)
 │
-├── index.js                # Main server file (includes HTML)
-├── package.json            # Dependencies
-├── .gitignore              # Git ignore rules
-├── Procfile                # Heroku deployment
-├── Dockerfile              # Docker deployment (optional)
-├── .env.example            # Environment template
-└── README.md               # This file
+├── 📄 index.js             ← 🔥 Main server + HTML UI
+├── 📦 package.json         ← Dependencies list
+├── 🚫 .gitignore           ← Git ignore rules
+├── 🚀 Procfile             ← Heroku deployment config
+├── 🐳 Dockerfile           ← Docker deployment (optional)
+├── ⚙️  .env.example         ← Environment variables template
+└── 📖 README.md            ← You are here!
 ```
 
 ---
-
-## ❓ FAQ
-
-<details>
-<summary><b>❓ Is this completely free?</b></summary>
-
-✅ **YES!** 100% free and open source (MIT License)
-
-</details>
-
-<details>
-<summary><b>❓ How do I get the pairing code?</b></summary>
-
-1. Deploy the project
-2. Open the website
-3. Enter your WhatsApp number
-4. Click "Generate Pairing Code"
-5. Use the code in WhatsApp
-6. Session ID will be sent to your WhatsApp
-
-</details>
-
-<details>
-<summary><b>❓ Which deployment platform is best?</b></summary>
-
-🏆 **Render.com** is recommended because:
-- ✅ Free tier available (750 hours/month)
-- ✅ Easy setup
-- ✅ Auto-deploys from GitHub
-- ✅ Fast performance
-- ✅ No credit card required
-
-</details>
-
-<details>
-<summary><b>❓ Can I customize the website?</b></summary>
-
-✅ **YES!** Edit the HTML in `index.js` to:
-- Change colors and gradients
-- Update owner information
-- Modify social media links
-- Add your own branding
-
-</details>
-
-<details>
-<summary><b>❓ How long does the pairing code last?</b></summary>
-
-⏱️ Pairing codes are valid for **60 seconds**. If expired, generate a new one.
-
-</details>
-
-<details>
-<summary><b>❓ Is my session secure?</b></summary>
-
-🔒 **YES!** Session data is:
-- Sent directly to your WhatsApp
-- Not stored on the server
-- Automatically deleted after delivery
-- Encrypted in transit
-
-</details>
-
----
-
-## 🤝 CONTRIBUTING
-
-Contributions are welcome! 🎉
-
-1. ⭐ Star this repo
-2. 🍴 Fork the project
-3. 🌿 Create your feature branch (`git checkout -b feature/AmazingFeature`)
-4. 💾 Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-5. 📤 Push to the branch (`git push origin feature/AmazingFeature`)
-6. 📬 Open a Pull Request
-
----
-
-## 💖 SUPPORT
 
 <div align="center">
 
-### ⭐ STAR THIS REPOSITORY
+## ❓ FREQUENTLY ASKED QUESTIONS
 
-<a href="https://github.com/musakhanbaloch03-sad/YOUSAF-PAIRING-V1">
-<img src="https://img.shields.io/github/stars/musakhanbaloch03-sad/YOUSAF-PAIRING-V1?style=social" alt="GitHub stars"/>
-</a>
+<img src="https://readme-typing-svg.demolab.com?font=Orbitron&weight=700&size=18&duration=2000&pause=500&color=FF6600&center=true&vCenter=true&width=500&height=40&lines=Got+questions%3F+We+got+answers!+💬" alt="FAQ" />
 
-**Every star motivates me! 🙏**
+</div>
+
+<details>
+<summary><b>💚 Is this completely free to use?</b></summary>
+<br>
+
+✅ **100% FREE!** This project is fully open source under MIT License. No hidden fees, no credit card required for free hosting options.
+
+</details>
+
+<details>
+<summary><b>⚡ How do I get the pairing code?</b></summary>
+<br>
+
+```
+1. Deploy the project on any platform
+2. Open the website
+3. Enter your WhatsApp number with country code
+4. Click "Generate Pairing Code"
+5. Use the code in WhatsApp → Linked Devices
+6. Session ID arrives in your WhatsApp! ✅
+```
+
+</details>
+
+<details>
+<summary><b>🏆 Which deployment platform is best?</b></summary>
+<br>
+
+🥇 **Render.com** is the top choice because:
+- ✅ 750 free hours per month
+- ✅ Zero configuration needed
+- ✅ Auto-deploys from GitHub
+- ✅ No credit card required
+- ✅ Fast performance globally
+
+</details>
+
+<details>
+<summary><b>🎨 Can I customize the website design?</b></summary>
+<br>
+
+✅ **Absolutely!** The HTML/CSS is in `index.js`. You can:
+- 🎨 Change colors and neon effects
+- 👤 Update owner information  
+- 🔗 Modify social media links
+- 🖼️ Add custom images/logo
+- ✨ Modify animations
+
+</details>
+
+<details>
+<summary><b>⏱️ How long is the pairing code valid?</b></summary>
+<br>
+
+⏰ Pairing codes are valid for exactly **60 seconds**. If it expires, simply click **Generate** again to get a fresh code instantly!
+
+</details>
+
+<details>
+<summary><b>🔒 Is my session data secure?</b></summary>
+<br>
+
+🛡️ **Fully Secure!** Your session data is:
+- ✅ Sent **directly** to your WhatsApp only
+- ✅ **Never stored** permanently on the server
+- ✅ Auto-deleted immediately after delivery
+- ✅ Encrypted in transit (HTTPS)
+
+</details>
 
 ---
 
-### 📱 FOLLOW ON SOCIAL MEDIA
+<div align="center">
+
+## 🤝 CONTRIBUTING
+
+<img src="https://readme-typing-svg.demolab.com?font=Orbitron&weight=700&size=18&duration=2000&pause=500&color=00FFF7&center=true&vCenter=true&width=600&height=40&lines=Contributions+are+welcome!+🎉+Let's+build+together!" alt="Contribute" />
+
+</div>
+
+```bash
+# 1. ⭐ Star this repo first!
+# 2. 🍴 Fork the project
+git fork https://github.com/musakhanbaloch03-sad/YOUSAF-PAIRING-V1
+
+# 3. 🌿 Create your feature branch
+git checkout -b feature/MyAmazingFeature
+
+# 4. 💾 Commit your changes
+git commit -m "✨ Add: MyAmazingFeature"
+
+# 5. 📤 Push to the branch
+git push origin feature/MyAmazingFeature
+
+# 6. 📬 Open a Pull Request!
+```
+
+---
+
+<div align="center">
+
+## 💖 SHOW YOUR SUPPORT
+
+<img src="https://readme-typing-svg.demolab.com?font=Orbitron&weight=900&size=22&duration=2000&pause=800&color=FFE600&center=true&vCenter=true&multiline=false&width=650&height=50&lines=⭐+STAR+THIS+REPO+TO+SHOW+SUPPORT!+⭐" alt="Star" />
+
+<br>
+
+[![GitHub stars](https://img.shields.io/github/stars/musakhanbaloch03-sad/YOUSAF-PAIRING-V1?style=social)](https://github.com/musakhanbaloch03-sad/YOUSAF-PAIRING-V1)
+&nbsp;&nbsp;
+[![GitHub forks](https://img.shields.io/github/forks/musakhanbaloch03-sad/YOUSAF-PAIRING-V1?style=social)](https://github.com/musakhanbaloch03-sad/YOUSAF-PAIRING-V1)
+
+**Every ⭐ star motivates me to build more amazing tools! 🙏**
+
+<br>
+
+---
+
+### 📱 FOLLOW ON ALL PLATFORMS
 
 <table>
 <tr>
@@ -392,30 +496,28 @@ Contributions are welcome! 🎉
 
 [![WhatsApp](https://img.shields.io/badge/WhatsApp-25D366?style=for-the-badge&logo=whatsapp&logoColor=white)](https://whatsapp.com/channel/0029Vb3Uzps6buMH2RvGef0j)
 
-Join our channel
+**Join Channel**
 
 </td>
 <td align="center">
 
 [![YouTube](https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/@Yousaf_Baloch_Tech)
 
-Subscribe for tutorials
-
-</td>
-</tr>
-<tr>
-<td align="center">
-
-[![TikTok](https://img.shields.io/badge/TikTok-000000?style=for-the-badge&logo=tiktok&logoColor=white)](https://tiktok.com/@loser_boy.110)
-
-Follow for tech tips
+**Subscribe**
 
 </td>
 <td align="center">
 
-[![Phone](https://img.shields.io/badge/Phone-34B7F1?style=for-the-badge&logo=phone&logoColor=white)](tel:923710636110)
+[![TikTok](https://img.shields.io/badge/TikTok-FF0050?style=for-the-badge&logo=tiktok&logoColor=white)](https://tiktok.com/@loser_boy.110)
 
-Call: 923710636110
+**Follow**
+
+</td>
+<td align="center">
+
+[![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/musakhanbaloch03-sad)
+
+**Star & Fork**
 
 </td>
 </tr>
@@ -425,77 +527,62 @@ Call: 923710636110
 
 ---
 
-## 📜 LICENSE
-
 <div align="center">
 
-### ⚖️ MIT LICENSE
+## 📜 MIT LICENSE
 
 ```
-MIT License
+MIT License — Copyright (c) 2026 MUHAMMAD YOUSAF BALOCH
 
-Copyright (c) 2026 MUHAMMAD YOUSAF BALOCH
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software to use, copy, modify, merge, publish, distribute,
+sublicense, and/or sell copies of the Software.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
 ```
 
-**You CAN:**
-- ✅ Use commercially
-- ✅ Modify
-- ✅ Distribute
-- ✅ Private use
-
-**You MUST:**
-- ⚠️ Include license
-- ⚠️ Include copyright notice
+![Can Use](https://img.shields.io/badge/✅_Can-Use_Commercially-00ff88?style=flat-square&labelColor=0d0d1a)
+![Can Modify](https://img.shields.io/badge/✅_Can-Modify-00fff7?style=flat-square&labelColor=0d0d1a)
+![Can Distribute](https://img.shields.io/badge/✅_Can-Distribute-aa00ff?style=flat-square&labelColor=0d0d1a)
+![Must Credit](https://img.shields.io/badge/⚠️_Must-Include_License-ffe600?style=flat-square&labelColor=0d0d1a)
 
 </div>
 
 ---
+
+<div align="center">
 
 ## 👨‍💻 CREATOR
 
-<div align="center">
+<img src="https://readme-typing-svg.demolab.com?font=Orbitron&weight=900&size=24&duration=2000&pause=800&color=FF00C8&center=true&vCenter=true&width=700&height=55&lines=🇵🇰+MUHAMMAD+YOUSAF+BALOCH+🇵🇰" alt="Creator" />
 
-### 🇵🇰 MUHAMMAD YOUSAF BALOCH
+<img src="https://github-readme-stats.vercel.app/api?username=musakhanbaloch03-sad&show_icons=true&theme=radical&hide_border=true&bg_color=0d0d1a&title_color=00fff7&icon_color=ff00c8&text_color=ffffff&border_radius=15" width="49%"/>
+<img src="https://github-readme-streak-stats.herokuapp.com/?user=musakhanbaloch03-sad&theme=radical&hide_border=true&background=0d0d1a&stroke=ff00c8&ring=00fff7&fire=ffe600&currStreakLabel=00ff88&border_radius=15" width="49%"/>
 
-<img src="https://github-readme-stats.vercel.app/api?username=musakhanbaloch03-sad&show_icons=true&theme=radical&hide_border=true" width="48%"/>
+<br><br>
 
----
+| | |
+|:---:|:---|
+| 💼 | **Full Stack Developer & WhatsApp Bot Expert** |
+| 🌍 | **Pakistan 🇵🇰** |
+| 📞 | **+923710636110** |
+| 📧 | **musakhanbaloch03@gmail.com** |
+| 🎯 | **Open Source Developer** |
+| 💡 | **"Creating powerful, free tools for everyone"** |
 
-**Full Stack Developer | WhatsApp Bot Expert**
+<br>
 
-📞 **Phone:** +923710636110  
-🌐 **Country:** Pakistan 🇵🇰  
-💼 **Role:** Open Source Developer  
-📧 **Email:** musakhanbaloch03@gmail.com
+![Mission](https://img.shields.io/badge/🎯_Mission-Free_Tools_For_Everyone-ff00c8?style=for-the-badge&labelColor=0d0d1a)
 
----
+<br>
 
-### 🎯 MY MISSION
-
-**"Creating powerful, free tools for everyone"**
-
-✅ Open source software  
-✅ Free education  
-✅ Community support  
-✅ Innovation for all
+![Open Source](https://img.shields.io/badge/✅_Open-Source-00ff88?style=flat-square&labelColor=0d0d1a)
+&nbsp;
+![Free Education](https://img.shields.io/badge/✅_Free-Education-00fff7?style=flat-square&labelColor=0d0d1a)
+&nbsp;
+![Community](https://img.shields.io/badge/✅_Community-Support-aa00ff?style=flat-square&labelColor=0d0d1a)
+&nbsp;
+![Innovation](https://img.shields.io/badge/✅_Innovation-For_All-ffe600?style=flat-square&labelColor=0d0d1a)
 
 </div>
 
@@ -503,16 +590,16 @@ SOFTWARE.
 
 <div align="center">
 
-## ⭐ IF YOU LIKE THIS PROJECT, GIVE IT A STAR!
-
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">
 
-### 💖 THANK YOU FOR USING YOUSAF-BALOCH-MD!
+<img src="https://readme-typing-svg.demolab.com?font=Orbitron&weight=900&size=26&duration=2000&pause=800&color=00FFF7&center=true&vCenter=true&width=750&height=60&lines=💎+THANK+YOU+FOR+USING+YOUSAF-BALOCH-MD!+💎;⭐+Star+the+repo+if+it+helped+you!+⭐;🚀+Happy+Coding+from+Pakistan+🇵🇰+🚀" alt="Footer Typing" />
 
-<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=22&pause=1000&color=667EEA&center=true&vCenter=true&width=600&lines=Made+with+%E2%9D%A4%EF%B8%8F+in+Pakistan+%F0%9F%87%B5%F0%9F%87%B0;Created+by+MUHAMMAD+YOUSAF+BALOCH;Happy+Coding!+%F0%9F%9A%80" alt="Footer" />
+<br>
 
 **© 2026 MUHAMMAD YOUSAF BALOCH | All Rights Reserved**
 
-<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20&height=100&section=footer"/>
+<br>
+
+<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=0,2,2,5,30&height=120&section=footer&animation=twinkling"/>
 
 </div>
