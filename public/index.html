@@ -269,39 +269,34 @@ body{font-family:'Rajdhani',sans-serif;background:var(--dark);color:#fff;min-hei
 /* ═══ CODE RESULT — STAR OF THE SHOW ═══ */
 .code-result{
   margin-top:28px;border-radius:24px;padding:32px;text-align:center;
-  display:none;position:relative;overflow:hidden;animation:fadeU .5s ease;
-  background:rgba(0,255,136,.04);
+  display:block;
+  background:#050510;
+  border:3px solid #00ff88;
+  box-shadow:0 0 30px rgba(0,255,136,.5),0 0 60px rgba(0,255,136,.2),inset 0 0 30px rgba(0,255,136,.05);
+  animation:resultBorderPulse 2s ease-in-out infinite;
 }
-/* Animated rainbow border on result box */
-.code-result::before{
-  content:'';position:absolute;inset:0;border-radius:24px;padding:3px;z-index:0;
-  background:linear-gradient(90deg,var(--c4),var(--c1),var(--c2),var(--c6),var(--c3),var(--c4));
-  background-size:400% 100%;animation:rainbowText 2.5s linear infinite;
-  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
-  -webkit-mask-composite:xor;mask-composite:exclude;
+@keyframes resultBorderPulse{
+  0%,100%{border-color:#00ff88;box-shadow:0 0 25px rgba(0,255,136,.5),0 0 50px rgba(0,255,136,.2);}
+  33%{border-color:#00fff7;box-shadow:0 0 35px rgba(0,255,247,.6),0 0 70px rgba(0,255,247,.25);}
+  66%{border-color:#ff00c8;box-shadow:0 0 35px rgba(255,0,200,.6),0 0 70px rgba(255,0,200,.25);}
 }
-.code-result>*{position:relative;z-index:1;}
 
 .code-label{
-  font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:5px;
+  font-family:'Orbitron',sans-serif;font-size:13px;letter-spacing:5px;
   text-transform:uppercase;margin-bottom:16px;
-  background:linear-gradient(90deg,var(--c4),var(--c1));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  color:#00ff88;
+  text-shadow:0 0 10px rgba(0,255,136,.8);
 }
 
 /* THE CODE ITSELF */
 .code-display{
   font-family:'Share Tech Mono',monospace;
-  font-size:clamp(30px,10vw,62px);color:var(--c4);letter-spacing:14px;
-  text-shadow:
-    0 0 15px rgba(0,255,136,1),
-    0 0 35px rgba(0,255,136,.8),
-    0 0 70px rgba(0,255,136,.5),
-    0 0 120px rgba(0,255,136,.25);
-  margin-bottom:14px;padding:20px 14px;
-  background:rgba(0,255,136,.06);border-radius:16px;
-  border:1px solid rgba(0,255,136,.2);
-  animation:codePulse 2s ease-in-out infinite;
+  font-size:clamp(28px,8vw,56px);color:#00ff88;letter-spacing:10px;
+  text-shadow:0 0 20px #00ff88,0 0 40px rgba(0,255,136,.6);
+  margin-bottom:16px;padding:20px 14px;
+  background:rgba(0,0,0,.6);border-radius:16px;
+  border:2px solid rgba(0,255,136,.4);
+  word-break:break-all;
 }
 @keyframes codePulse{
   0%,100%{text-shadow:0 0 15px rgba(0,255,136,1),0 0 35px rgba(0,255,136,.8),0 0 70px rgba(0,255,136,.5);}
@@ -547,17 +542,17 @@ body{font-family:'Rajdhani',sans-serif;background:var(--dark);color:#fff;min-hei
 
       <div class="err-box" id="errBox"></div>
 
-      <!-- ✅ CODE RESULT BOX — always in DOM, toggled by JS -->
-      <div class="code-result" id="codeResult">
-        <div class="code-label">✨ YOUR PAIRING CODE ✨</div>
-        <div class="code-display" id="codeDisplay">----</div>
-        <div class="code-expiry" id="codeExpiry">⏳ Code expires in <span id="expTimer">60</span>s</div>
+      <!-- ✅ CODE RESULT BOX — always visible -->
+      <div class="code-result" id="codeResult" style="display:block;">
+        <div class="code-label" id="codeLabel">⬇️ YOUR PAIRING CODE WILL APPEAR HERE ⬇️</div>
+        <div class="code-display" id="codeDisplay">- - - - - - - -</div>
+        <div class="code-expiry" id="codeExpiry" style="display:none;">⏳ Code expires in <span id="expTimer">60</span>s</div>
         <div class="code-actions">
-          <button class="copy-btn" onclick="copyCode()">
+          <button class="copy-btn" onclick="copyCode()" id="copyBtn" style="opacity:0.4;cursor:not-allowed;">
             <i class="fas fa-copy"></i> &nbsp;COPY CODE
           </button>
           <button class="new-btn" onclick="resetForm()">
-            <i class="fas fa-redo"></i> &nbsp;New Code
+            <i class="fas fa-redo"></i> &nbsp;Reset
           </button>
         </div>
       </div>
@@ -708,7 +703,8 @@ async function generateCode(){
 
   // Reset
   errBox.style.display='none';
-  codeResult.style.display='none';
+  document.getElementById('codeExpiry').style.display='none';
+  document.getElementById('codeLabel').innerHTML='⬇️ YOUR PAIRING CODE WILL APPEAR HERE ⬇️';
   if(expInterval)clearInterval(expInterval);
 
   // Validate
@@ -735,7 +731,17 @@ async function generateCode(){
     if(code){
       // Show the code
       document.getElementById('codeDisplay').textContent=code;
-      codeResult.style.display='block';
+      document.getElementById('codeLabel').innerHTML='✨ YOUR PAIRING CODE ✨';
+      
+      // Activate copy button
+      const copyBtn=document.getElementById('copyBtn');
+      copyBtn.style.opacity='1';
+      copyBtn.style.cursor='pointer';
+
+      // Show expiry
+      const expEl=document.getElementById('codeExpiry');
+      expEl.style.display='block';
+
       btn.innerHTML='<i class="fas fa-check-circle"></i> &nbsp;Code Generated!';
 
       // Scroll to code
@@ -797,7 +803,11 @@ function resetForm(){
   phoneEl.value='';
   phoneEl.classList.remove('ok','bad');
   valMsg.className='val-msg';valMsg.style.display='none';
-  document.getElementById('codeResult').style.display='none';
+  document.getElementById('codeDisplay').textContent='- - - - - - - -';
+  document.getElementById('codeLabel').innerHTML='⬇️ YOUR PAIRING CODE WILL APPEAR HERE ⬇️';
+  document.getElementById('codeExpiry').style.display='none';
+  const copyBtn=document.getElementById('copyBtn');
+  copyBtn.style.opacity='0.4';copyBtn.style.cursor='not-allowed';
   document.getElementById('errBox').style.display='none';
   document.getElementById('genBtn').innerHTML='<i class="fas fa-key"></i> &nbsp;Generate Pairing Code';
   if(expInterval)clearInterval(expInterval);
