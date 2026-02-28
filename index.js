@@ -191,7 +191,7 @@ async function startPairing(phone, sid) {
     const sock = makeWASocket({
   version,
   logger,
-  printQRInTerminal: true,
+
   browser: ['Ubuntu', 'Chrome', '120.0.6099.109'],
   auth: {
     creds: state.creds,
