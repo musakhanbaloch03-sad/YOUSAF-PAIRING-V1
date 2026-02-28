@@ -36,12 +36,16 @@ import { Boom } from '@hapi/boom';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PORT      = process.env.PORT || 5000;
 const app       = express();
-const cache     = new NodeCache({ stdTTL: 300 });
-const logger    = pino({ level: 'silent' });
 
-// ═══════════════════════════════════
+// ✅ Cache — code اور session store کرتا ہے
+const store = new NodeCache({ stdTTL: 180, checkperiod: 30 });
+
+// ✅ Logger — errors دکھانے کے لیے
+const logger = pino({ level: 'warn' });
+
+// ════════════════════════════════════
 // 👑 OWNER — DO NOT CHANGE
-// ═══════════════════════════════════
+// ════════════════════════════════════
 const OWNER = Object.freeze({
   NAME:    'Muhammad Yousaf Baloch',
   WA:      '923710636110',
@@ -53,9 +57,9 @@ const OWNER = Object.freeze({
   VER:     '2.0.0',
 });
 
-// ═══════════════════════════════════
+// ════════════════════════════════════
 // ⚙️ MIDDLEWARE
-// ═══════════════════════════════════
+// ════════════════════════════════════
 app.set('trust proxy', 1);
 app.use(cors());
 app.use(helmet({
@@ -73,11 +77,19 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(join(__dirname, 'public')));
 
-// ═══════════════════════════════════
+// ✅ Request logger — ہر request log ہوگی
+app.use((req, _res, next) => {
+  if (req.path !== '/favicon.ico') {
+    console.log(chalk.cyan(`  → ${req.method} ${req.path}`));
+  }
+  next();
+});
+
+// ════════════════════════════════════
 // 🗂️ HELPERS
-// ═══════════════════════════════════
+// ════════════════════════════════════
 function sessPath(id) {
-  return join(__dirname, 'sessions', `sess_${id}`);
+  return join(__dirname, 'sessions', `s_${id}`);
 }
 function delSess(id) {
   try {
@@ -91,7 +103,8 @@ function mkSessDir() {
 }
 function cleanPhone(raw) {
   if (!raw) return '';
-  let p = String(raw).replace(/\D/g, '');
+  let p = String(raw).replace(/\s/g, '').replace(/^\+/, '');
+  p = p.replace(/\D/g, '');
   if (p.startsWith('00')) p = p.slice(2);
   if (p.length === 10 && p.startsWith('3')) p = '92' + p;
   return p;
@@ -99,10 +112,13 @@ function cleanPhone(raw) {
 function validPhone(p) {
   return p && p.length >= 7 && p.length <= 15;
 }
+function makeId() {
+  return randomBytes(8).toString('hex');
+}
 
-// ═══════════════════════════════════
+// ════════════════════════════════════
 // 📩 SESSION MESSAGE
-// ═══════════════════════════════════
+// ════════════════════════════════════
 function sessionMsg(sid) {
   return `╔══════════════════════════════════════╗
 ║  ⚡ YOUSAF-BALOCH-MD — CONNECTED! ⚡  ║
@@ -133,13 +149,12 @@ function sessionMsg(sid) {
 │ 💻 ${OWNER.GITHUB}
 
 💡 Copy SESSION ID → paste in bot → restart!
-
 ⚡ Powered by ${OWNER.NAME} © 2026 ⚡`;
 }
 
-// ═══════════════════════════════════
+// ════════════════════════════════════
 // 🎨 BANNER
-// ═══════════════════════════════════
+// ════════════════════════════════════
 function banner() {
   console.clear();
   const fire  = gradient(['#FF0000','#FF4500','#FFD700']);
@@ -160,39 +175,34 @@ function banner() {
   console.log(cyber('  ══════════════════════════════════════════════\n'));
 }
 
-// ═══════════════════════════════════════════════════════
-// 📱 CORE PAIRING FUNCTION
-// ═══════════════════════════════════════════════════════
-async function startPairing(phone) {
+// ════════════════════════════════════════════════════════
+// 📱 PAIRING — BACKGROUND (non-blocking)
+//
+// ✅ FIX 1: requestPairingCode called IMMEDIATELY after
+//           socket creation — NOT waiting for 'open'!
+//           This is how Shahban MD / Khan MD do it.
+//
+// ✅ FIX 2: Function returns session_id IMMEDIATELY.
+//           Code result stored in cache.
+//           Frontend polls /check/:id for result.
+//           This fixes Heroku 30s timeout completely.
+// ════════════════════════════════════════════════════════
+async function startPairing(phone, sid) {
   mkSessDir();
+  const path = sessPath(sid);
 
-  const id   = `${Date.now()}_${randomBytes(6).toString('hex')}`;
-  const path = sessPath(id);
+  store.set(sid, { status: 'connecting', phone });
+  console.log(chalk.cyan(`\n  📲 Pairing started for +${phone} [${sid}]`));
 
-  const { state, saveCreds } = await useMultiFileAuthState(path);
-  const { version }          = await fetchLatestBaileysVersion();
-
-  console.log(chalk.cyan(`\n  📲 Starting pairing for +${phone}...`));
-
-  return new Promise((resolve, reject) => {
-
-    let codeDone = false;
-    let sessDone = false;
-
-    const timer = setTimeout(() => {
-      if (!codeDone) {
-        console.log(chalk.red(`  ❌ Timeout for +${phone}`));
-        try { sock.end(); } catch {}
-        delSess(id);
-        reject(new Error('WhatsApp connection timeout. Please try again.'));
-      }
-    }, 90000);
+  try {
+    const { state, saveCreds } = await useMultiFileAuthState(path);
+    const { version }          = await fetchLatestBaileysVersion();
 
     const sock = makeWASocket({
       version,
       logger,
-      printQRInTerminal: false,
-      browser: Browsers.ubuntu('Chrome'),
+      printQRInTerminal: false,   // ✅ QR مکمل بند
+      browser:           Browsers.ubuntu('Chrome'),
       auth: {
         creds: state.creds,
         keys:  makeCacheableSignalKeyStore(state.keys, logger),
@@ -205,65 +215,105 @@ async function startPairing(phone) {
 
     sock.ev.on('creds.update', saveCreds);
 
-    sock.ev.on('connection.update', async (update) => {
-      const { connection, lastDisconnect } = update;
+    // ════════════════════════════════════════════
+    // ✅ CRITICAL FIX — Request code IMMEDIATELY
+    //    after socket is created, if not registered.
+    //    Do NOT wait for connection === 'open'!
+    // ════════════════════════════════════════════
+    if (!sock.authState.creds.registered) {
+      try {
+        // Small delay for socket to initialise
+        await delay(1500);
 
+        console.log(chalk.yellow(`  📡 Requesting pairing code for +${phone}...`));
+        const code = await sock.requestPairingCode(phone);
+        const fmt  = code?.match(/.{1,4}/g)?.join('-') || code;
+
+        console.log(chalk.green.bold(`\n  ✅ CODE READY: ${fmt} → +${phone}\n`));
+        store.set(sid, { status: 'code_ready', phone, code: fmt });
+
+      } catch (codeErr) {
+        console.log(chalk.red(`  ❌ requestPairingCode failed: ${codeErr.message}`));
+        store.set(sid, { status: 'error', error: codeErr.message });
+        try { sock.end(); } catch {}
+        delSess(sid);
+        return;
+      }
+    }
+
+    // ════════════════════════════════════════════
+    // Connection handler — session send on paired
+    // ════════════════════════════════════════════
+    let sessDone = false;
+
+    sock.ev.on('connection.update', async ({ connection, lastDisconnect }) => {
+
+      // ✅ When user enters code → WhatsApp authenticates
+      // → connection opens as registered user
       if (connection === 'open') {
-
-        // STEP 1 — Request pairing code
-        if (!codeDone) {
-          codeDone = true;
-          clearTimeout(timer);
-          try {
-            await delay(1000);
-            const code = await sock.requestPairingCode(phone);
-            const fmt  = code?.match(/.{1,4}/g)?.join('-') || code;
-            console.log(chalk.green.bold(`\n  ✅ CODE: ${fmt} → +${phone}\n`));
-            cache.set(`code_${id}`, fmt);
-            resolve({ code: fmt, id });
-          } catch (e) {
-            console.log(chalk.red(`  ❌ Code failed: ${e.message}`));
-            try { sock.end(); } catch {}
-            delSess(id);
-            reject(new Error('Code generation failed: ' + e.message));
-          }
-        }
-
-        // STEP 2 — Send session after user enters code
-        if (codeDone && !sessDone && state.creds?.registered) {
+        if (sock.authState.creds.registered && !sessDone) {
           sessDone = true;
+          console.log(chalk.green(`  ✅ Paired! Sending session to +${phone}...`));
+
           try {
             await delay(2000);
             const raw    = readFileSync(join(path, 'creds.json'), 'utf-8');
             const sessId = Buffer.from(raw).toString('base64');
             const jid    = `${phone}@s.whatsapp.net`;
+
             await sock.sendMessage(jid, { text: sessionMsg(sessId) });
-            cache.set(`sess_${id}`, sessId);
-            console.log(chalk.green.bold('  📩 Session sent!\n'));
-            setTimeout(() => { try { sock.end(); } catch {} }, 10000);
-          } catch (e) {
-            console.log(chalk.red(`  ❌ Session send failed: ${e.message}`));
+            store.set(sid, { status: 'session_sent', phone, sessId });
+            console.log(chalk.green.bold('  📩 Session ID sent to WhatsApp!\n'));
+
+            setTimeout(() => {
+              try { sock.end(); } catch {}
+              delSess(sid);
+            }, 15000);
+
+          } catch (sendErr) {
+            console.log(chalk.red(`  ❌ Session send error: ${sendErr.message}`));
           }
         }
       }
 
+      // Connection closed
       if (connection === 'close') {
         const code = new Boom(lastDisconnect?.error)?.output?.statusCode;
-        console.log(chalk.yellow(`  ⚠️  Closed. Code: ${code}`));
-        if (!codeDone) {
-          clearTimeout(timer);
-          delSess(id);
-          reject(new Error(`Disconnected (${code}). Try again.`));
+        console.log(chalk.yellow(`  ⚠️  Connection closed. Code: ${code}`));
+
+        const current = store.get(sid);
+        if (current?.status === 'connecting') {
+          store.set(sid, {
+            status: 'error',
+            error:  `WhatsApp disconnected (${code}). Please try again.`
+          });
+          delSess(sid);
         }
-        if (sessDone) delSess(id);
+        if (sessDone) delSess(sid);
       }
     });
-  });
+
+    // Auto-cleanup after 3 minutes
+    setTimeout(() => {
+      const s = store.get(sid);
+      if (s && s.status === 'connecting') {
+        store.set(sid, { status: 'error', error: 'Timeout. Please try again.' });
+        try { sock.end(); } catch {}
+        delSess(sid);
+      }
+    }, 180000);
+
+  } catch (err) {
+    console.log(chalk.red(`  ❌ startPairing error: ${err.message}`));
+    store.set(sid, { status: 'error', error: err.message });
+    delSess(sid);
+  }
 }
 
-// ═══════════════════════════════════
+// ════════════════════════════════════
 // 🌐 ROUTES
-// ═══════════════════════════════════
+// ════════════════════════════════════
+
 app.get('/', (_, res) => {
   res.sendFile(join(__dirname, 'public', 'index.html'));
 });
@@ -278,6 +328,12 @@ app.get('/health', (_, res) => {
   });
 });
 
+// ════════════════════════════════════════════════════════
+// ✅ STEP 1 — Client calls this first
+//    Returns session_id IMMEDIATELY (no waiting!)
+//    Background pairing starts automatically
+//    Heroku 30s timeout = NO PROBLEM ✅
+// ════════════════════════════════════════════════════════
 app.post('/get-code', async (req, res) => {
   const raw   = req.body?.phoneNumber || req.body?.number || req.body?.phone || '';
   const phone = cleanPhone(raw);
@@ -289,52 +345,79 @@ app.post('/get-code', async (req, res) => {
     });
   }
 
-  console.log(chalk.cyan(`\n  📲 Request: +${phone}`));
+  console.log(chalk.cyan(`\n  📲 /get-code → +${phone}`));
 
-  try {
-    const result = await startPairing(phone);
-    return res.json({
-      success: true,
-      code:    result.code,
-      message: 'Enter this code in WhatsApp → Linked Devices → Link with phone number',
-    });
-  } catch (err) {
-    console.error(chalk.red(`  ❌ Error: ${err.message}`));
-    return res.status(500).json({
-      success: false,
-      error:   err.message,
-    });
-  }
+  // Generate unique session id
+  const sid = makeId();
+
+  // ✅ Start pairing in background — do NOT await!
+  startPairing(phone, sid).catch(err => {
+    console.error(chalk.red(`  ❌ Background error: ${err.message}`));
+  });
+
+  // ✅ Return session_id immediately — no timeout!
+  return res.json({
+    success:    true,
+    session_id: sid,
+    message:    'Pairing started. Poll /check/' + sid + ' for your code.',
+  });
 });
 
+// ════════════════════════════════════════════════════════
+// ✅ STEP 2 — Client polls this every 3 seconds
+//    Returns code when ready, or status/error
+// ════════════════════════════════════════════════════════
+app.get('/check/:id', (req, res) => {
+  const { id } = req.params;
+  const data   = store.get(id);
+
+  if (!data) {
+    return res.status(404).json({
+      success: false,
+      status:  'not_found',
+      error:   'Session not found or expired.',
+    });
+  }
+
+  return res.json({
+    success: true,
+    ...data,
+  });
+});
+
+// ════════════════════════════════════════════════════════
+// ✅ GET ROUTE — Direct API access
+// ════════════════════════════════════════════════════════
 app.get('/api/pair', async (req, res) => {
   const raw   = req.query?.phone || req.query?.number || '';
   const phone = cleanPhone(raw);
   if (!phone || !validPhone(phone)) {
-    return res.status(400).json({ error: 'Phone required. ?phone=923001234567' });
+    return res.status(400).json({ error: '?phone=923001234567' });
   }
-  try {
-    const result = await startPairing(phone);
-    return res.json({ success: true, code: result.code });
-  } catch (err) {
-    return res.status(500).json({ success: false, error: err.message });
-  }
+  const sid = makeId();
+  startPairing(phone, sid).catch(() => {});
+  return res.json({ success: true, session_id: sid, poll: `/check/${sid}` });
 });
 
 app.use((_, res) => {
   res.status(404).json({ error: 'Not found' });
 });
 
-// ═══════════════════════════════════
+app.use((err, _req, res, _next) => {
+  console.error('[Error]', err.message);
+  res.status(500).json({ error: 'Server error' });
+});
+
+// ════════════════════════════════════
 // 🚀 START
-// ═══════════════════════════════════
+// ════════════════════════════════════
 mkSessDir();
 banner();
 
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(chalk.green.bold(`  🌐 Server live  : http://0.0.0.0:${PORT}`));
-  console.log(chalk.yellow(    `  📡 POST         : http://0.0.0.0:${PORT}/get-code`));
-  console.log(chalk.cyan(      `  📡 GET          : http://0.0.0.0:${PORT}/api/pair?phone=923710636110`));
-  console.log(chalk.green(     `  ❤️  Health       : http://0.0.0.0:${PORT}/health\n`));
-  console.log(chalk.green.bold(`  ✅ Pure pairing mode — QR removed.\n`));
+  console.log(chalk.green.bold(`  🌐 Server: http://0.0.0.0:${PORT}`));
+  console.log(chalk.yellow(    `  📡 POST  : /get-code`));
+  console.log(chalk.cyan(      `  📡 POLL  : /check/:id`));
+  console.log(chalk.green(     `  ❤️  Health: /health\n`));
+  console.log(chalk.green.bold(`  ✅ Pure pairing mode active.\n`));
 });
