@@ -15,13 +15,11 @@
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'Rajdhani',sans-serif;background:var(--dark);color:#fff;min-height:100vh;overflow-x:hidden;}
 
-/* ═══ ANIMATED GRID BG ═══ */
 .bg-grid{position:fixed;inset:0;z-index:0;
   background-image:linear-gradient(rgba(0,255,247,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,247,.05) 1px,transparent 1px);
   background-size:40px 40px;animation:gridScroll 15s linear infinite;}
 @keyframes gridScroll{to{background-position:40px 40px;}}
 
-/* ═══ ORBS ═══ */
 .bg-orbs{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;}
 .orb{position:absolute;border-radius:50%;filter:blur(100px);opacity:.2;animation:orbF linear infinite;}
 .o1{width:700px;height:700px;background:var(--c1);top:-200px;left:-200px;animation-duration:18s;}
@@ -36,13 +34,9 @@ body{font-family:'Rajdhani',sans-serif;background:var(--dark);color:#fff;min-hei
   75%{transform:translate(30px,60px) scale(1.05);}
 }
 
-/* ═══ SCANLINES ═══ */
 .scanlines{position:fixed;inset:0;z-index:0;pointer-events:none;
-  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.15) 2px,rgba(0,0,0,.15) 4px);
-  animation:scanMove 8s linear infinite;}
-@keyframes scanMove{to{background-position:0 100px;}}
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.15) 2px,rgba(0,0,0,.15) 4px);}
 
-/* ═══ PARTICLES ═══ */
 .particles{position:fixed;inset:0;z-index:0;pointer-events:none;}
 .pt{position:absolute;border-radius:50%;animation:ptFly linear infinite;}
 @keyframes ptFly{
@@ -51,32 +45,26 @@ body{font-family:'Rajdhani',sans-serif;background:var(--dark);color:#fff;min-hei
   100%{transform:translateY(-5vh) scale(1);opacity:0;}
 }
 
-/* ═══ WRAPPER ═══ */
 .wrapper{position:relative;z-index:1;min-height:100vh;padding:25px 16px 80px;display:flex;flex-direction:column;align-items:center;}
 
-/* ═══ WELCOME TAG ═══ */
 .welcome-tag{
   display:inline-flex;align-items:center;gap:10px;
   border:1px solid rgba(0,255,247,.4);background:rgba(0,255,247,.07);
   padding:6px 24px;border-radius:50px;font-size:10px;letter-spacing:5px;
   color:var(--c1);text-transform:uppercase;margin-bottom:20px;
-  box-shadow:0 0 25px rgba(0,255,247,.2),0 0 60px rgba(0,255,247,.08),inset 0 0 25px rgba(0,255,247,.04);
+  box-shadow:0 0 25px rgba(0,255,247,.2),inset 0 0 25px rgba(0,255,247,.04);
   animation:tagP 2.5s ease-in-out infinite;
 }
 @keyframes tagP{
-  0%,100%{box-shadow:0 0 25px rgba(0,255,247,.2),0 0 60px rgba(0,255,247,.08);}
-  50%{box-shadow:0 0 45px rgba(0,255,247,.5),0 0 90px rgba(0,255,247,.2),inset 0 0 30px rgba(0,255,247,.08);}
+  0%,100%{box-shadow:0 0 25px rgba(0,255,247,.2);}
+  50%{box-shadow:0 0 45px rgba(0,255,247,.5),0 0 90px rgba(0,255,247,.2);}
 }
 .welcome-tag::before,.welcome-tag::after{content:'◆';font-size:7px;animation:spinS 3s linear infinite;}
 @keyframes spinS{to{transform:rotate(360deg);}}
 
-/* ═══ MEGA BOT NAME ═══ */
 .bot-name-outer{position:relative;display:inline-block;margin-bottom:8px;}
-
-/* 4-sided animated neon border */
 .bot-name-outer::before{
-  content:'';position:absolute;inset:-14px;border-radius:18px;
-  padding:3px;
+  content:'';position:absolute;inset:-14px;border-radius:18px;padding:3px;
   background:linear-gradient(90deg,var(--c1),var(--c2),var(--c3),var(--c4),var(--c6),var(--c5),var(--c1));
   background-size:500% 100%;
   -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
@@ -84,15 +72,12 @@ body{font-family:'Rajdhani',sans-serif;background:var(--dark);color:#fff;min-hei
   animation:borderRainbow 2.5s linear infinite;
 }
 @keyframes borderRainbow{to{background-position:-500% 0;}}
-
-/* Outer glow */
 .bot-name-outer::after{
   content:'';position:absolute;inset:-30px;border-radius:32px;z-index:-1;
   background:radial-gradient(ellipse,rgba(0,255,247,.18) 0%,rgba(255,0,200,.12) 40%,transparent 70%);
   animation:nameGlowP 2s ease-in-out infinite alternate;
 }
 @keyframes nameGlowP{from{opacity:.5;transform:scale(.93);}to{opacity:1;transform:scale(1.04);}}
-
 .bot-name{
   font-family:'Orbitron',sans-serif;
   font-size:clamp(22px,5vw,54px);font-weight:900;line-height:1.15;
@@ -103,10 +88,8 @@ body{font-family:'Rajdhani',sans-serif;background:var(--dark);color:#fff;min-hei
   animation:rainbowText 3s linear infinite;
 }
 @keyframes rainbowText{to{background-position:-500% 0;}}
-
 .bot-tagline{font-size:12px;letter-spacing:6px;color:rgba(255,255,255,.3);text-transform:uppercase;margin:18px 0 14px;}
 
-/* ═══ PREMIUM BADGE ═══ */
 .premium-badge{
   display:inline-block;
   background:linear-gradient(135deg,var(--c3),var(--c5),var(--c2),var(--c6),var(--c1));
@@ -116,14 +99,12 @@ body{font-family:'Rajdhani',sans-serif;background:var(--dark);color:#fff;min-hei
   animation:badgeG 3s ease-in-out infinite,gradBtn 4s ease infinite;
 }
 @keyframes badgeG{
-  0%,100%{transform:scale(1);box-shadow:0 0 30px rgba(255,230,0,.6),0 0 70px rgba(255,0,200,.35);}
-  50%{transform:scale(1.06);box-shadow:0 0 55px rgba(255,230,0,.9),0 0 120px rgba(255,0,200,.6);}
+  0%,100%{transform:scale(1);}
+  50%{transform:scale(1.06);}
 }
 
-/* ═══ CLOCK ═══ */
 .clock-wrap{
-  background:rgba(0,0,0,.55);
-  border:1px solid rgba(0,255,247,.2);border-radius:22px;padding:18px 28px;
+  background:rgba(0,0,0,.55);border:1px solid rgba(0,255,247,.2);border-radius:22px;padding:18px 28px;
   display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;
   max-width:580px;width:100%;position:relative;overflow:hidden;
   box-shadow:0 0 40px rgba(0,255,247,.1),inset 0 0 40px rgba(0,0,0,.4);
@@ -135,73 +116,31 @@ body{font-family:'Rajdhani',sans-serif;background:var(--dark);color:#fff;min-hei
 }
 @keyframes topScan{0%,100%{opacity:.5;}50%{opacity:1;}}
 .clock-item{text-align:center;}
-.clock-val{
-  font-family:'Share Tech Mono',monospace;font-size:30px;color:var(--c1);line-height:1;
-  text-shadow:0 0 20px var(--c1),0 0 40px rgba(0,255,247,.5),0 0 70px rgba(0,255,247,.2);
-}
+.clock-val{font-family:'Share Tech Mono',monospace;font-size:30px;color:var(--c1);line-height:1;text-shadow:0 0 20px var(--c1);}
 .clock-lbl{font-size:9px;letter-spacing:2px;color:rgba(255,255,255,.3);text-transform:uppercase;margin-top:3px;}
-.clock-sep{
-  font-family:'Share Tech Mono',monospace;font-size:30px;color:var(--c2);
-  text-shadow:0 0 15px var(--c2);animation:blinkK 1s step-end infinite;
-}
+.clock-sep{font-family:'Share Tech Mono',monospace;font-size:30px;color:var(--c2);text-shadow:0 0 15px var(--c2);animation:blinkK 1s step-end infinite;}
 @keyframes blinkK{50%{opacity:0;}}
 .day-badge{
   background:linear-gradient(45deg,var(--c2),var(--c6),var(--c1));
   color:#000;font-weight:900;font-size:12px;letter-spacing:3px;
   padding:6px 18px;border-radius:20px;text-transform:uppercase;
-  box-shadow:0 0 20px rgba(0,255,247,.5),0 0 40px rgba(255,0,200,.3);
 }
 
-/* ═══ MAIN CARD ═══ */
 .main-card{width:100%;max-width:940px;margin-top:38px;animation:slideU .9s cubic-bezier(.22,1,.36,1) .2s both;}
 @keyframes slideU{from{opacity:0;transform:translateY(40px);}to{opacity:1;transform:translateY(0);}}
 
-/* ═══ TABS ═══ */
-.tabs{
-  display:flex;gap:0;background:rgba(0,0,0,.65);
-  border:1px solid rgba(255,255,255,.08);border-radius:22px;padding:7px;
-  margin-bottom:26px;max-width:540px;margin-left:auto;margin-right:auto;
-  position:relative;overflow:hidden;
-}
-.tabs::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:2px;
-  background:linear-gradient(to right,transparent,var(--c2),var(--c1),transparent);
-}
-.tab-btn{
-  flex:1;padding:16px 20px;background:transparent;border:none;border-radius:16px;
-  color:rgba(255,255,255,.3);font-family:'Orbitron',sans-serif;font-size:11px;
-  letter-spacing:2px;cursor:pointer;transition:all .35s;text-transform:uppercase;
-  display:flex;align-items:center;justify-content:center;gap:8px;
-}
-.tab-btn.active{
-  background:linear-gradient(135deg,rgba(0,255,247,.14),rgba(255,0,200,.14),rgba(170,0,255,.1));
-  color:#fff;border:1px solid rgba(0,255,247,.28);
-  box-shadow:0 0 30px rgba(0,255,247,.13);
-}
-.tab-btn i{font-size:17px;}
-#tbP.active i{color:var(--c2);text-shadow:0 0 12px var(--c2);}
-#tbQ.active i{color:var(--c1);text-shadow:0 0 12px var(--c1);}
-
-/* ═══ SECTION ═══ */
 .sec{
   background:rgba(4,2,20,.92);border:1px solid rgba(255,255,255,.07);
-  border-radius:28px;padding:36px 32px;display:none;
+  border-radius:28px;padding:36px 32px;
   position:relative;overflow:hidden;backdrop-filter:blur(30px);
 }
-.sec.on{display:block;animation:fadeU .45s ease;}
-@keyframes fadeU{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
-
-.sec::before{content:'';position:absolute;top:0;left:4%;right:4%;height:3px;border-radius:3px;}
-.sec-pair::before{
+.sec::before{
+  content:'';position:absolute;top:0;left:4%;right:4%;height:3px;border-radius:3px;
   background:linear-gradient(to right,transparent,var(--c2),var(--c6),var(--c2),transparent);
   box-shadow:0 0 25px var(--c2),0 4px 20px rgba(255,0,200,.3);
 }
-.sec-qr::before{
-  background:linear-gradient(to right,transparent,var(--c1),var(--c4),var(--c1),transparent);
-  box-shadow:0 0 25px var(--c1),0 4px 20px rgba(0,255,247,.3);
-}
+@keyframes fadeU{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
 
-/* ═══ PAIR HEADER ═══ */
 .ph{text-align:center;margin-bottom:28px;}
 .ph h3{
   font-family:'Orbitron',sans-serif;font-size:24px;font-weight:900;margin-bottom:7px;
@@ -213,7 +152,6 @@ body{font-family:'Rajdhani',sans-serif;background:var(--dark);color:#fff;min-hei
 }
 .ph p{font-size:13px;color:rgba(255,255,255,.35);letter-spacing:2px;}
 
-/* ═══ PHONE INPUT ═══ */
 .inp-lbl{font-size:11px;letter-spacing:4px;color:rgba(255,255,255,.35);text-transform:uppercase;display:block;margin-bottom:12px;}
 .inp-wrap{position:relative;margin-bottom:8px;}
 .inp-flag{position:absolute;left:18px;top:50%;transform:translateY(-50%);font-size:22px;z-index:2;}
@@ -224,15 +162,14 @@ body{font-family:'Rajdhani',sans-serif;background:var(--dark);color:#fff;min-hei
   font-family:'Share Tech Mono',monospace;letter-spacing:4px;outline:none;transition:.3s;
 }
 .phone-inp::placeholder{color:rgba(255,255,255,.12);font-size:17px;letter-spacing:2px;}
-.phone-inp:focus {border-color:var(--c2);box-shadow:0 0 35px rgba(255,0,200,.25),inset 0 0 25px rgba(255,0,200,.05);}
-.phone-inp.ok   {border-color:var(--c4);box-shadow:0 0 25px rgba(0,255,136,.25);}
-.phone-inp.bad  {border-color:#ff006e;  box-shadow:0 0 25px rgba(255,0,110,.25);}
+.phone-inp:focus{border-color:var(--c2);box-shadow:0 0 35px rgba(255,0,200,.25),inset 0 0 25px rgba(255,0,200,.05);}
+.phone-inp.ok {border-color:var(--c4);box-shadow:0 0 25px rgba(0,255,136,.25);}
+.phone-inp.bad{border-color:#ff006e;box-shadow:0 0 25px rgba(255,0,110,.25);}
 .inp-hint{font-size:11px;color:rgba(255,255,255,.2);margin-left:5px;font-style:italic;}
 .val-msg{font-size:12px;margin-top:8px;margin-left:5px;display:none;font-weight:700;}
 .val-msg.ok {color:var(--c4);display:block;}
 .val-msg.bad{color:#ff6b9d;display:block;}
 
-/* ═══ GENERATE BUTTON — ULTRA SPECTACULAR ═══ */
 .gen-btn{
   width:100%;padding:22px;border:none;border-radius:18px;
   color:#fff;font-family:'Orbitron',sans-serif;
@@ -240,94 +177,83 @@ body{font-family:'Rajdhani',sans-serif;background:var(--dark);color:#fff;min-hei
   text-transform:uppercase;position:relative;overflow:hidden;margin-top:22px;
   background:linear-gradient(135deg,#ff00c8,#aa00ff,#0055ff,#00d2ff,#00ff88,#ffe600,#ff00c8);
   background-size:500% 500%;animation:gradBtn 4s ease infinite;
-  box-shadow:0 0 35px rgba(255,0,200,.5),0 0 70px rgba(0,255,247,.25),0 0 120px rgba(170,0,255,.15);
+  box-shadow:0 0 35px rgba(255,0,200,.5),0 0 70px rgba(0,255,247,.25);
   transition:transform .3s,box-shadow .3s;
 }
 @keyframes gradBtn{0%,100%{background-position:0% 50%;}50%{background-position:100% 50%;}}
-.gen-btn::before{
-  content:'';position:absolute;inset:-3px;border-radius:21px;z-index:-1;
-  background:linear-gradient(135deg,#ff00c8,#aa00ff,#00fff7,#00ff88,#ffe600,#ff00c8);
-  background-size:500% 500%;animation:gradBtn 3s ease infinite;filter:blur(10px);opacity:.8;
-}
 .gen-btn::after{
   content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
   background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);transition:.6s;
 }
 .gen-btn:hover::after{left:100%;}
-.gen-btn:hover{transform:translateY(-5px) scale(1.02);box-shadow:0 0 60px rgba(255,0,200,.8),0 0 120px rgba(0,255,247,.4),0 25px 50px rgba(170,0,255,.5);}
+.gen-btn:hover{transform:translateY(-5px) scale(1.02);}
 .gen-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;animation:none;box-shadow:none;}
-.gen-btn:disabled::before{display:none;}
 
-/* ═══ ERROR BOX ═══ */
-.err-box{
+/* ── STATUS BOX — shows loading/error/success ── */
+.status-box{
+  margin-top:20px;border-radius:16px;padding:18px 20px;
+  display:none;text-align:center;animation:fadeU .3s ease;
+  font-size:14px;font-weight:700;
+}
+.status-box.loading{
+  background:rgba(0,255,247,.06);border:1px solid rgba(0,255,247,.3);
+  color:var(--c1);display:block;
+}
+.status-box.error{
   background:rgba(255,0,80,.08);border:1px solid rgba(255,0,80,.4);
-  border-radius:14px;padding:16px;margin-top:18px;
-  font-size:14px;color:#ff6b9d;display:none;text-align:center;
-  animation:fadeU .3s ease;font-weight:600;
+  color:#ff6b9d;display:block;
+}
+.status-box.success{
+  background:rgba(0,255,136,.06);border:1px solid rgba(0,255,136,.3);
+  color:var(--c4);display:block;
 }
 
-/* ═══ CODE RESULT — STAR OF THE SHOW ═══ */
+/* ── CODE RESULT ── */
 .code-result{
   margin-top:28px;border-radius:24px;padding:32px;text-align:center;
-  display:block;
-  background:#050510;
-  border:3px solid #00ff88;
-  box-shadow:0 0 30px rgba(0,255,136,.5),0 0 60px rgba(0,255,136,.2),inset 0 0 30px rgba(0,255,136,.05);
-  animation:resultBorderPulse 2s ease-in-out infinite;
+  display:none;
+  background:#050510;border:3px solid #00ff88;
+  box-shadow:0 0 30px rgba(0,255,136,.5),0 0 60px rgba(0,255,136,.2);
+  animation:resultPulse 2s ease-in-out infinite;
 }
-@keyframes resultBorderPulse{
-  0%,100%{border-color:#00ff88;box-shadow:0 0 25px rgba(0,255,136,.5),0 0 50px rgba(0,255,136,.2);}
-  33%{border-color:#00fff7;box-shadow:0 0 35px rgba(0,255,247,.6),0 0 70px rgba(0,255,247,.25);}
-  66%{border-color:#ff00c8;box-shadow:0 0 35px rgba(255,0,200,.6),0 0 70px rgba(255,0,200,.25);}
+.code-result.visible{display:block;animation:fadeU .5s ease, resultPulse 2s ease-in-out 0.5s infinite;}
+@keyframes resultPulse{
+  0%,100%{border-color:#00ff88;box-shadow:0 0 25px rgba(0,255,136,.5);}
+  33%{border-color:#00fff7;box-shadow:0 0 35px rgba(0,255,247,.6);}
+  66%{border-color:#ff00c8;box-shadow:0 0 35px rgba(255,0,200,.6);}
 }
-
 .code-label{
   font-family:'Orbitron',sans-serif;font-size:13px;letter-spacing:5px;
-  text-transform:uppercase;margin-bottom:16px;
-  color:#00ff88;
+  text-transform:uppercase;margin-bottom:16px;color:#00ff88;
   text-shadow:0 0 10px rgba(0,255,136,.8);
 }
-
-/* THE CODE ITSELF */
 .code-display{
   font-family:'Share Tech Mono',monospace;
   font-size:clamp(28px,8vw,56px);color:#00ff88;letter-spacing:10px;
   text-shadow:0 0 20px #00ff88,0 0 40px rgba(0,255,136,.6);
   margin-bottom:16px;padding:20px 14px;
   background:rgba(0,0,0,.6);border-radius:16px;
-  border:2px solid rgba(0,255,136,.4);
-  word-break:break-all;
+  border:2px solid rgba(0,255,136,.4);word-break:break-all;
 }
-@keyframes codePulse{
-  0%,100%{text-shadow:0 0 15px rgba(0,255,136,1),0 0 35px rgba(0,255,136,.8),0 0 70px rgba(0,255,136,.5);}
-  50%{text-shadow:0 0 25px rgba(0,255,136,1),0 0 60px rgba(0,255,136,1),0 0 100px rgba(0,255,136,.7),0 0 160px rgba(0,255,136,.35);}
-}
-
-.code-expiry{font-size:13px;color:rgba(255,230,0,.85);margin-bottom:22px;font-weight:700;text-shadow:0 0 10px rgba(255,230,0,.4);}
-
+.code-expiry{font-size:13px;color:rgba(255,230,0,.85);margin-bottom:22px;font-weight:700;}
 .code-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
-
-/* COPY BUTTON — GLOWING */
 .copy-btn{
   background:linear-gradient(135deg,var(--c4),var(--c1),var(--c4));
   background-size:300% 300%;
   color:#000;border:none;padding:16px 38px;border-radius:16px;
   cursor:pointer;font-family:'Orbitron',sans-serif;font-weight:900;
   font-size:14px;letter-spacing:3px;text-transform:uppercase;transition:.3s;
-  box-shadow:0 0 28px rgba(0,255,136,.5),0 0 55px rgba(0,255,247,.3);
-  animation:gradBtn 3s ease infinite;
+  box-shadow:0 0 28px rgba(0,255,136,.5);animation:gradBtn 3s ease infinite;
 }
-.copy-btn:hover{transform:scale(1.08) translateY(-3px);box-shadow:0 0 50px rgba(0,255,136,.8),0 0 100px rgba(0,255,247,.5);}
-
+.copy-btn:hover{transform:scale(1.08) translateY(-3px);}
 .new-btn{
   background:transparent;color:rgba(255,255,255,.5);
   border:1px solid rgba(255,255,255,.15);padding:16px 26px;
   border-radius:16px;cursor:pointer;font-family:'Rajdhani',sans-serif;
   font-size:14px;letter-spacing:2px;font-weight:700;transition:.3s;
 }
-.new-btn:hover{border-color:var(--c2);color:var(--c2);box-shadow:0 0 18px rgba(255,0,200,.2);}
+.new-btn:hover{border-color:var(--c2);color:var(--c2);}
 
-/* ═══ COPY TOAST ═══ */
 .toast{
   position:fixed;bottom:38px;left:50%;
   transform:translateX(-50%) translateY(120px);
@@ -335,31 +261,20 @@ body{font-family:'Rajdhani',sans-serif;background:var(--dark);color:#fff;min-hei
   color:#000;padding:15px 35px;border-radius:50px;
   font-weight:900;font-size:15px;letter-spacing:2px;
   transition:.45s cubic-bezier(.22,1,.36,1);z-index:9999;
-  box-shadow:0 0 40px rgba(0,255,136,.6);
-  font-family:'Orbitron',sans-serif;
+  box-shadow:0 0 40px rgba(0,255,136,.6);font-family:'Orbitron',sans-serif;
 }
 .toast.show{transform:translateX(-50%) translateY(0);}
 
-/* ═══ HOW-TO STEPS ═══ */
-.how-to{
-  background:rgba(255,0,200,.04);border:1px solid rgba(255,0,200,.15);
-  border-radius:18px;padding:22px;margin-top:26px;
-}
-.how-to h4{
-  font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:4px;
-  text-transform:uppercase;margin-bottom:16px;
-  color:var(--c2);text-shadow:0 0 12px rgba(255,0,200,.6);
-}
+.how-to{background:rgba(255,0,200,.04);border:1px solid rgba(255,0,200,.15);border-radius:18px;padding:22px;margin-top:26px;}
+.how-to h4{font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:4px;text-transform:uppercase;margin-bottom:16px;color:var(--c2);}
 .step{display:flex;align-items:flex-start;gap:14px;margin-bottom:12px;font-size:13px;color:rgba(255,255,255,.6);}
 .step-n{
   width:25px;height:25px;flex-shrink:0;
   background:rgba(255,0,200,.15);border:1px solid rgba(255,0,200,.4);
   border-radius:50%;display:flex;align-items:center;justify-content:center;
   font-size:11px;color:var(--c2);font-weight:900;
-  box-shadow:0 0 10px rgba(255,0,200,.25);
 }
 
-/* ═══ SPINNER ═══ */
 .spin{
   width:18px;height:18px;border:2px solid rgba(255,255,255,.2);border-top-color:#fff;
   border-radius:50%;animation:spinK .7s linear infinite;
@@ -367,63 +282,6 @@ body{font-family:'Rajdhani',sans-serif;background:var(--dark);color:#fff;min-hei
 }
 @keyframes spinK{to{transform:rotate(360deg);}}
 
-/* ═══ QR SECTION ═══ */
-.qr-layout{display:flex;flex-direction:column;align-items:center;gap:22px;}
-.qr-head{text-align:center;}
-.qr-head h3{
-  font-family:'Orbitron',sans-serif;font-size:24px;font-weight:900;margin-bottom:7px;
-  background:linear-gradient(90deg,var(--c1),var(--c4),var(--c1));background-size:300% 100%;
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  animation:rainbowText 3s linear infinite;
-  filter:drop-shadow(0 0 18px rgba(0,255,247,.8));
-}
-.qr-head p{font-size:13px;color:rgba(255,255,255,.35);letter-spacing:2px;}
-
-/* QR box with glowing border */
-.qr-outer{
-  position:relative;padding:3px;border-radius:24px;
-  background:linear-gradient(90deg,var(--c1),var(--c2),var(--c4),var(--c6),var(--c3),var(--c1));
-  background-size:400% 100%;animation:rainbowText 2.5s linear infinite;
-  box-shadow:0 0 50px rgba(0,255,247,.5),0 0 100px rgba(0,255,247,.2);
-}
-.qr-box{
-  width:250px;height:250px;background:#fff;border-radius:22px;
-  display:flex;align-items:center;justify-content:center;overflow:hidden;
-}
-.qr-box img{width:100%;height:100%;object-fit:contain;}
-.qr-ph{text-align:center;color:#bbb;padding:20px;}
-.qr-ph i{font-size:70px;color:#ccc;margin-bottom:12px;display:block;}
-.qr-ph p{font-size:11px;color:#aaa;}
-
-/* QR timer */
-.qr-timer-bar{width:250px;height:5px;background:rgba(255,255,255,.08);border-radius:10px;overflow:hidden;display:none;}
-.qr-timer-fill{height:100%;width:100%;background:linear-gradient(90deg,var(--c4),var(--c1),var(--c2));border-radius:10px;transition:width 1s linear;}
-
-.qr-status{display:flex;align-items:center;gap:9px;font-size:13px;color:rgba(255,255,255,.5);font-weight:700;}
-.qr-dot{width:10px;height:10px;border-radius:50%;background:var(--c4);box-shadow:0 0 12px var(--c4);animation:dotP 1.5s infinite;}
-@keyframes dotP{50%{opacity:.3;transform:scale(.7);}}
-
-/* QR button */
-.qr-btn{
-  background:transparent;border:2px solid rgba(0,255,247,.4);color:var(--c1);
-  padding:15px 40px;border-radius:16px;cursor:pointer;
-  font-family:'Orbitron',sans-serif;font-size:12px;font-weight:900;
-  letter-spacing:3px;text-transform:uppercase;transition:.3s;
-  box-shadow:0 0 20px rgba(0,255,247,.15);
-}
-.qr-btn:hover{background:rgba(0,255,247,.1);border-color:var(--c1);box-shadow:0 0 45px rgba(0,255,247,.4);transform:translateY(-3px);}
-.qr-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
-
-.qr-err{
-  background:rgba(255,0,80,.08);border:1px solid rgba(255,0,80,.3);
-  border-radius:12px;padding:14px;font-size:13px;color:#ff6b9d;
-  display:none;text-align:center;width:100%;font-weight:600;
-}
-
-.qr-how{background:rgba(0,255,247,.03);border:1px solid rgba(0,255,247,.12);border-radius:18px;padding:22px;width:100%;}
-.qr-how h4{font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:4px;color:var(--c1);text-transform:uppercase;margin-bottom:16px;text-shadow:0 0 12px rgba(0,255,247,.6);}
-
-/* ═══ SOCIAL ═══ */
 .social{
   width:100%;max-width:940px;margin-top:42px;
   background:rgba(4,2,20,.92);backdrop-filter:blur(30px);
@@ -442,7 +300,6 @@ body{font-family:'Rajdhani',sans-serif;background:var(--dark);color:#fff;min-hei
   background-size:400% 100%;
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
   animation:rainbowText 3s linear infinite;
-  filter:drop-shadow(0 0 10px rgba(255,230,0,.5));
 }
 .social-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:16px;}
 .s-btn{
@@ -460,7 +317,6 @@ body{font-family:'Rajdhani',sans-serif;background:var(--dark);color:#fff;min-hei
 .s-btn.wa:hover{border-color:rgba(0,255,136,.5);color:var(--c4);box-shadow:0 0 30px rgba(0,255,136,.15);}
 .s-btn.gh:hover{border-color:rgba(255,255,255,.4);color:#fff;box-shadow:0 0 30px rgba(255,255,255,.1);}
 
-/* ═══ FOOTER ═══ */
 .footer{width:100%;max-width:940px;margin-top:30px;text-align:center;padding:28px;border-top:1px solid rgba(255,255,255,.05);}
 .footer p{font-size:13px;color:rgba(255,255,255,.25);margin-bottom:6px;}
 .footer .own{color:var(--c3);font-weight:900;text-shadow:0 0 12px rgba(255,230,0,.5);}
@@ -468,8 +324,6 @@ body{font-family:'Rajdhani',sans-serif;background:var(--dark);color:#fff;min-hei
 
 @media(max-width:600px){
   .sec{padding:24px 14px;}
-  .qr-box,.qr-outer-w{width:200px;height:200px;}
-  .qr-timer-bar{width:200px;}
   .code-display{letter-spacing:7px;}
   .social-grid{grid-template-columns:1fr 1fr;}
   .clock-wrap{padding:14px 16px;gap:10px;}
@@ -488,7 +342,6 @@ body{font-family:'Rajdhani',sans-serif;background:var(--dark);color:#fff;min-hei
 
 <div class="wrapper">
 
-  <!-- ═══ HEADER ═══ -->
   <div class="welcome-tag">⚡ Official Pairing Gateway ⚡</div>
 
   <div class="bot-name-outer">
@@ -498,7 +351,6 @@ body{font-family:'Rajdhani',sans-serif;background:var(--dark);color:#fff;min-hei
   <div class="bot-tagline">WhatsApp Multi-Device Bot System</div>
   <div class="premium-badge">💎 ULTRA PRO PREMIUM 💎</div>
 
-  <!-- Clock -->
   <div class="clock-wrap">
     <div class="clock-item"><div class="clock-val" id="cH">00</div><div class="clock-lbl">Hour</div></div>
     <div class="clock-sep">:</div>
@@ -508,20 +360,8 @@ body{font-family:'Rajdhani',sans-serif;background:var(--dark);color:#fff;min-hei
     <div class="day-badge" id="cD">---</div>
   </div>
 
-  <!-- ═══ MAIN CARD ═══ -->
   <div class="main-card">
-    <!-- Tabs -->
-    <div class="tabs">
-      <button class="tab-btn active" onclick="sw('pair')" id="tbP">
-        <i class="fas fa-key"></i> Pairing Code
-      </button>
-      <button class="tab-btn" onclick="sw('qr')" id="tbQ">
-        <i class="fas fa-qrcode"></i> QR Code
-      </button>
-    </div>
-
-    <!-- ═══ PAIRING SECTION ═══ -->
-    <div class="sec sec-pair on" id="sPair">
+    <div class="sec">
       <div class="ph">
         <h3><i class="fas fa-key"></i> &nbsp;Pairing Code Generator</h3>
         <p>Enter your WhatsApp number to get your pairing code instantly</p>
@@ -530,7 +370,7 @@ body{font-family:'Rajdhani',sans-serif;background:var(--dark);color:#fff;min-hei
       <label class="inp-lbl"><i class="fas fa-mobile-alt"></i> &nbsp;WhatsApp Number</label>
       <div class="inp-wrap">
         <span class="inp-flag">📱</span>
-        <input type="text" class="phone-inp" id="phoneNumber"
+        <input type="tel" class="phone-inp" id="phoneInp"
                placeholder="923XXXXXXXXX" autocomplete="off" maxlength="15">
       </div>
       <div class="inp-hint">Country code required — no spaces or + &nbsp;(e.g. 923001234567)</div>
@@ -540,24 +380,24 @@ body{font-family:'Rajdhani',sans-serif;background:var(--dark);color:#fff;min-hei
         <i class="fas fa-key"></i> &nbsp;Generate Pairing Code
       </button>
 
-      <div class="err-box" id="errBox"></div>
+      <!-- STATUS BOX — loading/error messages here -->
+      <div class="status-box" id="statusBox"></div>
 
-      <!-- ✅ CODE RESULT BOX — always visible -->
-      <div class="code-result" id="codeResult" style="display:block;">
-        <div class="code-label" id="codeLabel">⬇️ YOUR PAIRING CODE WILL APPEAR HERE ⬇️</div>
-        <div class="code-display" id="codeDisplay">- - - - - - - -</div>
-        <div class="code-expiry" id="codeExpiry" style="display:none;">⏳ Code expires in <span id="expTimer">60</span>s</div>
+      <!-- CODE RESULT — hidden until code arrives -->
+      <div class="code-result" id="codeResult">
+        <div class="code-label">✨ YOUR PAIRING CODE ✨</div>
+        <div class="code-display" id="codeDisplay"></div>
+        <div class="code-expiry" id="codeExpiry"></div>
         <div class="code-actions">
-          <button class="copy-btn" onclick="copyCode()" id="copyBtn" style="opacity:0.4;cursor:not-allowed;">
+          <button class="copy-btn" onclick="copyCode()" id="copyBtn">
             <i class="fas fa-copy"></i> &nbsp;COPY CODE
           </button>
           <button class="new-btn" onclick="resetForm()">
-            <i class="fas fa-redo"></i> &nbsp;Reset
+            <i class="fas fa-redo"></i> &nbsp;New Request
           </button>
         </div>
       </div>
 
-      <!-- How to link -->
       <div class="how-to">
         <h4><i class="fas fa-info-circle"></i> &nbsp;How to Link Your WhatsApp</h4>
         <div class="step"><div class="step-n">1</div><span>Open WhatsApp → Settings → Linked Devices</span></div>
@@ -566,49 +406,9 @@ body{font-family:'Rajdhani',sans-serif;background:var(--dark);color:#fff;min-hei
         <div class="step"><div class="step-n">4</div><span>Your SESSION ID will be sent to your WhatsApp 🚀</span></div>
       </div>
     </div>
+  </div>
 
-    <!-- ═══ QR SECTION ═══ -->
-    <div class="sec sec-qr" id="sQr">
-      <div class="qr-layout">
-        <div class="qr-head">
-          <h3><i class="fas fa-qrcode"></i> &nbsp;QR Code Scanner</h3>
-          <p>Generate and scan with WhatsApp to link instantly</p>
-        </div>
-
-        <div class="qr-outer">
-          <div class="qr-box" id="qrBox">
-            <div class="qr-ph" id="qrPh">
-              <i class="fas fa-qrcode"></i>
-              <p>Click the button below to generate</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="qr-timer-bar" id="qrBar"><div class="qr-timer-fill" id="qrFill"></div></div>
-
-        <div class="qr-status">
-          <div class="qr-dot"></div>
-          <span id="qrSt">Ready to generate</span>
-        </div>
-
-        <button class="qr-btn" id="qrBtn" onclick="generateQR()">
-          <i class="fas fa-sync-alt"></i> &nbsp;Generate QR Code
-        </button>
-
-        <div class="qr-err" id="qrErr"></div>
-
-        <div class="qr-how">
-          <h4><i class="fas fa-camera"></i> &nbsp;How to Scan</h4>
-          <div class="step"><div class="step-n">1</div><span>Open WhatsApp → Settings → Linked Devices</span></div>
-          <div class="step"><div class="step-n">2</div><span>Tap "Link a Device" → "Scan QR Code"</span></div>
-          <div class="step"><div class="step-n">3</div><span>Point your camera at the QR code shown above</span></div>
-          <div class="step"><div class="step-n">4</div><span>Your SESSION ID will be sent to your WhatsApp 🚀</span></div>
-        </div>
-      </div>
-    </div>
-  </div><!-- end main-card -->
-
-  <!-- ═══ SOCIAL ═══ -->
+  <!-- SOCIAL — Owner Details -->
   <div class="social">
     <div class="social-title">⚡ Connect with Muhammad Yousaf Baloch ⚡</div>
     <div class="social-grid">
@@ -627,19 +427,19 @@ body{font-family:'Rajdhani',sans-serif;background:var(--dark);color:#fff;min-hei
     </div>
   </div>
 
-  <!-- ═══ FOOTER ═══ -->
+  <!-- FOOTER -->
   <div class="footer">
     <p>Created with ❤️ by <span class="own">Muhammad Yousaf Baloch</span></p>
     <p>📱 WhatsApp: <strong>+923710636110</strong></p>
     <p class="cp">© 2026 YOUSAF-BALOCH-MD | All Rights Reserved</p>
   </div>
 
-</div><!-- end wrapper -->
+</div>
 
 <div class="toast" id="toast">✅ Code Copied!</div>
 
 <script>
-// ─── PARTICLES ───
+// ── PARTICLES ──
 (function(){
   const c=['#00fff7','#ff00c8','#ffe600','#00ff88','#aa00ff','#ff6600'];
   const w=document.getElementById('pts');
@@ -657,7 +457,7 @@ body{font-family:'Rajdhani',sans-serif;background:var(--dark);color:#fff;min-hei
   }
 })();
 
-// ─── CLOCK ───
+// ── CLOCK ──
 const DAYS=['SUN','MON','TUE','WED','THU','FRI','SAT'];
 function pad(n){return String(n).padStart(2,'0');}
 function tick(){
@@ -669,227 +469,199 @@ function tick(){
 }
 tick();setInterval(tick,1000);
 
-// ─── TABS ───
-function sw(t){
-  document.getElementById('tbP').classList.toggle('active',t==='pair');
-  document.getElementById('tbQ').classList.toggle('active',t==='qr');
-  document.getElementById('sPair').classList.toggle('on',t==='pair');
-  document.getElementById('sQr').classList.toggle('on',t==='qr');
+// ── PHONE VALIDATION ──
+const phoneEl = document.getElementById('phoneInp');
+const valMsg  = document.getElementById('valMsg');
+
+phoneEl.addEventListener('input', () => {
+  phoneEl.value = phoneEl.value.replace(/[^0-9]/g, '');
+  const n = phoneEl.value;
+  phoneEl.classList.remove('ok','bad');
+  valMsg.className = 'val-msg';
+  valMsg.style.display = 'none';
+  if(!n.length) return;
+  if(n.length < 7){
+    phoneEl.classList.add('bad');
+    valMsg.textContent = '❌ Too short — please include country code';
+    valMsg.classList.add('bad');
+  } else if(n.length > 15){
+    phoneEl.classList.add('bad');
+    valMsg.textContent = '❌ Too long — check the number';
+    valMsg.classList.add('bad');
+  } else {
+    phoneEl.classList.add('ok');
+    valMsg.textContent = '✅ Number looks good!';
+    valMsg.classList.add('ok');
+  }
+});
+phoneEl.addEventListener('keypress', e => { if(e.key==='Enter') generateCode(); });
+
+// ── STATE ──
+let expInterval = null;
+
+// ── SHOW STATUS ──
+function showStatus(type, msg) {
+  const b = document.getElementById('statusBox');
+  b.className = 'status-box ' + type;
+  b.innerHTML = msg;
+}
+function hideStatus() {
+  document.getElementById('statusBox').className = 'status-box';
+  document.getElementById('statusBox').innerHTML = '';
 }
 
-// ─── PHONE VALIDATION ───
-const phoneEl=document.getElementById('phoneNumber');
-const valMsg=document.getElementById('valMsg');
-phoneEl.addEventListener('input',()=>{
-  phoneEl.value=phoneEl.value.replace(/[^0-9]/g,'');
-  const n=phoneEl.value;
-  phoneEl.classList.remove('ok','bad');
-  valMsg.className='val-msg';
-  if(!n.length){valMsg.style.display='none';return;}
-  if(n.length<10){phoneEl.classList.add('bad');valMsg.textContent='❌ Too short — please include country code';valMsg.classList.add('bad');}
-  else if(n.length>15){phoneEl.classList.add('bad');valMsg.textContent='❌ Too long — check the number';valMsg.classList.add('bad');}
-  else{phoneEl.classList.add('ok');valMsg.textContent='✅ Number looks good!';valMsg.classList.add('ok');}
-});
-phoneEl.addEventListener('keypress',e=>{if(e.key==='Enter')generateCode();});
+// ── MAIN: GENERATE PAIRING CODE ──
+async function generateCode() {
+  const number = phoneEl.value.replace(/[^0-9]/g, '');
+  const btn    = document.getElementById('genBtn');
 
-// ─── PAIRING CODE — ROBUST API HANDLER ───
-let expInterval=null;
-
-async function generateCode(){
-  const number=phoneEl.value.replace(/[^0-9]/g,'');
-  const btn=document.getElementById('genBtn');
-  const errBox=document.getElementById('errBox');
-  const codeResult=document.getElementById('codeResult');
-
-  // Reset
-  errBox.style.display='none';
-  document.getElementById('codeExpiry').style.display='none';
-  document.getElementById('codeLabel').innerHTML='⬇️ YOUR PAIRING CODE WILL APPEAR HERE ⬇️';
-  if(expInterval)clearInterval(expInterval);
+  // Clear previous results
+  hideStatus();
+  document.getElementById('codeResult').classList.remove('visible');
+  if(expInterval) clearInterval(expInterval);
 
   // Validate
-  if(!number){showErr('❌ Please enter your phone number first.');phoneEl.focus();return;}
-  if(number.length<10){showErr('❌ Number too short! Please add country code (e.g. 923001234567)');phoneEl.focus();return;}
-  if(number.length>15){showErr('❌ Number too long! Please check and try again.');phoneEl.focus();return;}
-
-  // Loading
-  btn.disabled=true;
-  btn.innerHTML='<span class="spin"></span> Generating...';
-
-  try{
-    const res=await fetch('/get-code',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({phoneNumber:number})
-    });
-
-    const data=await res.json();
-
-    // ✅ Flexible response parsing — works with multiple API formats
-    const code=data.code||data.pairingCode||data.pairing_code||data.sessionId||null;
-
-    if(code){
-      // Show the code
-      document.getElementById('codeDisplay').textContent=code;
-      document.getElementById('codeLabel').innerHTML='✨ YOUR PAIRING CODE ✨';
-      
-      // Activate copy button
-      const copyBtn=document.getElementById('copyBtn');
-      copyBtn.style.opacity='1';
-      copyBtn.style.cursor='pointer';
-
-      // Show expiry
-      const expEl=document.getElementById('codeExpiry');
-      expEl.style.display='block';
-
-      btn.innerHTML='<i class="fas fa-check-circle"></i> &nbsp;Code Generated!';
-
-      // Scroll to code
-      setTimeout(()=>codeResult.scrollIntoView({behavior:'smooth',block:'center'}),100);
-
-      // 60s countdown
-      let rem=60;
-      document.getElementById('codeExpiry').innerHTML=`⏳ Code expires in <span id="expTimer">${rem}</span>s`;
-      expInterval=setInterval(()=>{
-        rem--;
-        const el=document.getElementById('expTimer');
-        if(el)el.textContent=rem;
-        if(rem<=0){
-          clearInterval(expInterval);
-          document.getElementById('codeExpiry').innerHTML='⚠️ Code expired — generate a new one';
-        }
-      },1000);
-
-    }else{
-      // Show the actual server response for debugging
-      const errMsg=data.error||data.message||data.msg||JSON.stringify(data);
-      showErr('❌ '+errMsg);
-      btn.innerHTML='<i class="fas fa-key"></i> &nbsp;Try Again';
-    }
-
-  }catch(err){
-    showErr('❌ Connection error: '+err.message);
-    btn.innerHTML='<i class="fas fa-key"></i> &nbsp;Try Again';
+  if(!number || number.length < 7) {
+    showStatus('error', '❌ Please enter a valid phone number with country code.<br><small>Example: 923001234567</small>');
+    phoneEl.focus();
+    return;
   }
 
-  btn.disabled=false;
+  // Set loading state
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span> Connecting to WhatsApp...';
+  showStatus('loading', '<span class="spin"></span> Connecting to WhatsApp servers — please wait up to 30 seconds...');
+
+  try {
+    // ── FETCH with 90s timeout ──
+    const controller = new AbortController();
+    const timeoutId  = setTimeout(() => controller.abort(), 90000);
+
+    const res = await fetch('/get-code', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ phoneNumber: number, number: number }),
+      signal:  controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+
+    // Parse response
+    let data;
+    try {
+      data = await res.json();
+    } catch(_) {
+      throw new Error('Server returned invalid response. Please try again.');
+    }
+
+    // Check HTTP status
+    if(!res.ok) {
+      const msg = data?.error || data?.message || `Server error ${res.status}`;
+      throw new Error(msg);
+    }
+
+    // Extract code — support all formats
+    const code = data.code || data.pairingCode || data.pairing_code || data.PairingCode || null;
+
+    if(code) {
+      // ✅ SUCCESS
+      hideStatus();
+      document.getElementById('codeDisplay').textContent = code;
+      document.getElementById('codeResult').classList.add('visible');
+
+      btn.innerHTML = '<i class="fas fa-check-circle"></i> &nbsp;Code Generated!';
+
+      // Scroll to code
+      setTimeout(() => {
+        document.getElementById('codeResult').scrollIntoView({ behavior:'smooth', block:'center' });
+      }, 200);
+
+      // 60s countdown
+      let rem = 60;
+      document.getElementById('codeExpiry').innerHTML =
+        `⏳ Enter this code in WhatsApp NOW — expires in <span id="expTimer">${rem}</span>s`;
+
+      expInterval = setInterval(() => {
+        rem--;
+        const el = document.getElementById('expTimer');
+        if(el) el.textContent = rem;
+        if(rem <= 0) {
+          clearInterval(expInterval);
+          document.getElementById('codeExpiry').innerHTML =
+            '⚠️ Code expired — click "New Request" to generate a new one';
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-key"></i> &nbsp;Generate Pairing Code';
+        }
+      }, 1000);
+
+    } else {
+      // Server responded but no code
+      const errMsg = data?.error || data?.message || JSON.stringify(data);
+      throw new Error(errMsg);
+    }
+
+  } catch(err) {
+    // ── ERROR HANDLING ──
+    let userMsg = '';
+
+    if(err.name === 'AbortError') {
+      userMsg = `❌ <strong>Connection Timeout (90s)</strong><br>
+        <small>WhatsApp server did not respond in time.<br>
+        This can happen due to server load. Please try again.</small>`;
+    } else if(err.message.includes('fetch') || err.message.includes('network') || err.message.includes('Failed to fetch')) {
+      userMsg = `❌ <strong>Network Error</strong><br>
+        <small>Cannot reach the server. Please check your internet and try again.</small>`;
+    } else {
+      userMsg = `❌ <strong>Error:</strong> ${err.message}<br>
+        <small>Please try again after a few seconds.</small>`;
+    }
+
+    showStatus('error', userMsg);
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-key"></i> &nbsp;Try Again';
+  }
 }
 
-function showErr(msg){
-  const b=document.getElementById('errBox');
-  b.innerHTML=msg;b.style.display='block';
+// ── COPY CODE ──
+function copyCode() {
+  const code = document.getElementById('codeDisplay').textContent.trim();
+  if(!code) return;
+  const t = document.getElementById('toast');
+  const done = () => {
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  };
+  if(navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(code).then(done).catch(() => { fallbackCopy(code); done(); });
+  } else {
+    fallbackCopy(code); done();
+  }
 }
-
-// ─── COPY CODE ───
-function copyCode(){
-  const code=document.getElementById('codeDisplay').textContent.trim();
-  const t=document.getElementById('toast');
-  if(!code||code==='----')return;
-  const done=()=>{t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);};
-  if(navigator.clipboard&&navigator.clipboard.writeText){
-    navigator.clipboard.writeText(code).then(done).catch(()=>{fb(code);done();});
-  }else{fb(code);done();}
-}
-function fb(text){
-  const el=document.createElement('textarea');
-  el.value=text;el.style.cssText='position:fixed;opacity:0;top:0;left:0;';
-  document.body.appendChild(el);el.focus();el.select();
-  try{document.execCommand('copy');}catch(e){}
+function fallbackCopy(text) {
+  const el = document.createElement('textarea');
+  el.value = text;
+  el.style.cssText = 'position:fixed;opacity:0;top:0;left:0;';
+  document.body.appendChild(el);
+  el.focus(); el.select();
+  try { document.execCommand('copy'); } catch(e) {}
   document.body.removeChild(el);
 }
 
-// ─── RESET FORM ───
-function resetForm(){
-  phoneEl.value='';
+// ── RESET ──
+function resetForm() {
+  phoneEl.value = '';
   phoneEl.classList.remove('ok','bad');
-  valMsg.className='val-msg';valMsg.style.display='none';
-  document.getElementById('codeDisplay').textContent='- - - - - - - -';
-  document.getElementById('codeLabel').innerHTML='⬇️ YOUR PAIRING CODE WILL APPEAR HERE ⬇️';
-  document.getElementById('codeExpiry').style.display='none';
-  const copyBtn=document.getElementById('copyBtn');
-  copyBtn.style.opacity='0.4';copyBtn.style.cursor='not-allowed';
-  document.getElementById('errBox').style.display='none';
-  document.getElementById('genBtn').innerHTML='<i class="fas fa-key"></i> &nbsp;Generate Pairing Code';
-  if(expInterval)clearInterval(expInterval);
+  valMsg.className = 'val-msg';
+  valMsg.style.display = 'none';
+  hideStatus();
+  document.getElementById('codeResult').classList.remove('visible');
+  document.getElementById('codeDisplay').textContent = '';
+  document.getElementById('codeExpiry').innerHTML = '';
+  const btn = document.getElementById('genBtn');
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fas fa-key"></i> &nbsp;Generate Pairing Code';
+  if(expInterval) clearInterval(expInterval);
   phoneEl.focus();
-}
-
-// ─── QR CODE — ROBUST ───
-const QR_LIFE=60;
-let qrTimer=null;
-
-async function generateQR(){
-  const btn=document.getElementById('qrBtn');
-  const err=document.getElementById('qrErr');
-  const st=document.getElementById('qrSt');
-  const bar=document.getElementById('qrBar');
-
-  if(qrTimer)clearInterval(qrTimer);
-  err.style.display='none';
-  btn.disabled=true;
-  btn.innerHTML='<span class="spin"></span> Generating...';
-  st.textContent='Connecting to server...';
-
-  // Remove old QR image
-  const old=document.getElementById('qrImg');
-  if(old)old.remove();
-  document.getElementById('qrPh').style.display='block';
-
-  try{
-    const res=await fetch('/get-qr');
-    const data=await res.json();
-
-    // Flexible QR image source detection
-    let imgSrc=null;
-    if(data.base64)imgSrc='data:image/png;base64,'+data.base64;
-    else if(data.qr&&data.qr.startsWith('data:'))imgSrc=data.qr;
-    else if(data.qr)imgSrc=data.qr;
-    else if(data.image)imgSrc=data.image;
-    else if(data.qrCode)imgSrc=data.qrCode;
-    else if(data.qrcode)imgSrc=data.qrcode;
-
-    if(data.success!==false && imgSrc){
-      document.getElementById('qrPh').style.display='none';
-      const img=document.createElement('img');
-      img.id='qrImg';img.src=imgSrc;
-      img.style.cssText='width:100%;height:100%;object-fit:contain;';
-      document.getElementById('qrBox').appendChild(img);
-
-      // Timer bar
-      bar.style.display='block';
-      const fill=document.getElementById('qrFill');
-      fill.style.transition='none';fill.style.width='100%';
-      let elapsed=0;
-      qrTimer=setInterval(()=>{
-        elapsed++;
-        fill.style.transition='width 1s linear';
-        fill.style.width=((QR_LIFE-elapsed)/QR_LIFE*100)+'%';
-        st.textContent=`Scan quickly! Expires in ${QR_LIFE-elapsed}s`;
-        if(elapsed>=QR_LIFE){
-          clearInterval(qrTimer);
-          st.textContent='QR expired — generate a new one';
-          btn.innerHTML='<i class="fas fa-sync-alt"></i> &nbsp;Generate New QR';
-        }
-      },1000);
-
-      st.textContent='Scan with WhatsApp now! 📱';
-      btn.innerHTML='<i class="fas fa-sync-alt"></i> &nbsp;Refresh QR';
-    }else{
-      const errMsg=data.error||data.message||JSON.stringify(data);
-      showQrErr('❌ '+errMsg);
-      btn.innerHTML='<i class="fas fa-sync-alt"></i> &nbsp;Retry';
-    }
-  }catch(e){
-    showQrErr('❌ Connection error: '+e.message);
-    btn.innerHTML='<i class="fas fa-sync-alt"></i> &nbsp;Retry';
-  }
-  btn.disabled=false;
-}
-
-function showQrErr(msg){
-  const e=document.getElementById('qrErr');
-  e.innerHTML=msg;e.style.display='block';
-  document.getElementById('qrSt').textContent='Error — see message above';
 }
 </script>
 </body>
