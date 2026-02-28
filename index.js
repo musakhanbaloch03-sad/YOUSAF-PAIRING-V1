@@ -39,15 +39,9 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const PORT      = process.env.PORT || 5000;
 const app       = express();
 
-// ✅ Cache — code اور session store کرتا ہے
-const store = new NodeCache({ stdTTL: 180, checkperiod: 30 });
-
-// ✅ Logger — errors دکھانے کے لیے
+const store  = new NodeCache({ stdTTL: 180, checkperiod: 30 });
 const logger = pino({ level: 'warn' });
 
-// ════════════════════════════════════
-// 👑 OWNER — DO NOT CHANGE
-// ════════════════════════════════════
 const OWNER = Object.freeze({
   NAME:    'Muhammad Yousaf Baloch',
   WA:      '923710636110',
@@ -59,60 +53,44 @@ const OWNER = Object.freeze({
   VER:     '2.0.0',
 });
 
-// ════════════════════════════════════════════════════════════════
-// ✅ SECURITY FIX - Multiple Rate Limiters (GitHub CodeQL Fix)
-// ════════════════════════════════════════════════════════════════
-
-// 🔒 Strict rate limiter for pairing endpoints (prevent abuse)
 const strictLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 30, // 30 requests per 15 minutes
+  windowMs: 15 * 60 * 1000,
+  max: 30,
   message: { error: 'Too many pairing requests. Try again in 15 minutes.' },
   standardHeaders: true,
   legacyHeaders: false,
   skipSuccessfulRequests: false,
 });
 
-// 🔒 General rate limiter for public endpoints (prevent DDoS)
 const generalLimiter = rateLimit({
-  windowMs: 5 * 60 * 1000, // 5 minutes
-  max: 100, // 100 requests per 5 minutes
+  windowMs: 5 * 60 * 1000,
+  max: 100,
   message: { error: 'Too many requests. Please slow down.' },
   standardHeaders: true,
   legacyHeaders: false,
   skipSuccessfulRequests: true,
 });
 
-// 🔒 Health check rate limiter (monitoring tools)
 const healthLimiter = rateLimit({
-  windowMs: 1 * 60 * 1000, // 1 minute
-  max: 60, // 60 requests per minute
+  windowMs: 1 * 60 * 1000,
+  max: 60,
   message: { error: 'Health check rate limit exceeded.' },
   standardHeaders: true,
   legacyHeaders: false,
 });
 
-// ════════════════════════════════════
-// ⚙️ MIDDLEWARE
-// ════════════════════════════════════
 app.set('trust proxy', 1);
 app.use(cors());
+
+// ✅ FIX: CSP بند کی — fetch requests block نہیں ہوں گی
 app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      styleSrc:   ["'self'","'unsafe-inline'","https://fonts.googleapis.com","https://cdnjs.cloudflare.com"],
-      scriptSrc:  ["'self'","'unsafe-inline'"],
-      fontSrc:    ["'self'","https://fonts.gstatic.com","https://cdnjs.cloudflare.com"],
-      imgSrc:     ["'self'","data:","https:"],
-    },
-  },
+  contentSecurityPolicy: false,
 }));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(join(__dirname, 'public')));
 
-// ✅ Request logger — ہر request log ہوگی
 app.use((req, _res, next) => {
   if (req.path !== '/favicon.ico') {
     console.log(chalk.cyan(`  → ${req.method} ${req.path}`));
@@ -120,9 +98,6 @@ app.use((req, _res, next) => {
   next();
 });
 
-// ════════════════════════════════════
-// 🗂️ HELPERS
-// ════════════════════════════════════
 function sessPath(id) {
   return join(__dirname, 'sessions', `s_${id}`);
 }
@@ -151,9 +126,6 @@ function makeId() {
   return randomBytes(8).toString('hex');
 }
 
-// ════════════════════════════════════
-// 📩 SESSION MESSAGE
-// ════════════════════════════════════
 function sessionMsg(sid) {
   return `╔══════════════════════════════════════╗
 ║  ⚡ YOUSAF-BALOCH-MD — CONNECTED! ⚡  ║
@@ -187,9 +159,6 @@ function sessionMsg(sid) {
 ⚡ Powered by ${OWNER.NAME} © 2026 ⚡`;
 }
 
-// ════════════════════════════════════
-// 🎨 BANNER
-// ════════════════════════════════════
 function banner() {
   console.clear();
   const fire  = gradient(['#FF0000','#FF4500','#FFD700']);
@@ -209,21 +178,9 @@ function banner() {
   console.log(chalk.cyan('  💻 GitHub: ') + chalk.white(OWNER.GITHUB));
   console.log(cyber('  ══════════════════════════════════════════════'));
   console.log(chalk.green('  🔒 Security: Rate limiting enabled'));
-  console.log(chalk.green('  ✅ GitHub CodeQL: Compliant\n'));
+  console.log(chalk.green('  ✅ CSP: Disabled for fetch compatibility\n'));
 }
 
-// ════════════════════════════════════════════════════════
-// 📱 PAIRING — BACKGROUND (non-blocking)
-//
-// ✅ FIX 1: requestPairingCode called IMMEDIATELY after
-//           socket creation — NOT waiting for 'open'!
-//           This is how Shahban MD / Khan MD do it.
-//
-// ✅ FIX 2: Function returns session_id IMMEDIATELY.
-//           Code result stored in cache.
-//           Frontend polls /check/:id for result.
-//           This fixes Heroku 30s timeout completely.
-// ════════════════════════════════════════════════════════
 async function startPairing(phone, sid) {
   mkSessDir();
   const path = sessPath(sid);
@@ -238,7 +195,7 @@ async function startPairing(phone, sid) {
     const sock = makeWASocket({
       version,
       logger,
-      printQRInTerminal: false,   // ✅ QR مکمل بند
+      printQRInTerminal: false,
       browser:           Browsers.ubuntu('Chrome'),
       auth: {
         creds: state.creds,
@@ -252,23 +209,14 @@ async function startPairing(phone, sid) {
 
     sock.ev.on('creds.update', saveCreds);
 
-    // ════════════════════════════════════════════
-    // ✅ CRITICAL FIX — Request code IMMEDIATELY
-    //    after socket is created, if not registered.
-    //    Do NOT wait for connection === 'open'!
-    // ════════════════════════════════════════════
     if (!sock.authState.creds.registered) {
       try {
-        // Small delay for socket to initialise
         await delay(1500);
-
         console.log(chalk.yellow(`  📡 Requesting pairing code for +${phone}...`));
         const code = await sock.requestPairingCode(phone);
         const fmt  = code?.match(/.{1,4}/g)?.join('-') || code;
-
         console.log(chalk.green.bold(`\n  ✅ CODE READY: ${fmt} → +${phone}\n`));
         store.set(sid, { status: 'code_ready', phone, code: fmt });
-
       } catch (codeErr) {
         console.log(chalk.red(`  ❌ requestPairingCode failed: ${codeErr.message}`));
         store.set(sid, { status: 'error', error: codeErr.message });
@@ -278,46 +226,34 @@ async function startPairing(phone, sid) {
       }
     }
 
-    // ════════════════════════════════════════════
-    // Connection handler — session send on paired
-    // ════════════════════════════════════════════
     let sessDone = false;
 
     sock.ev.on('connection.update', async ({ connection, lastDisconnect }) => {
-
-      // ✅ When user enters code → WhatsApp authenticates
-      // → connection opens as registered user
       if (connection === 'open') {
         if (sock.authState.creds.registered && !sessDone) {
           sessDone = true;
           console.log(chalk.green(`  ✅ Paired! Sending session to +${phone}...`));
-
           try {
             await delay(2000);
             const raw    = readFileSync(join(path, 'creds.json'), 'utf-8');
             const sessId = Buffer.from(raw).toString('base64');
             const jid    = `${phone}@s.whatsapp.net`;
-
             await sock.sendMessage(jid, { text: sessionMsg(sessId) });
             store.set(sid, { status: 'session_sent', phone, sessId });
             console.log(chalk.green.bold('  📩 Session ID sent to WhatsApp!\n'));
-
             setTimeout(() => {
               try { sock.end(); } catch {}
               delSess(sid);
             }, 15000);
-
           } catch (sendErr) {
             console.log(chalk.red(`  ❌ Session send error: ${sendErr.message}`));
           }
         }
       }
 
-      // Connection closed
       if (connection === 'close') {
         const code = new Boom(lastDisconnect?.error)?.output?.statusCode;
         console.log(chalk.yellow(`  ⚠️  Connection closed. Code: ${code}`));
-
         const current = store.get(sid);
         if (current?.status === 'connecting') {
           store.set(sid, {
@@ -330,7 +266,6 @@ async function startPairing(phone, sid) {
       }
     });
 
-    // Auto-cleanup after 3 minutes
     setTimeout(() => {
       const s = store.get(sid);
       if (s && s.status === 'connecting') {
@@ -347,16 +282,10 @@ async function startPairing(phone, sid) {
   }
 }
 
-// ════════════════════════════════════════════════════════════════
-// 🌐 ROUTES - ✅ ALL PROTECTED WITH RATE LIMITING
-// ════════════════════════════════════════════════════════════════
-
-// ✅ FIX: Homepage with rate limiting (GitHub Security Fix)
 app.get('/', generalLimiter, (_, res) => {
   res.sendFile(join(__dirname, 'public', 'index.html'));
 });
 
-// ✅ FIX: Health check with rate limiting (GitHub Security Fix)
 app.get('/health', healthLimiter, (_, res) => {
   res.json({
     status:   '✅ Online',
@@ -368,13 +297,6 @@ app.get('/health', healthLimiter, (_, res) => {
   });
 });
 
-// ════════════════════════════════════════════════════════
-// ✅ STEP 1 — Client calls this first
-//    Returns session_id IMMEDIATELY (no waiting!)
-//    Background pairing starts automatically
-//    Heroku 30s timeout = NO PROBLEM ✅
-//    ✅ Protected with strict rate limiting
-// ════════════════════════════════════════════════════════
 app.post('/get-code', strictLimiter, async (req, res) => {
   const raw   = req.body?.phoneNumber || req.body?.number || req.body?.phone || '';
   const phone = cleanPhone(raw);
@@ -387,16 +309,12 @@ app.post('/get-code', strictLimiter, async (req, res) => {
   }
 
   console.log(chalk.cyan(`\n  📲 /get-code → +${phone}`));
-
-  // Generate unique session id
   const sid = makeId();
 
-  // ✅ Start pairing in background — do NOT await!
   startPairing(phone, sid).catch(err => {
     console.error(chalk.red(`  ❌ Background error: ${err.message}`));
   });
 
-  // ✅ Return session_id immediately — no timeout!
   return res.json({
     success:    true,
     session_id: sid,
@@ -404,11 +322,6 @@ app.post('/get-code', strictLimiter, async (req, res) => {
   });
 });
 
-// ════════════════════════════════════════════════════════
-// ✅ STEP 2 — Client polls this every 3 seconds
-//    Returns code when ready, or status/error
-//    ✅ Protected with general rate limiting
-// ════════════════════════════════════════════════════════
 app.get('/check/:id', generalLimiter, (req, res) => {
   const { id } = req.params;
   const data   = store.get(id);
@@ -421,16 +334,9 @@ app.get('/check/:id', generalLimiter, (req, res) => {
     });
   }
 
-  return res.json({
-    success: true,
-    ...data,
-  });
+  return res.json({ success: true, ...data });
 });
 
-// ════════════════════════════════════════════════════════
-// ✅ GET ROUTE — Direct API access
-//    ✅ Protected with strict rate limiting
-// ════════════════════════════════════════════════════════
 app.get('/api/pair', strictLimiter, async (req, res) => {
   const raw   = req.query?.phone || req.query?.number || '';
   const phone = cleanPhone(raw);
@@ -442,20 +348,15 @@ app.get('/api/pair', strictLimiter, async (req, res) => {
   return res.json({ success: true, session_id: sid, poll: `/check/${sid}` });
 });
 
-// ✅ 404 handler with rate limiting
 app.use(generalLimiter, (_, res) => {
   res.status(404).json({ error: 'Not found' });
 });
 
-// Error handler
 app.use((err, _req, res, _next) => {
   console.error('[Error]', err.message);
   res.status(500).json({ error: 'Server error' });
 });
 
-// ════════════════════════════════════
-// 🚀 START
-// ════════════════════════════════════
 mkSessDir();
 banner();
 
@@ -468,7 +369,6 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(chalk.green.bold(`  🔒 Rate limiting: ENABLED\n`));
 });
 
-// ✅ Graceful shutdown
 process.on('SIGTERM', () => {
   console.log(chalk.yellow('\n⚠️  SIGTERM - Shutting down gracefully...'));
   process.exit(0);
@@ -478,4 +378,3 @@ process.on('SIGINT', () => {
   console.log(chalk.yellow('\n⚠️  SIGINT - Shutting down gracefully...'));
   process.exit(0);
 });
-                                                            
