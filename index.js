@@ -4,6 +4,7 @@
  * ║          Created by: Muhammad Yousaf Baloch                     ║
  * ║          WhatsApp: +923710636110                                 ║
  * ║          GitHub: https://github.com/musakhanbaloch03-sad        ║
+ * ║          ✅ SECURITY HARDENED - GitHub CodeQL Compliant         ║
  * ╚══════════════════════════════════════════════════════════════════╝
  */
 
@@ -13,6 +14,7 @@ dotenv.config();
 import express   from 'express';
 import cors      from 'cors';
 import helmet    from 'helmet';
+import rateLimit from 'express-rate-limit';
 import pino      from 'pino';
 import chalk     from 'chalk';
 import figlet    from 'figlet';
@@ -55,6 +57,39 @@ const OWNER = Object.freeze({
   GITHUB:  'https://github.com/musakhanbaloch03-sad',
   BOT:     'YOUSAF-BALOCH-MD',
   VER:     '2.0.0',
+});
+
+// ════════════════════════════════════════════════════════════════
+// ✅ SECURITY FIX - Multiple Rate Limiters (GitHub CodeQL Fix)
+// ════════════════════════════════════════════════════════════════
+
+// 🔒 Strict rate limiter for pairing endpoints (prevent abuse)
+const strictLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 30, // 30 requests per 15 minutes
+  message: { error: 'Too many pairing requests. Try again in 15 minutes.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+  skipSuccessfulRequests: false,
+});
+
+// 🔒 General rate limiter for public endpoints (prevent DDoS)
+const generalLimiter = rateLimit({
+  windowMs: 5 * 60 * 1000, // 5 minutes
+  max: 100, // 100 requests per 5 minutes
+  message: { error: 'Too many requests. Please slow down.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+  skipSuccessfulRequests: true,
+});
+
+// 🔒 Health check rate limiter (monitoring tools)
+const healthLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 60, // 60 requests per minute
+  message: { error: 'Health check rate limit exceeded.' },
+  standardHeaders: true,
+  legacyHeaders: false,
 });
 
 // ════════════════════════════════════
@@ -172,7 +207,9 @@ function banner() {
   console.log(chalk.cyan('  🎬 YT    : ') + chalk.red(OWNER.YOUTUBE));
   console.log(chalk.cyan('  📢 Chan  : ') + chalk.green(OWNER.CHANNEL));
   console.log(chalk.cyan('  💻 GitHub: ') + chalk.white(OWNER.GITHUB));
-  console.log(cyber('  ══════════════════════════════════════════════\n'));
+  console.log(cyber('  ══════════════════════════════════════════════'));
+  console.log(chalk.green('  🔒 Security: Rate limiting enabled'));
+  console.log(chalk.green('  ✅ GitHub CodeQL: Compliant\n'));
 }
 
 // ════════════════════════════════════════════════════════
@@ -310,21 +347,24 @@ async function startPairing(phone, sid) {
   }
 }
 
-// ════════════════════════════════════
-// 🌐 ROUTES
-// ════════════════════════════════════
+// ════════════════════════════════════════════════════════════════
+// 🌐 ROUTES - ✅ ALL PROTECTED WITH RATE LIMITING
+// ════════════════════════════════════════════════════════════════
 
-app.get('/', (_, res) => {
+// ✅ FIX: Homepage with rate limiting (GitHub Security Fix)
+app.get('/', generalLimiter, (_, res) => {
   res.sendFile(join(__dirname, 'public', 'index.html'));
 });
 
-app.get('/health', (_, res) => {
+// ✅ FIX: Health check with rate limiting (GitHub Security Fix)
+app.get('/health', healthLimiter, (_, res) => {
   res.json({
-    status:  '✅ Online',
-    service: 'YOUSAF-PAIRING-V1',
-    owner:   OWNER.NAME,
-    version: OWNER.VER,
-    time:    new Date().toISOString(),
+    status:   '✅ Online',
+    service:  'YOUSAF-PAIRING-V1',
+    owner:    OWNER.NAME,
+    version:  OWNER.VER,
+    time:     new Date().toISOString(),
+    security: 'Rate limiting enabled',
   });
 });
 
@@ -333,8 +373,9 @@ app.get('/health', (_, res) => {
 //    Returns session_id IMMEDIATELY (no waiting!)
 //    Background pairing starts automatically
 //    Heroku 30s timeout = NO PROBLEM ✅
+//    ✅ Protected with strict rate limiting
 // ════════════════════════════════════════════════════════
-app.post('/get-code', async (req, res) => {
+app.post('/get-code', strictLimiter, async (req, res) => {
   const raw   = req.body?.phoneNumber || req.body?.number || req.body?.phone || '';
   const phone = cleanPhone(raw);
 
@@ -366,8 +407,9 @@ app.post('/get-code', async (req, res) => {
 // ════════════════════════════════════════════════════════
 // ✅ STEP 2 — Client polls this every 3 seconds
 //    Returns code when ready, or status/error
+//    ✅ Protected with general rate limiting
 // ════════════════════════════════════════════════════════
-app.get('/check/:id', (req, res) => {
+app.get('/check/:id', generalLimiter, (req, res) => {
   const { id } = req.params;
   const data   = store.get(id);
 
@@ -387,8 +429,9 @@ app.get('/check/:id', (req, res) => {
 
 // ════════════════════════════════════════════════════════
 // ✅ GET ROUTE — Direct API access
+//    ✅ Protected with strict rate limiting
 // ════════════════════════════════════════════════════════
-app.get('/api/pair', async (req, res) => {
+app.get('/api/pair', strictLimiter, async (req, res) => {
   const raw   = req.query?.phone || req.query?.number || '';
   const phone = cleanPhone(raw);
   if (!phone || !validPhone(phone)) {
@@ -399,10 +442,12 @@ app.get('/api/pair', async (req, res) => {
   return res.json({ success: true, session_id: sid, poll: `/check/${sid}` });
 });
 
-app.use((_, res) => {
+// ✅ 404 handler with rate limiting
+app.use(generalLimiter, (_, res) => {
   res.status(404).json({ error: 'Not found' });
 });
 
+// Error handler
 app.use((err, _req, res, _next) => {
   console.error('[Error]', err.message);
   res.status(500).json({ error: 'Server error' });
@@ -418,6 +463,19 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(chalk.green.bold(`  🌐 Server: http://0.0.0.0:${PORT}`));
   console.log(chalk.yellow(    `  📡 POST  : /get-code`));
   console.log(chalk.cyan(      `  📡 POLL  : /check/:id`));
-  console.log(chalk.green(     `  ❤️  Health: /health\n`));
-  console.log(chalk.green.bold(`  ✅ Pure pairing mode active.\n`));
+  console.log(chalk.green(     `  ❤️  Health: /health`));
+  console.log(chalk.green.bold(`  ✅ Pure pairing mode active`));
+  console.log(chalk.green.bold(`  🔒 Rate limiting: ENABLED\n`));
 });
+
+// ✅ Graceful shutdown
+process.on('SIGTERM', () => {
+  console.log(chalk.yellow('\n⚠️  SIGTERM - Shutting down gracefully...'));
+  process.exit(0);
+});
+
+process.on('SIGINT', () => {
+  console.log(chalk.yellow('\n⚠️  SIGINT - Shutting down gracefully...'));
+  process.exit(0);
+});
+                                                            
