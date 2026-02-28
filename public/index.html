@@ -3,312 +3,87 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>YOUSAF-BALOCH-MD | Ultra Pro Pairing Gateway</title>
+<title>YOUSAF-BALOCH-MD | Pairing Gateway</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
-:root{
-  --c1:#00fff7;--c2:#ff00c8;--c3:#ffe600;
-  --c4:#00ff88;--c5:#ff6600;--c6:#aa00ff;
-  --dark:#02000a;
-}
+:root{--c1:#00fff7;--c2:#ff00c8;--c3:#ffe600;--c4:#00ff88;--c5:#ff6600;--c6:#aa00ff;--dark:#02000a;}
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'Rajdhani',sans-serif;background:var(--dark);color:#fff;min-height:100vh;overflow-x:hidden;}
-
-.bg-grid{position:fixed;inset:0;z-index:0;
-  background-image:linear-gradient(rgba(0,255,247,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,247,.05) 1px,transparent 1px);
-  background-size:40px 40px;animation:gridScroll 15s linear infinite;}
+.bg-grid{position:fixed;inset:0;z-index:0;background-image:linear-gradient(rgba(0,255,247,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,247,.05) 1px,transparent 1px);background-size:40px 40px;animation:gridScroll 15s linear infinite;}
 @keyframes gridScroll{to{background-position:40px 40px;}}
-
 .bg-orbs{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;}
-.orb{position:absolute;border-radius:50%;filter:blur(100px);opacity:.2;animation:orbF linear infinite;}
+.orb{position:absolute;border-radius:50%;filter:blur(100px);opacity:.18;animation:orbF linear infinite;}
 .o1{width:700px;height:700px;background:var(--c1);top:-200px;left:-200px;animation-duration:18s;}
 .o2{width:600px;height:600px;background:var(--c2);bottom:-200px;right:-200px;animation-duration:22s;animation-direction:reverse;}
 .o3{width:400px;height:400px;background:var(--c6);top:35%;left:25%;animation-duration:13s;}
-.o4{width:350px;height:350px;background:var(--c3);top:10%;right:10%;animation-duration:26s;}
-.o5{width:300px;height:300px;background:var(--c4);bottom:20%;left:60%;animation-duration:20s;}
-@keyframes orbF{
-  0%,100%{transform:translate(0,0) scale(1);}
-  25%{transform:translate(50px,-50px) scale(1.1);}
-  50%{transform:translate(-40px,40px) scale(.9);}
-  75%{transform:translate(30px,60px) scale(1.05);}
-}
-
-.scanlines{position:fixed;inset:0;z-index:0;pointer-events:none;
-  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.15) 2px,rgba(0,0,0,.15) 4px);}
-
+@keyframes orbF{0%,100%{transform:translate(0,0) scale(1);}25%{transform:translate(50px,-50px) scale(1.1);}50%{transform:translate(-40px,40px) scale(.9);}75%{transform:translate(30px,60px) scale(1.05);}}
+.scanlines{position:fixed;inset:0;z-index:0;pointer-events:none;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.12) 2px,rgba(0,0,0,.12) 4px);}
 .particles{position:fixed;inset:0;z-index:0;pointer-events:none;}
 .pt{position:absolute;border-radius:50%;animation:ptFly linear infinite;}
-@keyframes ptFly{
-  0%{transform:translateY(100vh) scale(0);opacity:0;}
-  5%{opacity:1;}90%{opacity:1;}
-  100%{transform:translateY(-5vh) scale(1);opacity:0;}
-}
-
+@keyframes ptFly{0%{transform:translateY(100vh) scale(0);opacity:0;}5%{opacity:1;}90%{opacity:1;}100%{transform:translateY(-5vh) scale(1);opacity:0;}}
 .wrapper{position:relative;z-index:1;min-height:100vh;padding:25px 16px 80px;display:flex;flex-direction:column;align-items:center;}
-
-.welcome-tag{
-  display:inline-flex;align-items:center;gap:10px;
-  border:1px solid rgba(0,255,247,.4);background:rgba(0,255,247,.07);
-  padding:6px 24px;border-radius:50px;font-size:10px;letter-spacing:5px;
-  color:var(--c1);text-transform:uppercase;margin-bottom:20px;
-  box-shadow:0 0 25px rgba(0,255,247,.2),inset 0 0 25px rgba(0,255,247,.04);
-  animation:tagP 2.5s ease-in-out infinite;
-}
-@keyframes tagP{
-  0%,100%{box-shadow:0 0 25px rgba(0,255,247,.2);}
-  50%{box-shadow:0 0 45px rgba(0,255,247,.5),0 0 90px rgba(0,255,247,.2);}
-}
-.welcome-tag::before,.welcome-tag::after{content:'◆';font-size:7px;animation:spinS 3s linear infinite;}
-@keyframes spinS{to{transform:rotate(360deg);}}
-
-.bot-name-outer{position:relative;display:inline-block;margin-bottom:8px;}
-.bot-name-outer::before{
-  content:'';position:absolute;inset:-14px;border-radius:18px;padding:3px;
-  background:linear-gradient(90deg,var(--c1),var(--c2),var(--c3),var(--c4),var(--c6),var(--c5),var(--c1));
-  background-size:500% 100%;
-  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
-  -webkit-mask-composite:xor;mask-composite:exclude;
-  animation:borderRainbow 2.5s linear infinite;
-}
-@keyframes borderRainbow{to{background-position:-500% 0;}}
-.bot-name-outer::after{
-  content:'';position:absolute;inset:-30px;border-radius:32px;z-index:-1;
-  background:radial-gradient(ellipse,rgba(0,255,247,.18) 0%,rgba(255,0,200,.12) 40%,transparent 70%);
-  animation:nameGlowP 2s ease-in-out infinite alternate;
-}
-@keyframes nameGlowP{from{opacity:.5;transform:scale(.93);}to{opacity:1;transform:scale(1.04);}}
-.bot-name{
-  font-family:'Orbitron',sans-serif;
-  font-size:clamp(22px,5vw,54px);font-weight:900;line-height:1.15;
-  padding:14px 22px;display:block;
-  background:linear-gradient(90deg,var(--c1),var(--c2),var(--c3),var(--c4),var(--c6),var(--c5),var(--c1));
-  background-size:500% 100%;
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  animation:rainbowText 3s linear infinite;
-}
+.welcome-tag{display:inline-flex;align-items:center;gap:10px;border:1px solid rgba(0,255,247,.4);background:rgba(0,255,247,.07);padding:6px 24px;border-radius:50px;font-size:10px;letter-spacing:5px;color:var(--c1);text-transform:uppercase;margin-bottom:20px;box-shadow:0 0 25px rgba(0,255,247,.2);animation:tagP 2.5s ease-in-out infinite;}
+@keyframes tagP{0%,100%{box-shadow:0 0 25px rgba(0,255,247,.2);}50%{box-shadow:0 0 45px rgba(0,255,247,.5);}}
+.bot-name{font-family:'Orbitron',sans-serif;font-size:clamp(22px,5vw,52px);font-weight:900;padding:14px 22px;display:block;background:linear-gradient(90deg,var(--c1),var(--c2),var(--c3),var(--c4),var(--c6),var(--c5),var(--c1));background-size:500% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:rainbowText 3s linear infinite;text-align:center;}
 @keyframes rainbowText{to{background-position:-500% 0;}}
-.bot-tagline{font-size:12px;letter-spacing:6px;color:rgba(255,255,255,.3);text-transform:uppercase;margin:18px 0 14px;}
-
-.premium-badge{
-  display:inline-block;
-  background:linear-gradient(135deg,var(--c3),var(--c5),var(--c2),var(--c6),var(--c1));
-  background-size:400% 400%;color:#000;padding:9px 30px;border-radius:50px;
-  font-weight:900;font-size:13px;letter-spacing:3px;margin-bottom:28px;
-  box-shadow:0 0 30px rgba(255,230,0,.6),0 0 70px rgba(255,0,200,.35);
-  animation:badgeG 3s ease-in-out infinite,gradBtn 4s ease infinite;
-}
-@keyframes badgeG{
-  0%,100%{transform:scale(1);}
-  50%{transform:scale(1.06);}
-}
-
-.clock-wrap{
-  background:rgba(0,0,0,.55);border:1px solid rgba(0,255,247,.2);border-radius:22px;padding:18px 28px;
-  display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;
-  max-width:580px;width:100%;position:relative;overflow:hidden;
-  box-shadow:0 0 40px rgba(0,255,247,.1),inset 0 0 40px rgba(0,0,0,.4);
-}
-.clock-wrap::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:2px;
-  background:linear-gradient(to right,transparent,var(--c1),var(--c2),var(--c3),var(--c1),transparent);
-  animation:topScan 2.5s linear infinite;
-}
-@keyframes topScan{0%,100%{opacity:.5;}50%{opacity:1;}}
-.clock-item{text-align:center;}
+.bot-tagline{font-size:12px;letter-spacing:6px;color:rgba(255,255,255,.3);text-transform:uppercase;margin:12px 0 14px;text-align:center;}
+.premium-badge{display:inline-block;background:linear-gradient(135deg,var(--c3),var(--c5),var(--c2));color:#000;padding:9px 30px;border-radius:50px;font-weight:900;font-size:13px;letter-spacing:3px;margin-bottom:28px;box-shadow:0 0 30px rgba(255,230,0,.5);animation:badgeG 3s ease-in-out infinite;}
+@keyframes badgeG{0%,100%{transform:scale(1);}50%{transform:scale(1.05);}}
+.clock-wrap{background:rgba(0,0,0,.55);border:1px solid rgba(0,255,247,.2);border-radius:22px;padding:18px 28px;display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;max-width:560px;width:100%;box-shadow:0 0 40px rgba(0,255,247,.1);margin-bottom:10px;}
 .clock-val{font-family:'Share Tech Mono',monospace;font-size:30px;color:var(--c1);line-height:1;text-shadow:0 0 20px var(--c1);}
-.clock-lbl{font-size:9px;letter-spacing:2px;color:rgba(255,255,255,.3);text-transform:uppercase;margin-top:3px;}
-.clock-sep{font-family:'Share Tech Mono',monospace;font-size:30px;color:var(--c2);text-shadow:0 0 15px var(--c2);animation:blinkK 1s step-end infinite;}
+.clock-lbl{font-size:9px;letter-spacing:2px;color:rgba(255,255,255,.3);text-transform:uppercase;margin-top:3px;text-align:center;}
+.clock-sep{font-family:'Share Tech Mono',monospace;font-size:30px;color:var(--c2);animation:blinkK 1s step-end infinite;}
 @keyframes blinkK{50%{opacity:0;}}
-.day-badge{
-  background:linear-gradient(45deg,var(--c2),var(--c6),var(--c1));
-  color:#000;font-weight:900;font-size:12px;letter-spacing:3px;
-  padding:6px 18px;border-radius:20px;text-transform:uppercase;
-}
-
-.main-card{width:100%;max-width:940px;margin-top:38px;animation:slideU .9s cubic-bezier(.22,1,.36,1) .2s both;}
+.day-badge{background:linear-gradient(45deg,var(--c2),var(--c6),var(--c1));color:#000;font-weight:900;font-size:12px;letter-spacing:3px;padding:6px 18px;border-radius:20px;}
+.main-card{width:100%;max-width:920px;margin-top:32px;animation:slideU .9s cubic-bezier(.22,1,.36,1) both;}
 @keyframes slideU{from{opacity:0;transform:translateY(40px);}to{opacity:1;transform:translateY(0);}}
-
-.sec{
-  background:rgba(4,2,20,.92);border:1px solid rgba(255,255,255,.07);
-  border-radius:28px;padding:36px 32px;
-  position:relative;overflow:hidden;backdrop-filter:blur(30px);
-}
-.sec::before{
-  content:'';position:absolute;top:0;left:4%;right:4%;height:3px;border-radius:3px;
-  background:linear-gradient(to right,transparent,var(--c2),var(--c6),var(--c2),transparent);
-  box-shadow:0 0 25px var(--c2),0 4px 20px rgba(255,0,200,.3);
-}
-@keyframes fadeU{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
-
+.sec{background:rgba(4,2,20,.93);border:1px solid rgba(255,255,255,.07);border-radius:28px;padding:36px 32px;position:relative;overflow:hidden;backdrop-filter:blur(30px);}
+.sec::before{content:'';position:absolute;top:0;left:4%;right:4%;height:3px;border-radius:3px;background:linear-gradient(to right,transparent,var(--c2),var(--c6),var(--c2),transparent);box-shadow:0 0 25px var(--c2);}
 .ph{text-align:center;margin-bottom:28px;}
-.ph h3{
-  font-family:'Orbitron',sans-serif;font-size:24px;font-weight:900;margin-bottom:7px;
-  background:linear-gradient(90deg,var(--c2),var(--c6),var(--c1),var(--c2));
-  background-size:300% 100%;
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  animation:rainbowText 3s linear infinite;
-  filter:drop-shadow(0 0 18px rgba(255,0,200,.7));
-}
+.ph h3{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;margin-bottom:7px;background:linear-gradient(90deg,var(--c2),var(--c6),var(--c1));background-size:300% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:rainbowText 3s linear infinite;}
 .ph p{font-size:13px;color:rgba(255,255,255,.35);letter-spacing:2px;}
-
 .inp-lbl{font-size:11px;letter-spacing:4px;color:rgba(255,255,255,.35);text-transform:uppercase;display:block;margin-bottom:12px;}
 .inp-wrap{position:relative;margin-bottom:8px;}
 .inp-flag{position:absolute;left:18px;top:50%;transform:translateY(-50%);font-size:22px;z-index:2;}
-.phone-inp{
-  width:100%;padding:20px 20px 20px 60px;
-  background:rgba(0,0,0,.55);border:2px solid rgba(255,255,255,.1);
-  border-radius:16px;color:#fff;font-size:22px;
-  font-family:'Share Tech Mono',monospace;letter-spacing:4px;outline:none;transition:.3s;
-}
-.phone-inp::placeholder{color:rgba(255,255,255,.12);font-size:17px;letter-spacing:2px;}
-.phone-inp:focus{border-color:var(--c2);box-shadow:0 0 35px rgba(255,0,200,.25),inset 0 0 25px rgba(255,0,200,.05);}
-.phone-inp.ok {border-color:var(--c4);box-shadow:0 0 25px rgba(0,255,136,.25);}
-.phone-inp.bad{border-color:#ff006e;box-shadow:0 0 25px rgba(255,0,110,.25);}
-.inp-hint{font-size:11px;color:rgba(255,255,255,.2);margin-left:5px;font-style:italic;}
+.phone-inp{width:100%;padding:20px 20px 20px 60px;background:rgba(0,0,0,.55);border:2px solid rgba(255,255,255,.1);border-radius:16px;color:#fff;font-size:22px;font-family:'Share Tech Mono',monospace;letter-spacing:4px;outline:none;transition:.3s;}
+.phone-inp::placeholder{color:rgba(255,255,255,.12);font-size:16px;letter-spacing:2px;}
+.phone-inp:focus{border-color:var(--c2);box-shadow:0 0 35px rgba(255,0,200,.25);}
+.phone-inp.ok{border-color:var(--c4);box-shadow:0 0 25px rgba(0,255,136,.2);}
+.phone-inp.bad{border-color:#ff006e;box-shadow:0 0 25px rgba(255,0,110,.2);}
+.inp-hint{font-size:11px;color:rgba(255,255,255,.2);margin-left:5px;font-style:italic;margin-top:6px;}
 .val-msg{font-size:12px;margin-top:8px;margin-left:5px;display:none;font-weight:700;}
-.val-msg.ok {color:var(--c4);display:block;}
+.val-msg.ok{color:var(--c4);display:block;}
 .val-msg.bad{color:#ff6b9d;display:block;}
-
-.gen-btn{
-  width:100%;padding:22px;border:none;border-radius:18px;
-  color:#fff;font-family:'Orbitron',sans-serif;
-  font-size:15px;letter-spacing:4px;font-weight:900;cursor:pointer;
-  text-transform:uppercase;position:relative;overflow:hidden;margin-top:22px;
-  background:linear-gradient(135deg,#ff00c8,#aa00ff,#0055ff,#00d2ff,#00ff88,#ffe600,#ff00c8);
-  background-size:500% 500%;animation:gradBtn 4s ease infinite;
-  box-shadow:0 0 35px rgba(255,0,200,.5),0 0 70px rgba(0,255,247,.25);
-  transition:transform .3s,box-shadow .3s;
-}
+.gen-btn{width:100%;padding:22px;border:none;border-radius:18px;color:#fff;font-family:'Orbitron',sans-serif;font-size:15px;letter-spacing:4px;font-weight:900;cursor:pointer;text-transform:uppercase;position:relative;overflow:hidden;margin-top:22px;background:linear-gradient(135deg,#ff00c8,#aa00ff,#0055ff,#00d2ff,#00ff88,#ffe600,#ff00c8);background-size:500% 500%;animation:gradBtn 4s ease infinite;box-shadow:0 0 35px rgba(255,0,200,.5);transition:transform .3s;}
 @keyframes gradBtn{0%,100%{background-position:0% 50%;}50%{background-position:100% 50%;}}
-.gen-btn::after{
-  content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);transition:.6s;
-}
-.gen-btn:hover::after{left:100%;}
-.gen-btn:hover{transform:translateY(-5px) scale(1.02);}
+.gen-btn:hover{transform:translateY(-4px) scale(1.01);}
 .gen-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;animation:none;box-shadow:none;}
-
-/* ── STATUS BOX — shows loading/error/success ── */
-.status-box{
-  margin-top:20px;border-radius:16px;padding:18px 20px;
-  display:none;text-align:center;animation:fadeU .3s ease;
-  font-size:14px;font-weight:700;
-}
-.status-box.loading{
-  background:rgba(0,255,247,.06);border:1px solid rgba(0,255,247,.3);
-  color:var(--c1);display:block;
-}
-.status-box.error{
-  background:rgba(255,0,80,.08);border:1px solid rgba(255,0,80,.4);
-  color:#ff6b9d;display:block;
-}
-.status-box.success{
-  background:rgba(0,255,136,.06);border:1px solid rgba(0,255,136,.3);
-  color:var(--c4);display:block;
-}
-
-/* ── CODE RESULT ── */
-.code-result{
-  margin-top:28px;border-radius:24px;padding:32px;text-align:center;
-  display:none;
-  background:#050510;border:3px solid #00ff88;
-  box-shadow:0 0 30px rgba(0,255,136,.5),0 0 60px rgba(0,255,136,.2);
-  animation:resultPulse 2s ease-in-out infinite;
-}
-.code-result.visible{display:block;animation:fadeU .5s ease, resultPulse 2s ease-in-out 0.5s infinite;}
-@keyframes resultPulse{
-  0%,100%{border-color:#00ff88;box-shadow:0 0 25px rgba(0,255,136,.5);}
-  33%{border-color:#00fff7;box-shadow:0 0 35px rgba(0,255,247,.6);}
-  66%{border-color:#ff00c8;box-shadow:0 0 35px rgba(255,0,200,.6);}
-}
-.code-label{
-  font-family:'Orbitron',sans-serif;font-size:13px;letter-spacing:5px;
-  text-transform:uppercase;margin-bottom:16px;color:#00ff88;
-  text-shadow:0 0 10px rgba(0,255,136,.8);
-}
-.code-display{
-  font-family:'Share Tech Mono',monospace;
-  font-size:clamp(28px,8vw,56px);color:#00ff88;letter-spacing:10px;
-  text-shadow:0 0 20px #00ff88,0 0 40px rgba(0,255,136,.6);
-  margin-bottom:16px;padding:20px 14px;
-  background:rgba(0,0,0,.6);border-radius:16px;
-  border:2px solid rgba(0,255,136,.4);word-break:break-all;
-}
+.status-box{margin-top:20px;border-radius:16px;padding:20px;display:none;text-align:center;font-size:14px;font-weight:700;animation:fadeU .3s ease;line-height:1.7;}
+.status-box.loading{background:rgba(0,255,247,.06);border:1px solid rgba(0,255,247,.3);color:var(--c1);display:block;}
+.status-box.error{background:rgba(255,0,80,.08);border:1px solid rgba(255,0,80,.4);color:#ff6b9d;display:block;}
+@keyframes fadeU{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.code-result{margin-top:28px;border-radius:24px;padding:32px;text-align:center;display:none;background:#050510;border:3px solid var(--c4);box-shadow:0 0 30px rgba(0,255,136,.5);}
+.code-result.visible{display:block;animation:fadeU .5s ease;}
+.code-label{font-family:'Orbitron',sans-serif;font-size:13px;letter-spacing:5px;text-transform:uppercase;margin-bottom:16px;color:var(--c4);text-shadow:0 0 10px rgba(0,255,136,.8);}
+.code-display{font-family:'Share Tech Mono',monospace;font-size:clamp(28px,8vw,56px);color:var(--c4);letter-spacing:10px;text-shadow:0 0 20px var(--c4);margin-bottom:16px;padding:20px 14px;background:rgba(0,0,0,.6);border-radius:16px;border:2px solid rgba(0,255,136,.4);word-break:break-all;}
 .code-expiry{font-size:13px;color:rgba(255,230,0,.85);margin-bottom:22px;font-weight:700;}
 .code-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
-.copy-btn{
-  background:linear-gradient(135deg,var(--c4),var(--c1),var(--c4));
-  background-size:300% 300%;
-  color:#000;border:none;padding:16px 38px;border-radius:16px;
-  cursor:pointer;font-family:'Orbitron',sans-serif;font-weight:900;
-  font-size:14px;letter-spacing:3px;text-transform:uppercase;transition:.3s;
-  box-shadow:0 0 28px rgba(0,255,136,.5);animation:gradBtn 3s ease infinite;
-}
-.copy-btn:hover{transform:scale(1.08) translateY(-3px);}
-.new-btn{
-  background:transparent;color:rgba(255,255,255,.5);
-  border:1px solid rgba(255,255,255,.15);padding:16px 26px;
-  border-radius:16px;cursor:pointer;font-family:'Rajdhani',sans-serif;
-  font-size:14px;letter-spacing:2px;font-weight:700;transition:.3s;
-}
+.copy-btn{background:linear-gradient(135deg,var(--c4),var(--c1));color:#000;border:none;padding:16px 38px;border-radius:16px;cursor:pointer;font-family:'Orbitron',sans-serif;font-weight:900;font-size:14px;letter-spacing:3px;text-transform:uppercase;transition:.3s;box-shadow:0 0 28px rgba(0,255,136,.5);}
+.copy-btn:hover{transform:scale(1.07) translateY(-3px);}
+.new-btn{background:transparent;color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.15);padding:16px 26px;border-radius:16px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:14px;letter-spacing:2px;font-weight:700;transition:.3s;}
 .new-btn:hover{border-color:var(--c2);color:var(--c2);}
-
-.toast{
-  position:fixed;bottom:38px;left:50%;
-  transform:translateX(-50%) translateY(120px);
-  background:linear-gradient(135deg,var(--c4),var(--c1));
-  color:#000;padding:15px 35px;border-radius:50px;
-  font-weight:900;font-size:15px;letter-spacing:2px;
-  transition:.45s cubic-bezier(.22,1,.36,1);z-index:9999;
-  box-shadow:0 0 40px rgba(0,255,136,.6);font-family:'Orbitron',sans-serif;
-}
-.toast.show{transform:translateX(-50%) translateY(0);}
-
+.spin{width:18px;height:18px;border:2px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spinK .7s linear infinite;display:inline-block;vertical-align:middle;margin-right:8px;}
+@keyframes spinK{to{transform:rotate(360deg);}}
 .how-to{background:rgba(255,0,200,.04);border:1px solid rgba(255,0,200,.15);border-radius:18px;padding:22px;margin-top:26px;}
 .how-to h4{font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:4px;text-transform:uppercase;margin-bottom:16px;color:var(--c2);}
 .step{display:flex;align-items:flex-start;gap:14px;margin-bottom:12px;font-size:13px;color:rgba(255,255,255,.6);}
-.step-n{
-  width:25px;height:25px;flex-shrink:0;
-  background:rgba(255,0,200,.15);border:1px solid rgba(255,0,200,.4);
-  border-radius:50%;display:flex;align-items:center;justify-content:center;
-  font-size:11px;color:var(--c2);font-weight:900;
-}
-
-.spin{
-  width:18px;height:18px;border:2px solid rgba(255,255,255,.2);border-top-color:#fff;
-  border-radius:50%;animation:spinK .7s linear infinite;
-  display:inline-block;vertical-align:middle;margin-right:8px;
-}
-@keyframes spinK{to{transform:rotate(360deg);}}
-
-.social{
-  width:100%;max-width:940px;margin-top:42px;
-  background:rgba(4,2,20,.92);backdrop-filter:blur(30px);
-  border:1px solid rgba(255,255,255,.07);border-radius:28px;padding:38px;
-  position:relative;overflow:hidden;animation:slideU .9s cubic-bezier(.22,1,.36,1) .4s both;
-}
-.social::before{
-  content:'';position:absolute;top:0;left:4%;right:4%;height:3px;border-radius:3px;
-  background:linear-gradient(to right,transparent,var(--c3),var(--c5),var(--c2),var(--c3),transparent);
-  box-shadow:0 0 25px var(--c3);
-}
-.social-title{
-  text-align:center;margin-bottom:28px;
-  font-family:'Orbitron',sans-serif;font-size:13px;letter-spacing:6px;text-transform:uppercase;
-  background:linear-gradient(90deg,var(--c3),var(--c5),var(--c2),var(--c6),var(--c1),var(--c3));
-  background-size:400% 100%;
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  animation:rainbowText 3s linear infinite;
-}
-.social-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:16px;}
-.s-btn{
-  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.09);
-  border-radius:18px;padding:24px 16px;text-align:center;
-  text-decoration:none;color:rgba(255,255,255,.6);
-  font-family:'Rajdhani',sans-serif;font-weight:700;font-size:14px;
-  letter-spacing:1px;transition:.35s;display:block;
-}
+.step-n{width:25px;height:25px;flex-shrink:0;background:rgba(255,0,200,.15);border:1px solid rgba(255,0,200,.4);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--c2);font-weight:900;}
+.social{width:100%;max-width:920px;margin-top:40px;background:rgba(4,2,20,.93);backdrop-filter:blur(30px);border:1px solid rgba(255,255,255,.07);border-radius:28px;padding:36px;position:relative;overflow:hidden;animation:slideU .9s .3s both;}
+.social::before{content:'';position:absolute;top:0;left:4%;right:4%;height:3px;border-radius:3px;background:linear-gradient(to right,transparent,var(--c3),var(--c5),var(--c3),transparent);box-shadow:0 0 25px var(--c3);}
+.social-title{text-align:center;margin-bottom:26px;font-family:'Orbitron',sans-serif;font-size:13px;letter-spacing:6px;text-transform:uppercase;background:linear-gradient(90deg,var(--c3),var(--c5),var(--c2),var(--c1),var(--c3));background-size:400% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:rainbowText 3s linear infinite;}
+.social-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;}
+.s-btn{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.09);border-radius:18px;padding:24px 16px;text-align:center;text-decoration:none;color:rgba(255,255,255,.6);font-family:'Rajdhani',sans-serif;font-weight:700;font-size:14px;transition:.35s;display:block;}
 .s-btn .ic{font-size:34px;margin-bottom:11px;display:block;}
 .s-btn .su{font-size:10px;letter-spacing:2px;color:rgba(255,255,255,.3);margin-top:5px;display:block;text-transform:uppercase;}
 .s-btn:hover{transform:translateY(-6px);}
@@ -316,47 +91,33 @@ body{font-family:'Rajdhani',sans-serif;background:var(--dark);color:#fff;min-hei
 .s-btn.tt:hover{border-color:rgba(0,255,247,.5);color:var(--c1);box-shadow:0 0 30px rgba(0,255,247,.15);}
 .s-btn.wa:hover{border-color:rgba(0,255,136,.5);color:var(--c4);box-shadow:0 0 30px rgba(0,255,136,.15);}
 .s-btn.gh:hover{border-color:rgba(255,255,255,.4);color:#fff;box-shadow:0 0 30px rgba(255,255,255,.1);}
-
-.footer{width:100%;max-width:940px;margin-top:30px;text-align:center;padding:28px;border-top:1px solid rgba(255,255,255,.05);}
+.footer{width:100%;max-width:920px;margin-top:30px;text-align:center;padding:28px;border-top:1px solid rgba(255,255,255,.05);}
 .footer p{font-size:13px;color:rgba(255,255,255,.25);margin-bottom:6px;}
-.footer .own{color:var(--c3);font-weight:900;text-shadow:0 0 12px rgba(255,230,0,.5);}
+.footer .own{color:var(--c3);font-weight:900;}
 .footer .cp{font-size:11px;letter-spacing:2px;color:rgba(255,255,255,.15);}
-
-@media(max-width:600px){
-  .sec{padding:24px 14px;}
-  .code-display{letter-spacing:7px;}
-  .social-grid{grid-template-columns:1fr 1fr;}
-  .clock-wrap{padding:14px 16px;gap:10px;}
-}
+.toast{position:fixed;bottom:38px;left:50%;transform:translateX(-50%) translateY(120px);background:linear-gradient(135deg,var(--c4),var(--c1));color:#000;padding:15px 35px;border-radius:50px;font-weight:900;font-size:15px;letter-spacing:2px;transition:.45s cubic-bezier(.22,1,.36,1);z-index:9999;font-family:'Orbitron',sans-serif;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+@media(max-width:600px){.sec{padding:22px 14px;}.code-display{letter-spacing:6px;}.social-grid{grid-template-columns:1fr 1fr;}}
 </style>
 </head>
 <body>
-
 <div class="bg-grid"></div>
-<div class="bg-orbs">
-  <div class="orb o1"></div><div class="orb o2"></div>
-  <div class="orb o3"></div><div class="orb o4"></div><div class="orb o5"></div>
-</div>
+<div class="bg-orbs"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div></div>
 <div class="scanlines"></div>
 <div class="particles" id="pts"></div>
 
 <div class="wrapper">
-
   <div class="welcome-tag">⚡ Official Pairing Gateway ⚡</div>
-
-  <div class="bot-name-outer">
-    <span class="bot-name">YOUSAF-BALOCH-MD</span>
-  </div>
-
+  <div class="bot-name">YOUSAF-BALOCH-MD</div>
   <div class="bot-tagline">WhatsApp Multi-Device Bot System</div>
   <div class="premium-badge">💎 ULTRA PRO PREMIUM 💎</div>
 
   <div class="clock-wrap">
-    <div class="clock-item"><div class="clock-val" id="cH">00</div><div class="clock-lbl">Hour</div></div>
+    <div><div class="clock-val" id="cH">00</div><div class="clock-lbl">Hour</div></div>
     <div class="clock-sep">:</div>
-    <div class="clock-item"><div class="clock-val" id="cM">00</div><div class="clock-lbl">Min</div></div>
+    <div><div class="clock-val" id="cM">00</div><div class="clock-lbl">Min</div></div>
     <div class="clock-sep">:</div>
-    <div class="clock-item"><div class="clock-val" id="cS">00</div><div class="clock-lbl">Sec</div></div>
+    <div><div class="clock-val" id="cS">00</div><div class="clock-lbl">Sec</div></div>
     <div class="day-badge" id="cD">---</div>
   </div>
 
@@ -364,56 +125,48 @@ body{font-family:'Rajdhani',sans-serif;background:var(--dark);color:#fff;min-hei
     <div class="sec">
       <div class="ph">
         <h3><i class="fas fa-key"></i> &nbsp;Pairing Code Generator</h3>
-        <p>Enter your WhatsApp number to get your pairing code instantly</p>
+        <p>Enter your WhatsApp number to get your 8-digit pairing code</p>
       </div>
 
       <label class="inp-lbl"><i class="fas fa-mobile-alt"></i> &nbsp;WhatsApp Number</label>
       <div class="inp-wrap">
         <span class="inp-flag">📱</span>
-        <input type="tel" class="phone-inp" id="phoneInp"
-               placeholder="923XXXXXXXXX" autocomplete="off" maxlength="15">
+        <input type="tel" class="phone-inp" id="phoneInp" placeholder="923XXXXXXXXX" autocomplete="off" maxlength="15">
       </div>
-      <div class="inp-hint">Country code required — no spaces or + &nbsp;(e.g. 923001234567)</div>
+      <div class="inp-hint">Country code — no + or spaces &nbsp;(e.g. 923001234567)</div>
       <div class="val-msg" id="valMsg"></div>
 
-      <button class="gen-btn" id="genBtn" onclick="generateCode()">
+      <button class="gen-btn" id="genBtn" onclick="startGenerate()">
         <i class="fas fa-key"></i> &nbsp;Generate Pairing Code
       </button>
 
-      <!-- STATUS BOX — loading/error messages here -->
       <div class="status-box" id="statusBox"></div>
 
-      <!-- CODE RESULT — hidden until code arrives -->
       <div class="code-result" id="codeResult">
         <div class="code-label">✨ YOUR PAIRING CODE ✨</div>
         <div class="code-display" id="codeDisplay"></div>
         <div class="code-expiry" id="codeExpiry"></div>
         <div class="code-actions">
-          <button class="copy-btn" onclick="copyCode()" id="copyBtn">
-            <i class="fas fa-copy"></i> &nbsp;COPY CODE
-          </button>
-          <button class="new-btn" onclick="resetForm()">
-            <i class="fas fa-redo"></i> &nbsp;New Request
-          </button>
+          <button class="copy-btn" onclick="copyCode()"><i class="fas fa-copy"></i> &nbsp;COPY CODE</button>
+          <button class="new-btn" onclick="resetForm()"><i class="fas fa-redo"></i> &nbsp;New Request</button>
         </div>
       </div>
 
       <div class="how-to">
-        <h4><i class="fas fa-info-circle"></i> &nbsp;How to Link Your WhatsApp</h4>
+        <h4><i class="fas fa-info-circle"></i> &nbsp;How to use this code</h4>
         <div class="step"><div class="step-n">1</div><span>Open WhatsApp → Settings → Linked Devices</span></div>
         <div class="step"><div class="step-n">2</div><span>Tap "Link a Device" → "Link with Phone Number"</span></div>
-        <div class="step"><div class="step-n">3</div><span>Enter the pairing code shown above</span></div>
-        <div class="step"><div class="step-n">4</div><span>Your SESSION ID will be sent to your WhatsApp 🚀</span></div>
+        <div class="step"><div class="step-n">3</div><span>Enter the 8-digit pairing code shown above</span></div>
+        <div class="step"><div class="step-n">4</div><span>Your SESSION ID will arrive in your WhatsApp inbox 🚀</span></div>
       </div>
     </div>
   </div>
 
-  <!-- SOCIAL — Owner Details -->
   <div class="social">
     <div class="social-title">⚡ Connect with Muhammad Yousaf Baloch ⚡</div>
     <div class="social-grid">
       <a href="https://www.youtube.com/@Yousaf_Baloch_Tech" target="_blank" class="s-btn yt">
-        <span class="ic">📺</span>YouTube Channel<span class="su">Yousaf Baloch Tech</span>
+        <span class="ic">📺</span>YouTube<span class="su">Yousaf Baloch Tech</span>
       </a>
       <a href="https://tiktok.com/@loser_boy.110" target="_blank" class="s-btn tt">
         <span class="ic">🎵</span>TikTok<span class="su">@loser_boy.110</span>
@@ -427,241 +180,209 @@ body{font-family:'Rajdhani',sans-serif;background:var(--dark);color:#fff;min-hei
     </div>
   </div>
 
-  <!-- FOOTER -->
   <div class="footer">
     <p>Created with ❤️ by <span class="own">Muhammad Yousaf Baloch</span></p>
     <p>📱 WhatsApp: <strong>+923710636110</strong></p>
     <p class="cp">© 2026 YOUSAF-BALOCH-MD | All Rights Reserved</p>
   </div>
-
 </div>
 
 <div class="toast" id="toast">✅ Code Copied!</div>
 
 <script>
-// ── PARTICLES ──
+// PARTICLES
 (function(){
-  const c=['#00fff7','#ff00c8','#ffe600','#00ff88','#aa00ff','#ff6600'];
+  const c=['#00fff7','#ff00c8','#ffe600','#00ff88','#aa00ff'];
   const w=document.getElementById('pts');
-  for(let i=0;i<65;i++){
-    const p=document.createElement('div');
+  for(let i=0;i<50;i++){
+    const p=document.createElement('div'),col=c[i%c.length],s=(Math.random()*3+1)+'px';
     p.className='pt';
-    const col=c[Math.floor(Math.random()*c.length)];
-    const sz=(Math.random()*3+1)+'px';
-    p.style.cssText=`left:${Math.random()*100}%;width:${sz};height:${sz};
-      background:${col};box-shadow:0 0 8px ${col};
-      animation-duration:${Math.random()*14+7}s;
-      animation-delay:${Math.random()*12}s;
-      opacity:${Math.random()*.5+.1};`;
+    p.style.cssText=`left:${Math.random()*100}%;width:${s};height:${s};background:${col};box-shadow:0 0 6px ${col};animation-duration:${Math.random()*12+6}s;animation-delay:${Math.random()*10}s;opacity:${Math.random()*.4+.1};`;
     w.appendChild(p);
   }
 })();
 
-// ── CLOCK ──
+// CLOCK
 const DAYS=['SUN','MON','TUE','WED','THU','FRI','SAT'];
 function pad(n){return String(n).padStart(2,'0');}
-function tick(){
-  const n=new Date();
-  document.getElementById('cH').textContent=pad(n.getHours());
-  document.getElementById('cM').textContent=pad(n.getMinutes());
-  document.getElementById('cS').textContent=pad(n.getSeconds());
-  document.getElementById('cD').textContent=DAYS[n.getDay()];
-}
+function tick(){const n=new Date();document.getElementById('cH').textContent=pad(n.getHours());document.getElementById('cM').textContent=pad(n.getMinutes());document.getElementById('cS').textContent=pad(n.getSeconds());document.getElementById('cD').textContent=DAYS[n.getDay()];}
 tick();setInterval(tick,1000);
 
-// ── PHONE VALIDATION ──
-const phoneEl = document.getElementById('phoneInp');
-const valMsg  = document.getElementById('valMsg');
-
-phoneEl.addEventListener('input', () => {
-  phoneEl.value = phoneEl.value.replace(/[^0-9]/g, '');
-  const n = phoneEl.value;
-  phoneEl.classList.remove('ok','bad');
-  valMsg.className = 'val-msg';
-  valMsg.style.display = 'none';
-  if(!n.length) return;
-  if(n.length < 7){
-    phoneEl.classList.add('bad');
-    valMsg.textContent = '❌ Too short — please include country code';
-    valMsg.classList.add('bad');
-  } else if(n.length > 15){
-    phoneEl.classList.add('bad');
-    valMsg.textContent = '❌ Too long — check the number';
-    valMsg.classList.add('bad');
-  } else {
-    phoneEl.classList.add('ok');
-    valMsg.textContent = '✅ Number looks good!';
-    valMsg.classList.add('ok');
-  }
+// PHONE VALIDATION
+const phoneEl=document.getElementById('phoneInp');
+const valMsg=document.getElementById('valMsg');
+phoneEl.addEventListener('input',()=>{
+  phoneEl.value=phoneEl.value.replace(/[^0-9]/g,'');
+  const n=phoneEl.value;
+  phoneEl.classList.remove('ok','bad');valMsg.className='val-msg';
+  if(!n.length)return;
+  if(n.length<7){phoneEl.classList.add('bad');valMsg.textContent='❌ Too short — include country code';valMsg.classList.add('bad');}
+  else if(n.length>15){phoneEl.classList.add('bad');valMsg.textContent='❌ Too long';valMsg.classList.add('bad');}
+  else{phoneEl.classList.add('ok');valMsg.textContent='✅ Number looks good!';valMsg.classList.add('ok');}
 });
-phoneEl.addEventListener('keypress', e => { if(e.key==='Enter') generateCode(); });
+phoneEl.addEventListener('keypress',e=>{if(e.key==='Enter')startGenerate();});
 
-// ── STATE ──
-let expInterval = null;
+// UI HELPERS
+function showStatus(type,html){const b=document.getElementById('statusBox');b.className='status-box '+type;b.innerHTML=html;}
+function hideStatus(){const b=document.getElementById('statusBox');b.className='status-box';b.innerHTML='';}
 
-// ── SHOW STATUS ──
-function showStatus(type, msg) {
-  const b = document.getElementById('statusBox');
-  b.className = 'status-box ' + type;
-  b.innerHTML = msg;
-}
-function hideStatus() {
-  document.getElementById('statusBox').className = 'status-box';
-  document.getElementById('statusBox').innerHTML = '';
-}
+// STATE
+let pollInterval=null,expInterval=null,sessionId=null,pollCount=0;
+function stopPolling(){if(pollInterval){clearInterval(pollInterval);pollInterval=null;}}
+function stopExpiry(){if(expInterval){clearInterval(expInterval);expInterval=null;}}
 
-// ── MAIN: GENERATE PAIRING CODE ──
-async function generateCode() {
-  const number = phoneEl.value.replace(/[^0-9]/g, '');
-  const btn    = document.getElementById('genBtn');
-
-  // Clear previous results
-  hideStatus();
+// ════════════════════════════════════
+// STEP 1 — POST /get-code
+// Returns session_id immediately
+// No Heroku timeout issue!
+// ════════════════════════════════════
+async function startGenerate(){
+  const number=phoneEl.value.replace(/[^0-9]/g,'');
+  const btn=document.getElementById('genBtn');
+  stopPolling();stopExpiry();hideStatus();
   document.getElementById('codeResult').classList.remove('visible');
-  if(expInterval) clearInterval(expInterval);
+  sessionId=null;pollCount=0;
 
-  // Validate
-  if(!number || number.length < 7) {
-    showStatus('error', '❌ Please enter a valid phone number with country code.<br><small>Example: 923001234567</small>');
-    phoneEl.focus();
-    return;
+  if(!number||number.length<7){
+    showStatus('error','❌ Please enter a valid phone number with country code.<br><small>Example: 923710636110</small>');
+    phoneEl.focus();return;
   }
 
-  // Set loading state
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spin"></span> Connecting to WhatsApp...';
-  showStatus('loading', '<span class="spin"></span> Connecting to WhatsApp servers — please wait up to 30 seconds...');
+  btn.disabled=true;
+  btn.innerHTML='<span class="spin"></span> Connecting...';
+  showStatus('loading','<span class="spin"></span> Sending request to server...');
 
   try {
-    // ── FETCH with 90s timeout ──
-    const controller = new AbortController();
-    const timeoutId  = setTimeout(() => controller.abort(), 90000);
-
-    const res = await fetch('/get-code', {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ phoneNumber: number, number: number }),
-      signal:  controller.signal,
+    const res=await fetch('/get-code',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({phoneNumber:number,number:number}),
     });
 
-    clearTimeout(timeoutId);
-
-    // Parse response
     let data;
-    try {
-      data = await res.json();
-    } catch(_) {
-      throw new Error('Server returned invalid response. Please try again.');
+    try{data=await res.json();}
+    catch(e){throw new Error('Server returned invalid response. Please try again.');}
+
+    console.log('[YOUSAF-MD] /get-code response:',data);
+
+    if(!res.ok||!data.success){
+      throw new Error(data?.error||'Server error '+res.status);
     }
 
-    // Check HTTP status
-    if(!res.ok) {
-      const msg = data?.error || data?.message || `Server error ${res.status}`;
-      throw new Error(msg);
+    // If old server returns code directly
+    if(data.code||data.pairingCode){
+      showCodeResult(data.code||data.pairingCode);
+      btn.disabled=false;
+      btn.innerHTML='<i class="fas fa-key"></i> &nbsp;Generate Pairing Code';
+      return;
     }
 
-    // Extract code — support all formats
-    const code = data.code || data.pairingCode || data.pairing_code || data.PairingCode || null;
-
-    if(code) {
-      // ✅ SUCCESS
-      hideStatus();
-      document.getElementById('codeDisplay').textContent = code;
-      document.getElementById('codeResult').classList.add('visible');
-
-      btn.innerHTML = '<i class="fas fa-check-circle"></i> &nbsp;Code Generated!';
-
-      // Scroll to code
-      setTimeout(() => {
-        document.getElementById('codeResult').scrollIntoView({ behavior:'smooth', block:'center' });
-      }, 200);
-
-      // 60s countdown
-      let rem = 60;
-      document.getElementById('codeExpiry').innerHTML =
-        `⏳ Enter this code in WhatsApp NOW — expires in <span id="expTimer">${rem}</span>s`;
-
-      expInterval = setInterval(() => {
-        rem--;
-        const el = document.getElementById('expTimer');
-        if(el) el.textContent = rem;
-        if(rem <= 0) {
-          clearInterval(expInterval);
-          document.getElementById('codeExpiry').innerHTML =
-            '⚠️ Code expired — click "New Request" to generate a new one';
-          btn.disabled = false;
-          btn.innerHTML = '<i class="fas fa-key"></i> &nbsp;Generate Pairing Code';
-        }
-      }, 1000);
-
-    } else {
-      // Server responded but no code
-      const errMsg = data?.error || data?.message || JSON.stringify(data);
-      throw new Error(errMsg);
+    // New server returns session_id
+    if(!data.session_id){
+      throw new Error('No session_id received from server.');
     }
 
-  } catch(err) {
-    // ── ERROR HANDLING ──
-    let userMsg = '';
+    sessionId=data.session_id;
+    btn.innerHTML='<span class="spin"></span> Waiting for WhatsApp...';
+    showStatus('loading','<span class="spin"></span> Connected! Generating pairing code...<br><small>Please wait 10–30 seconds</small>');
+    startPolling();
 
-    if(err.name === 'AbortError') {
-      userMsg = `❌ <strong>Connection Timeout (90s)</strong><br>
-        <small>WhatsApp server did not respond in time.<br>
-        This can happen due to server load. Please try again.</small>`;
-    } else if(err.message.includes('fetch') || err.message.includes('network') || err.message.includes('Failed to fetch')) {
-      userMsg = `❌ <strong>Network Error</strong><br>
-        <small>Cannot reach the server. Please check your internet and try again.</small>`;
-    } else {
-      userMsg = `❌ <strong>Error:</strong> ${err.message}<br>
-        <small>Please try again after a few seconds.</small>`;
-    }
-
-    showStatus('error', userMsg);
-    btn.disabled = false;
-    btn.innerHTML = '<i class="fas fa-key"></i> &nbsp;Try Again';
+  } catch(err){
+    console.error('[YOUSAF-MD] Error:',err);
+    let msg=err.message.includes('fetch')||err.message.includes('Failed')
+      ?'❌ <strong>Cannot reach server.</strong><br><small>Check your internet and try again.</small>'
+      :'❌ <strong>'+err.message+'</strong><br><small>Please try again.</small>';
+    showStatus('error',msg);
+    btn.disabled=false;
+    btn.innerHTML='<i class="fas fa-key"></i> &nbsp;Try Again';
   }
 }
 
-// ── COPY CODE ──
-function copyCode() {
-  const code = document.getElementById('codeDisplay').textContent.trim();
-  if(!code) return;
-  const t = document.getElementById('toast');
-  const done = () => {
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 3000);
-  };
-  if(navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(code).then(done).catch(() => { fallbackCopy(code); done(); });
-  } else {
-    fallbackCopy(code); done();
-  }
-}
-function fallbackCopy(text) {
-  const el = document.createElement('textarea');
-  el.value = text;
-  el.style.cssText = 'position:fixed;opacity:0;top:0;left:0;';
-  document.body.appendChild(el);
-  el.focus(); el.select();
-  try { document.execCommand('copy'); } catch(e) {}
-  document.body.removeChild(el);
+// ════════════════════════════════════
+// STEP 2 — Poll /check/:id
+// Checks every 3 seconds for code
+// ════════════════════════════════════
+function startPolling(){
+  pollCount=0;
+  pollInterval=setInterval(async()=>{
+    pollCount++;
+    if(pollCount>40){
+      stopPolling();
+      showStatus('error','❌ <strong>Timeout — WhatsApp did not respond in 2 minutes.</strong><br><small>Please try again.</small>');
+      const btn=document.getElementById('genBtn');btn.disabled=false;
+      btn.innerHTML='<i class="fas fa-key"></i> &nbsp;Try Again';
+      return;
+    }
+    try{
+      const res=await fetch('/check/'+sessionId);
+      const data=await res.json();
+      console.log('[YOUSAF-MD] Poll #'+pollCount+':',data.status);
+
+      if(!data.success||data.status==='not_found'){
+        stopPolling();
+        showStatus('error','❌ Session expired. Please try again.');
+        const btn=document.getElementById('genBtn');btn.disabled=false;
+        btn.innerHTML='<i class="fas fa-key"></i> &nbsp;Try Again';
+        return;
+      }
+      if(data.status==='error'){
+        stopPolling();
+        showStatus('error','❌ <strong>'+(data.error||'Pairing failed.')+'</strong><br><small>Please try again.</small>');
+        const btn=document.getElementById('genBtn');btn.disabled=false;
+        btn.innerHTML='<i class="fas fa-key"></i> &nbsp;Try Again';
+        return;
+      }
+      if(data.status==='code_ready'){
+        stopPolling();
+        showCodeResult(data.code);
+        const btn=document.getElementById('genBtn');btn.disabled=false;
+        btn.innerHTML='<i class="fas fa-check-circle"></i> &nbsp;Code Ready!';
+        return;
+      }
+      if(data.status==='connecting'){
+        showStatus('loading','<span class="spin"></span> Connecting to WhatsApp... ('+pollCount+'/40)<br><small>Please wait patiently</small>');
+      }
+    }catch(e){console.warn('[YOUSAF-MD] Poll error:',e.message);}
+  },3000);
 }
 
-// ── RESET ──
-function resetForm() {
-  phoneEl.value = '';
-  phoneEl.classList.remove('ok','bad');
-  valMsg.className = 'val-msg';
-  valMsg.style.display = 'none';
+// SHOW CODE
+function showCodeResult(code){
+  hideStatus();
+  document.getElementById('codeDisplay').textContent=code;
+  document.getElementById('codeResult').classList.add('visible');
+  let rem=60;
+  document.getElementById('codeExpiry').innerHTML='⏳ Enter in WhatsApp NOW — expires in <span id="expTimer">'+rem+'</span>s';
+  expInterval=setInterval(()=>{
+    rem--;
+    const el=document.getElementById('expTimer');
+    if(el)el.textContent=rem;
+    if(rem<=0){stopExpiry();document.getElementById('codeExpiry').innerHTML='⚠️ Code may have expired — click "New Request" for a fresh one';}
+  },1000);
+  setTimeout(()=>document.getElementById('codeResult').scrollIntoView({behavior:'smooth',block:'center'}),200);
+}
+
+// COPY
+function copyCode(){
+  const code=document.getElementById('codeDisplay').textContent.trim();
+  if(!code)return;
+  const done=()=>{const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);};
+  if(navigator.clipboard?.writeText){navigator.clipboard.writeText(code).then(done).catch(()=>{fbCopy(code);done();});}
+  else{fbCopy(code);done();}
+}
+function fbCopy(text){const el=document.createElement('textarea');el.value=text;el.style.cssText='position:fixed;opacity:0;';document.body.appendChild(el);el.focus();el.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(el);}
+
+// RESET
+function resetForm(){
+  stopPolling();stopExpiry();
+  phoneEl.value='';phoneEl.classList.remove('ok','bad');valMsg.className='val-msg';
   hideStatus();
   document.getElementById('codeResult').classList.remove('visible');
-  document.getElementById('codeDisplay').textContent = '';
-  document.getElementById('codeExpiry').innerHTML = '';
-  const btn = document.getElementById('genBtn');
-  btn.disabled = false;
-  btn.innerHTML = '<i class="fas fa-key"></i> &nbsp;Generate Pairing Code';
-  if(expInterval) clearInterval(expInterval);
-  phoneEl.focus();
+  document.getElementById('codeDisplay').textContent='';
+  document.getElementById('codeExpiry').innerHTML='';
+  const btn=document.getElementById('genBtn');btn.disabled=false;
+  btn.innerHTML='<i class="fas fa-key"></i> &nbsp;Generate Pairing Code';
+  sessionId=null;pollCount=0;phoneEl.focus();
 }
 </script>
 </body>
