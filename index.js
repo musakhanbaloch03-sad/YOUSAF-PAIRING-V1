@@ -193,7 +193,7 @@ async function startPairing(phone, sid) {
       logger,
       printQRInTerminal: false,
       // ✅ FIX: browser fingerprint بدلا — WhatsApp 515 error ختم
-      browser: ['YOUSAF-MD', 'Chrome', '4.0.0'],
+      browser: ['Ubuntu', 'Chrome', '22.0.0'],
       auth: {
         creds: state.creds,
         keys:  makeCacheableSignalKeyStore(state.keys, logger),
