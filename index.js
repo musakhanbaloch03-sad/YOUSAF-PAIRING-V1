@@ -30,7 +30,6 @@ import {
   useMultiFileAuthState,
   fetchLatestBaileysVersion,
   makeCacheableSignalKeyStore,
-  Browsers,
   delay,
 } from '@whiskeysockets/baileys';
 import { Boom } from '@hapi/boom';
@@ -81,12 +80,9 @@ const healthLimiter = rateLimit({
 
 app.set('trust proxy', 1);
 app.use(cors());
-
-// ✅ FIX: CSP بند کی — fetch requests block نہیں ہوں گی
 app.use(helmet({
   contentSecurityPolicy: false,
 }));
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(join(__dirname, 'public')));
@@ -196,7 +192,8 @@ async function startPairing(phone, sid) {
       version,
       logger,
       printQRInTerminal: false,
-      browser:           Browsers.ubuntu('Chrome'),
+      // ✅ FIX: browser fingerprint بدلا — WhatsApp 515 error ختم
+      browser: ['YOUSAF-MD', 'Chrome', '4.0.0'],
       auth: {
         creds: state.creds,
         keys:  makeCacheableSignalKeyStore(state.keys, logger),
