@@ -189,20 +189,21 @@ async function startPairing(phone, sid) {
     const { version }          = await fetchLatestBaileysVersion();
 
     const sock = makeWASocket({
-      version,
-      logger,
-      printQRInTerminal: false,
-      // ✅ FIX: browser fingerprint بدلا — WhatsApp 515 error ختم
-      browser: ['Ubuntu', 'Chrome', '120.0.6099.109'],
-      auth: {
-        creds: state.creds,
-        keys:  makeCacheableSignalKeyStore(state.keys, logger),
-      },
-      markOnlineOnConnect:            false,
-      generateHighQualityLinkPreview: false,
-      syncFullHistory:                false,
-      getMessage:                     async () => undefined,
-    });
+  version,
+  logger,
+  printQRInTerminal: false,
+  browser: ['Ubuntu', 'Chrome', '120.0.6099.109'],
+  auth: {
+    creds: state.creds,
+    keys:  makeCacheableSignalKeyStore(state.keys, logger),
+  },
+  markOnlineOnConnect:            false,
+  generateHighQualityLinkPreview: false,
+  syncFullHistory:                false,
+  retryRequestDelayMs:            2000,
+  maxMsgRetryCount:               5,
+  getMessage:                     async () => undefined,
+});
 
     sock.ev.on('creds.update', saveCreds);
 
