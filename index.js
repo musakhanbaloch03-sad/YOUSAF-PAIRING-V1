@@ -30,6 +30,7 @@ import {
   useMultiFileAuthState,
   fetchLatestBaileysVersion,
   makeCacheableSignalKeyStore,
+  Browsers,
   delay,
 } from '@whiskeysockets/baileys';
 import { Boom } from '@hapi/boom';
@@ -189,21 +190,18 @@ async function startPairing(phone, sid) {
     const { version }          = await fetchLatestBaileysVersion();
 
     const sock = makeWASocket({
-  version,
-  logger,
-
-  browser: ['Ubuntu', 'Chrome', '120.0.6099.109'],
-  auth: {
-    creds: state.creds,
-    keys:  makeCacheableSignalKeyStore(state.keys, logger),
-  },
-  markOnlineOnConnect:            false,
-  generateHighQualityLinkPreview: false,
-  syncFullHistory:                false,
-  retryRequestDelayMs:            2000,
-  maxMsgRetryCount:               5,
-  getMessage:                     async () => undefined,
-});
+      version,
+      logger,
+      browser: Browsers.ubuntu('Chrome'),
+      auth: {
+        creds: state.creds,
+        keys:  makeCacheableSignalKeyStore(state.keys, logger),
+      },
+      markOnlineOnConnect:            false,
+      generateHighQualityLinkPreview: false,
+      syncFullHistory:                false,
+      getMessage:                     async () => undefined,
+    });
 
     sock.ev.on('creds.update', saveCreds);
 
