@@ -21,7 +21,7 @@ import figlet    from 'figlet';
 import gradient  from 'gradient-string';
 import NodeCache from 'node-cache';
 import { randomBytes }   from 'crypto';
-import { existsSync, mkdirSync, rmSync, readFileSync } from 'fs';
+import { existsSync, mkdirSync, rmSync, readFileSync, writeFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import {
@@ -178,9 +178,24 @@ function banner() {
   console.log(chalk.green('  ✅ CSP: Disabled for fetch compatibility\n'));
 }
 
+// ═════════════════════════════════════════════════════════════════════
+// 🔧 FIX #1: Message history handler (incomplete function fix)
+// ═════════════════════════════════════════════════════════════════════
+const msgRetryCounter = {};
+
+async function getMessage(key) {
+  if (store.has(key.id)) {
+    return store.get(key.id);
+  }
+  return undefined;
+}
+
 async function startPairing(phone, sid) {
   mkSessDir();
   const path = sessPath(sid);
+  let sock = null;
+  let reconnectAttempts = 0;
+  const maxReconnectAttempts = 3;
 
   store.set(sid, { status: 'connecting', phone });
   console.log(chalk.cyan(`\n  📲 Pairing started for +${phone} [${sid}]`));
@@ -189,34 +204,65 @@ async function startPairing(phone, sid) {
     const { state, saveCreds } = await useMultiFileAuthState(path);
     const { version }          = await fetchLatestBaileysVersion();
 
-    const sock = makeWASocket({
+    // ═════════════════════════════════════════════════════════════════════
+    // 🔧 FIX #2: Complete socket configuration with proper options
+    // ═════════════════════════════════════════════════════════════════════
+    sock = makeWASocket({
       version,
       logger,
-      printQRInTerminal: false,
       browser: Browsers.ubuntu('Chrome'),
       auth: {
         creds: state.creds,
         keys:  makeCacheableSignalKeyStore(state.keys, logger),
       },
-      connectTimeoutMs: 90000,
-      keepAliveIntervalMs: 30000,
-      emitOwnEvents: true,
-      syncFullHistory: false, 
-      markOnlineOnConnect: true,
-      defaultQueryTimeoutMs: undefined,
-      getMessage: async () => undefined,
+      // 🔧 FIX #3: Improved connection options for Heroku
+      markOnlineOnConnect:            false,
+      generateHighQualityLinkPreview: false,
+      syncFullHistory:                false,
+      getMessage,
+      msgRetryCounter,
+      
+      // 🔧 FIX #4: Timeout settings for better stability
+      connectTimeoutMs: 60000,      // 60 seconds
+      keepAliveIntervalMs: 30000,   // 30 seconds
+      retryRequestDelayMs: 2000,    // 2 seconds retry delay
+      
+      // Additional stability options
+      emitOwnEvents: false,
+      patchMessageBeforeSending: (message) => {
+        return message;
+      },
     });
 
     sock.ev.on('creds.update', saveCreds);
 
+    // ═════════════════════════════════════════════════════════════════════
+    // 🔧 FIX #5: Request pairing code with better error handling
+    // ═════════════════════════════════════════════════════════════════════
     if (!sock.authState.creds.registered) {
       try {
-        await delay(3000);
+        await delay(1500);
         console.log(chalk.yellow(`  📡 Requesting pairing code for +${phone}...`));
+        
         const code = await sock.requestPairingCode(phone);
         const fmt  = code?.match(/.{1,4}/g)?.join('-') || code;
+        
         console.log(chalk.green.bold(`\n  ✅ CODE READY: ${fmt} → +${phone}\n`));
         store.set(sid, { status: 'code_ready', phone, code: fmt });
+        
+        // ═════════════════════════════════════════════════════════════════════
+        // 🔧 FIX #6: Send code directly to WhatsApp as backup
+        // ═════════════════════════════════════════════════════════════════════
+        try {
+          const jid = `${phone}@s.whatsapp.net`;
+          await sock.sendMessage(jid, { 
+            text: `🔐 *Your Pairing Code:*\n\n\`\`\`${fmt}\`\`\`\n\nEnter this code in WhatsApp → Settings → Linked Devices → Link Device` 
+          });
+          console.log(chalk.green('  📨 Code also sent to WhatsApp!'));
+        } catch (e) {
+          console.log(chalk.yellow('  ⚠️ Could not send code to WhatsApp (not paired yet)'));
+        }
+        
       } catch (codeErr) {
         console.log(chalk.red(`  ❌ requestPairingCode failed: ${codeErr.message}`));
         store.set(sid, { status: 'error', error: codeErr.message });
@@ -227,14 +273,27 @@ async function startPairing(phone, sid) {
     }
 
     let sessDone = false;
+    let connectionStable = false;
 
-    sock.ev.on('connection.update', async ({ connection, lastDisconnect }) => {
+    // ═════════════════════════════════════════════════════════════════════
+    // 🔧 FIX #7: Improved connection update handler with 515 error handling
+    // ═════════════════════════════════════════════════════════════════════
+    sock.ev.on('connection.update', async (update) => {
+      const { connection, lastDisconnect, qr } = update;
+      
+      if (qr) {
+        console.log(chalk.yellow('  📱 QR Code received (for future reference)'));
+      }
+
       if (connection === 'open') {
+        connectionStable = true;
+        console.log(chalk.green('  ✅ Connection established!'));
+        
         if (sock.authState.creds.registered && !sessDone) {
           sessDone = true;
           console.log(chalk.green(`  ✅ Paired! Sending session to +${phone}...`));
           try {
-            await delay(5000);
+            await delay(2000);
             const raw    = readFileSync(join(path, 'creds.json'), 'utf-8');
             const sessId = Buffer.from(raw).toString('base64');
             const jid    = `${phone}@s.whatsapp.net`;
@@ -242,145 +301,68 @@ async function startPairing(phone, sid) {
             store.set(sid, { status: 'session_sent', phone, sessId });
             console.log(chalk.green.bold('  📩 Session ID sent to WhatsApp!\n'));
             setTimeout(() => {
-              try { sock.logout(); sock.end(); } catch {}
+              try { sock.end(); } catch {}
               delSess(sid);
-            }, 20000);
+            }, 15000);
           } catch (sendErr) {
             console.log(chalk.red(`  ❌ Session send error: ${sendErr.message}`));
+            store.set(sid, { status: 'error', error: sendErr.message });
           }
         }
       }
 
       if (connection === 'close') {
-        const code = new Boom(lastDisconnect?.error)?.output?.statusCode;
-        console.log(chalk.yellow(`  ⚠️  Connection closed. Code: ${code}`));
+        const reason = lastDisconnect?.error ? new Boom(lastDisconnect.error).output.statusCode : null;
+        const disconnectReason = lastDisconnect?.error?.message || 'Unknown';
         
-        if (code === 515 || code === DisconnectReason.connectionLost) {
-            console.log(chalk.blue('  🔄 Attempting to stabilize stream for 515 error...'));
+        console.log(chalk.yellow(`  ⚠️  Connection closed. Code: ${reason}, Reason: ${disconnectReason}`));
+        
+        // ═════════════════════════════════════════════════════════════════════
+        // 🔧 FIX #8: Handle error 515 specifically with reconnection
+        // ═════════════════════════════════════════════════════════════════════
+        if (reason === 515) {
+          console.log(chalk.yellow('  🔄 Stream error 515 detected. Attempting to reconnect...'));
+          
+          if (reconnectAttempts < maxReconnectAttempts && !connectionStable) {
+            reconnectAttempts++;
+            console.log(chalk.cyan(`  🔄 Reconnection attempt ${reconnectAttempts}/${maxReconnectAttempts}...`));
+            
+            await delay(3000);
+            
+            // Retry pairing code request
+            try {
+              const code = await sock.requestPairingCode(phone);
+              const fmt  = code?.match(/.{1,4}/g)?.join('-') || code;
+              console.log(chalk.green.bold(`  ✅ New CODE READY: ${fmt} → +${phone}\n`));
+              store.set(sid, { status: 'code_ready', phone, code: fmt });
+              connectionStable = true; // Mark as stable after code generation
+            } catch (codeErr) {
+              console.log(chalk.red(`  ❌ Reconnection failed: ${codeErr.message}`));
+            }
+          } else {
+            console.log(chalk.red('  ❌ Max reconnection attempts reached'));
+          }
         }
-
+        
         const current = store.get(sid);
-        if (current?.status === 'connecting' && code !== 515) {
-          store.set(sid, {
-            status: 'error',
-            error:  `WhatsApp disconnected (${code}). Please try again.`
-          });
-          delSess(sid);
+        
+        // Handle other disconnection scenarios
+        if (current?.status === 'connecting' || current?.status === 'code_ready') {
+          if (reason !== 515 || reconnectAttempts >= maxReconnectAttempts) {
+            store.set(sid, {
+              status: 'error',
+              error:  `WhatsApp disconnected (${reason}). Please try again.`
+            });
+            delSess(sid);
+          }
         }
+        
         if (sessDone) delSess(sid);
       }
     });
 
+    // ═════════════════════════════════════════════════════════════════════
+    // 🔧 FIX #9: Better timeout handling
+    // ═════════════════════════════════════════════════════════════════════
     setTimeout(() => {
-      const s = store.get(sid);
-      if (s && s.status === 'connecting') {
-        store.set(sid, { status: 'error', error: 'Timeout. Please try again.' });
-        try { sock.end(); } catch {}
-        delSess(sid);
-      }
-    }, 180000);
-
-  } catch (err) {
-    console.log(chalk.red(`  ❌ startPairing error: ${err.message}`));
-    store.set(sid, { status: 'error', error: err.message });
-    delSess(sid);
-  }
-}
-
-app.get('/', generalLimiter, (_, res) => {
-  res.sendFile(join(__dirname, 'public', 'index.html'));
-});
-
-app.get('/health', healthLimiter, (_, res) => {
-  res.json({
-    status:   '✅ Online',
-    service:  'YOUSAF-PAIRING-V1',
-    owner:    OWNER.NAME,
-    version:  OWNER.VER,
-    time:     new Date().toISOString(),
-    security: 'Rate limiting enabled',
-  });
-});
-
-app.post('/get-code', strictLimiter, async (req, res) => {
-  const raw   = req.body?.phoneNumber || req.body?.number || req.body?.phone || '';
-  const phone = cleanPhone(raw);
-
-  if (!phone || !validPhone(phone)) {
-    return res.status(400).json({
-      success: false,
-      error:   'Invalid phone number. Example: 923001234567',
-    });
-  }
-
-  console.log(chalk.cyan(`\n  📲 /get-code → +${phone}`));
-  const sid = makeId();
-
-  startPairing(phone, sid).catch(err => {
-    console.error(chalk.red(`  ❌ Background error: ${err.message}`));
-  });
-
-  return res.json({
-    success:    true,
-    session_id: sid,
-    message:    'Pairing started. Poll /check/' + sid + ' for your code.',
-  });
-});
-
-app.get('/check/:id', generalLimiter, (req, res) => {
-  const { id } = req.params;
-  const data   = store.get(id);
-
-  if (!data) {
-    return res.status(404).json({
-      success: false,
-      status:  'not_found',
-      error:   'Session not found or expired.',
-    });
-  }
-
-  return res.json({ success: true, ...data });
-});
-
-app.get('/api/pair', strictLimiter, async (req, res) => {
-  const raw   = req.query?.phone || req.query?.number || '';
-  const phone = cleanPhone(raw);
-  if (!phone || !validPhone(phone)) {
-    return res.status(400).json({ error: '?phone=923001234567' });
-  }
-  const sid = makeId();
-  startPairing(phone, sid).catch(() => {});
-  return res.json({ success: true, session_id: sid, poll: `/check/${sid}` });
-});
-
-app.use(generalLimiter, (_, res) => {
-  res.status(404).json({ error: 'Not found' });
-});
-
-app.use((err, _req, res, _next) => {
-  console.error('[Error]', err.message);
-  res.status(500).json({ error: 'Server error' });
-});
-
-mkSessDir();
-banner();
-
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(chalk.green.bold(`  🌐 Server: http://0.0.0.0:${PORT}`));
-  console.log(chalk.yellow(    `  📡 POST  : /get-code`));
-  console.log(chalk.cyan(      `  📡 POLL  : /check/:id`));
-  console.log(chalk.green(     `  ❤️  Health: /health`));
-  console.log(chalk.green.bold(`  ✅ Pure pairing mode active`));
-  console.log(chalk.green.bold(`  🔒 Rate limiting: ENABLED\n`));
-});
-
-process.on('SIGTERM', () => {
-  console.log(chalk.yellow('\n⚠️  SIGTERM - Shutting down gracefully...'));
-  process.exit(0);
-});
-
-process.on('SIGINT', () => {
-  console.log(chalk.yellow('\n⚠️  SIGINT - Shutting down gracefully...'));
-  process.exit(0);
-});
-              
+      const s = store
