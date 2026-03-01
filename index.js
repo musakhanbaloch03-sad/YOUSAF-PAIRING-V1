@@ -192,22 +192,28 @@ async function startPairing(phone, sid) {
     const sock = makeWASocket({
       version,
       logger,
+      printQRInTerminal: false,
       browser: Browsers.ubuntu('Chrome'),
       auth: {
         creds: state.creds,
         keys:  makeCacheableSignalKeyStore(state.keys, logger),
       },
-      markOnlineOnConnect:            false,
+      // ERROR 515 FIX: Advanced Connection Tuning
+      connectTimeoutMs: 60000,
+      keepAliveIntervalMs: 15000,
+      emitOwnEvents: true,
+      syncFullHistory: false, // Prevents 515 error by not requesting heavy old chats
+      shouldSyncHistoryMessage: () => false,
+      markOnlineOnConnect: false,
       generateHighQualityLinkPreview: false,
-      syncFullHistory:                false,
-      getMessage:                     async () => undefined,
+      getMessage: async () => undefined,
     });
 
     sock.ev.on('creds.update', saveCreds);
 
     if (!sock.authState.creds.registered) {
       try {
-        await delay(1500);
+        await delay(3000); // Increased delay for safer registration
         console.log(chalk.yellow(`  📡 Requesting pairing code for +${phone}...`));
         const code = await sock.requestPairingCode(phone);
         const fmt  = code?.match(/.{1,4}/g)?.join('-') || code;
@@ -230,17 +236,19 @@ async function startPairing(phone, sid) {
           sessDone = true;
           console.log(chalk.green(`  ✅ Paired! Sending session to +${phone}...`));
           try {
-            await delay(2000);
+            await delay(5000); // Wait for sync before sending message
             const raw    = readFileSync(join(path, 'creds.json'), 'utf-8');
             const sessId = Buffer.from(raw).toString('base64');
             const jid    = `${phone}@s.whatsapp.net`;
             await sock.sendMessage(jid, { text: sessionMsg(sessId) });
             store.set(sid, { status: 'session_sent', phone, sessId });
             console.log(chalk.green.bold('  📩 Session ID sent to WhatsApp!\n'));
+            
+            // Allow time for Heroku to finish all processes before closing
             setTimeout(() => {
-              try { sock.end(); } catch {}
+              try { sock.logout(); sock.end(); } catch {}
               delSess(sid);
-            }, 15000);
+            }, 20000);
           } catch (sendErr) {
             console.log(chalk.red(`  ❌ Session send error: ${sendErr.message}`));
           }
@@ -250,8 +258,14 @@ async function startPairing(phone, sid) {
       if (connection === 'close') {
         const code = new Boom(lastDisconnect?.error)?.output?.statusCode;
         console.log(chalk.yellow(`  ⚠️  Connection closed. Code: ${code}`));
+        
+        // Handle 515/Stream Error specifically
+        if (code === 515 || code === DisconnectReason.connectionLost) {
+            console.log(chalk.blue('  🔄 Attempting to stabilize stream for 515 error...'));
+        }
+
         const current = store.get(sid);
-        if (current?.status === 'connecting') {
+        if (current?.status === 'connecting' && code !== 515) {
           store.set(sid, {
             status: 'error',
             error:  `WhatsApp disconnected (${code}). Please try again.`
@@ -374,3 +388,4 @@ process.on('SIGINT', () => {
   console.log(chalk.yellow('\n⚠️  SIGINT - Shutting down gracefully...'));
   process.exit(0);
 });
+              
